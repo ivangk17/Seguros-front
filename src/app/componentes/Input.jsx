@@ -2,7 +2,7 @@ import { useState } from "react";
 
 export default function Input({ name, type = "text", error, ...rest }) {
   return (
-    <div className="my-2 w-72">
+    <div className="">
       <input
         id={name}
         name={name}

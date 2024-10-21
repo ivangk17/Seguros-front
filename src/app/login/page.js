@@ -31,7 +31,7 @@ export default function PageLogin() {
     let res = "";
     if (!value) {
       res = "Contraseña es requerida";
-    } else if (value.length < 6) {
+    } else if (value.length < 2) {
       res = "La contraseña debe tener al menos 6 caracteres";
     }
     return res;
