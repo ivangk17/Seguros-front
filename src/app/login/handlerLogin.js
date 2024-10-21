@@ -1,7 +1,8 @@
-export async function handlerLogin(usuario, setInicio, setError, setToken, setUser) {
-
-  const url = "http://localhost:3000/api/users/loginAdminYAsegurador";
-
+export async function handlerLogin(usuario, setErrors, setToken, setUser) {
+  const api = process.env.NEXT_PUBLIC_URL_API;
+  const url = `${api}users/login`;
+  const MSG_ERROR_CONEXION =
+    "En este momento no hay conexion, intente nuevamente mas tarde";
   try {
     const request = await fetch(url, {
       method: "POST",
@@ -9,20 +10,44 @@ export async function handlerLogin(usuario, setInicio, setError, setToken, setUs
       body: JSON.stringify(usuario),
     });
 
-    if (request.status === 200) {
-      const response = (await request.json())
-      const token = response.token;
-      const usuario = JSON.stringify(response.user);
-      setToken(token);
-      setUser(usuario);
-      sessionStorage.setItem('token', token);
-      sessionStorage.setItem('user', usuario);
-    } else {
-      setError('Credenciales inválidas');
+    switch (request.status) {
+      case 200: {
+        const response = await request.json();
+        const token = response.token;
+        const usuarioData = JSON.stringify(response.user);
+        setToken(token);
+        setUser(usuarioData);
+        sessionStorage.setItem("token", token);
+        sessionStorage.setItem("user", usuarioData);
+        break;
+      }
+      case 400: {
+        const response = await request.text();
+        setErrors((prev) => ({
+          ...prev,
+          submit: response,
+        }));
+        break;
+      }
+      case 401: {
+        const response = await request.text();
+        setErrors((prev) => ({
+          ...prev,
+          submit: response,
+        }));
+        break;
+      }
+      default: {
+        const response = await request.json();
+        console.log(response);
+        setErrors((prev) => ({ ...prev, submit: MSG_ERROR_CONEXION }));
+        break;
+      }
     }
   } catch (error) {
-    setError('Error al realizar la solicitud');
-  } finally {
-    setInicio(true);
+    setErrors((prev) => ({
+      ...prev,
+      submit: MSG_ERROR_CONEXION,
+    }));
   }
 }
