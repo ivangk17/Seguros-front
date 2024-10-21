@@ -17,6 +17,10 @@ export default function WelcomePage() {
     router.push('/crearAsegurador');
   };
 
+  const listarClientes = () => {
+    router.push('/listarClientes');
+  }
+
   if (!user) {
     return null;
   }
@@ -30,6 +34,12 @@ export default function WelcomePage() {
         className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
       >
         Crear Asegurado
+      </button>
+      <button
+        onClick={listarClientes}
+        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
+      >
+        Listar Clientes
       </button>
     </div>
   );
