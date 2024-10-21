@@ -1,7 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Input from "../componentes/Input";
+import ClientsTable from "../componentes/ClientsTable";
+import Pagination from "../componentes/Pagination";
+import FilterForm from "../componentes/FilterForm";
+import ConfirmDeleteModal from "../componentes/ConfirmDeleteModal";
 
 export default function ClientsList() {
   const [clients, setClients] = useState([]);
@@ -11,11 +14,13 @@ export default function ClientsList() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Paginación
   const [currentPage, setCurrentPage] = useState(1);
-  const [clientsPerPage] = useState(10);
+  const [clientsPerPage] = useState(15);
 
-  // Función para obtener los clientes desde la API
+  // Estado para el modal
+  const [showModal, setShowModal] = useState(false);
+  const [clientToDelete, setClientToDelete] = useState(null);
+
   const fetchClients = async (search, dni, email) => {
     setLoading(true);
     try {
@@ -63,123 +68,71 @@ export default function ClientsList() {
     fetchClients(searchTerm, filterDni, filterEmail);
   };
 
+  const handleEdit = (client) => {
+    console.log("Editar cliente", client);
+  };
+
+  const handleDelete = (client) => {
+    setClientToDelete(client); // Asigna el cliente a eliminar
+    setShowModal(true); // Muestra el modal
+  };
+
+  const confirmDelete = async (id) => {
+    setShowModal(false);
+    try {
+      const response = await fetch(`http://localhost:3000/api/users/${id}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Error al eliminar el cliente");
+      }
+
+      // Actualiza la lista de clientes eliminando el que ha sido borrado
+      setClients(clients.filter((client) => client._id !== id));
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
   return (
     <div>
-      {/* Filtros */}
-      <form className="mb-4 flex gap-4 my-2" onSubmit={handleSubmit}>
-        <div className="flex flex-col">
-          <Input
-            id="nombre"
-            name="nombre"
-            type="text"
-            placeholder="Nombre"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
-        <div className="flex flex-col">
-          <Input
-            id="dni"
-            name="dni"
-            type="text"
-            placeholder="DNI"
-            value={filterDni}
-            onChange={(e) => setFilterDni(e.target.value)}
-          />
-        </div>
-        <div className="flex flex-col">
-          <Input
-            id="email"
-            name="email"
-            type="text"
-            placeholder="Email"
-            value={filterEmail}
-            onChange={(e) => setFilterEmail(e.target.value)}
-          />
-        </div>
-        <div className="flex flex-col">
-          <button className="mb-3 inline-flex items-center justify-center p-0.5 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-purple-600 to-blue-500 group-hover:from-purple-600 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800">
-            <span className="px-5 py-2.5 transition-all ease-in duration-75 bg-white dark:bg-gray-900 rounded-md group-hover:bg-opacity-0">
-              Filtrar
-            </span>
-          </button>
-        </div>
-      </form>
+      <FilterForm
+        searchTerm={searchTerm}
+        filterDni={filterDni}
+        filterEmail={filterEmail}
+        setSearchTerm={setSearchTerm}
+        setFilterDni={setFilterDni}
+        setFilterEmail={setFilterEmail}
+        handleSubmit={handleSubmit}
+      />
 
-      <div className="overflow-x-auto">
-        <table className="min-w-full divide-y-2 divide-gray-200 bg-white text-sm">
-          <thead className="ltr:text-left rtl:text-right">
-            <tr>
-              <th className="whitespace-nowrap px-4 py-2 font-medium text-gray-900 text-center">
-                Nombre
-              </th>
-              <th className="whitespace-nowrap px-4 py-2 font-medium text-gray-900 text-center">
-                Apellido
-              </th>
-              <th className="whitespace-nowrap px-4 py-2 font-medium text-gray-900 text-center">
-                DNI
-              </th>
-              <th className="whitespace-nowrap px-4 py-2 font-medium text-gray-900 text-center">
-                Email
-              </th>
-              <th className="px-4 py-2 text-center"></th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-200">
-            {currentClients.map((client) => (
-              <tr key={client._id}>
-                <td className="whitespace-nowrap px-4 py-2 text-center">
-                  {client.name}
-                </td>
-                <td className="whitespace-nowrap px-4 py-2 text-center">
-                  {client.lastname}
-                </td>
-                <td className="whitespace-nowrap px-4 py-2 text-center">
-                  {client.dni}
-                </td>
-                <td className="whitespace-nowrap px-4 py-2 text-center">
-                  {client.email}
-                </td>
-                <td className="whitespace-nowrap px-4 py-2 text-center">
-                  <a
-                    href="#"
-                    className="inline-block rounded bg-indigo-600 px-4 py-2 text-xs font-medium text-white hover:bg-indigo-700"
-                  >
-                    Editar
-                  </a>
-                  <button className="inline-block rounded bg-red-600 px-4 py-2 text-xs font-medium text-white hover:bg-red-700 ml-2">
-                    Eliminar
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <ClientsTable
+        clients={currentClients}
+        handleEdit={handleEdit}
+        handleDelete={handleDelete}
+      />
 
-      {/* Mostrar loading o error */}
       {loading && <p>Cargando clientes...</p>}
       {error && <p>Error: {error}</p>}
 
-      {/* Paginación */}
-      <div className="fixed bottom-4 right-4">
-        {Array.from(
-          { length: Math.ceil(clients.length / clientsPerPage) },
-          (_, i) => (
-            <button
-              key={i + 1}
-              onClick={() => paginate(i + 1)}
-              className={`mx-1 px-4 py-2 rounded ${
-                currentPage === i + 1
-                  ? "bg-indigo-600 text-white"
-                  : "bg-gray-300 text-black"
-              }`}
-            >
-              {i + 1}
-            </button>
-          )
-        )}
-      </div>
+      <Pagination
+        totalClients={clients.length}
+        clientsPerPage={clientsPerPage}
+        currentPage={currentPage}
+        paginate={paginate}
+      />
+
+      <ConfirmDeleteModal
+        show={showModal}
+        client={clientToDelete}
+        onClose={() => setShowModal(false)}
+        onConfirm={confirmDelete}
+      />
     </div>
   );
 }

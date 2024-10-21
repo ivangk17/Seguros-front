@@ -2,7 +2,7 @@ import { useState } from "react";
 
 export default function Input({ name, type = "text", error, ...rest }) {
   return (
-    <div className="">
+    <>
       <input
         id={name}
         name={name}
@@ -13,6 +13,6 @@ export default function Input({ name, type = "text", error, ...rest }) {
       {error && (
         <small className="text-red-500 text-xs italic mt-1">{error}</small>
       )}{" "}
-    </div>
+    </>
   );
 }
