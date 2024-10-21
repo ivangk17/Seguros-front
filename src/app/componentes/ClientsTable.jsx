@@ -16,6 +16,12 @@ export default function ClientsTable({ clients, handleEdit, handleDelete }) {
             <th className="whitespace-nowrap px-4 py-2 font-medium text-gray-900 text-center">
               Email
             </th>
+            <th className="whitespace-nowrap px-4 py-2 font-medium text-gray-900 text-center">
+              Teléfono
+            </th>
+            <th className="whitespace-nowrap px-4 py-2 font-medium text-gray-900 text-center">
+              CUIT
+            </th>
             <th className="px-4 py-2 text-center"></th>
           </tr>
         </thead>
@@ -33,6 +39,12 @@ export default function ClientsTable({ clients, handleEdit, handleDelete }) {
               </td>
               <td className="whitespace-nowrap px-4 py-2 text-center">
                 {client.email}
+              </td>
+              <td className="whitespace-nowrap px-4 py-2 text-center">
+                {client.phone}
+              </td>
+              <td className="whitespace-nowrap px-4 py-2 text-center">
+                {client.cuit}
               </td>
               <td className="whitespace-nowrap px-4 py-2 text-center">
                 <button

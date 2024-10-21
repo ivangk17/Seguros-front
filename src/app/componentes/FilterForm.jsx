@@ -4,9 +4,11 @@ export default function FilterForm({
   searchTerm,
   filterDni,
   filterEmail,
+  filterPhone, // Nuevo prop para el filtro de teléfono
   setSearchTerm,
   setFilterDni,
   setFilterEmail,
+  setFilterPhone, // Nuevo prop para la función de actualización del filtro de teléfono
   handleSubmit,
 }) {
   return (
@@ -39,6 +41,16 @@ export default function FilterForm({
           placeholder="Email"
           value={filterEmail}
           onChange={(e) => setFilterEmail(e.target.value)}
+        />
+      </div>
+      <div className="flex flex-col">
+        <Input
+          id="phone"
+          name="phone"
+          type="text"
+          placeholder="Teléfono"
+          value={filterPhone}
+          onChange={(e) => setFilterPhone(e.target.value)}
         />
       </div>
       <div className="flex flex-col">

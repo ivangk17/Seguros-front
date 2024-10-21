@@ -5,12 +5,14 @@ import ClientsTable from "../componentes/ClientsTable";
 import Pagination from "../componentes/Pagination";
 import FilterForm from "../componentes/FilterForm";
 import ConfirmDeleteModal from "../componentes/ConfirmDeleteModal";
+import { useRouter } from "next/navigation";
 
 export default function ClientsList() {
   const [clients, setClients] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterDni, setFilterDni] = useState("");
   const [filterEmail, setFilterEmail] = useState("");
+  const [filterPhone, setFilterPhone] = useState(""); 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -21,13 +23,16 @@ export default function ClientsList() {
   const [showModal, setShowModal] = useState(false);
   const [clientToDelete, setClientToDelete] = useState(null);
 
-  const fetchClients = async (search, dni, email) => {
+  const router = useRouter();
+
+  const fetchClients = async (search, dni, email, phone) => {
     setLoading(true);
     try {
       const queryParams = new URLSearchParams({
         ...(search && { search }),
         ...(dni && { dni }),
         ...(email && { email }),
+        ...(phone && { phone }), 
       }).toString();
 
       const response = await fetch(
@@ -65,16 +70,16 @@ export default function ClientsList() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    fetchClients(searchTerm, filterDni, filterEmail);
+    fetchClients(searchTerm, filterDni, filterEmail, filterPhone);
   };
 
   const handleEdit = (client) => {
-    console.log("Editar cliente", client);
+    router.push(`/listarClientes/editarCliente/${client._id}`);
   };
 
   const handleDelete = (client) => {
-    setClientToDelete(client); // Asigna el cliente a eliminar
-    setShowModal(true); // Muestra el modal
+    setClientToDelete(client); 
+    setShowModal(true);
   };
 
   const confirmDelete = async (id) => {
@@ -92,7 +97,6 @@ export default function ClientsList() {
         throw new Error("Error al eliminar el cliente");
       }
 
-      // Actualiza la lista de clientes eliminando el que ha sido borrado
       setClients(clients.filter((client) => client._id !== id));
     } catch (err) {
       setError(err.message);
@@ -105,9 +109,11 @@ export default function ClientsList() {
         searchTerm={searchTerm}
         filterDni={filterDni}
         filterEmail={filterEmail}
+        filterPhone={filterPhone}
         setSearchTerm={setSearchTerm}
         setFilterDni={setFilterDni}
         setFilterEmail={setFilterEmail}
+        setFilterPhone={setFilterPhone}
         handleSubmit={handleSubmit}
       />
 

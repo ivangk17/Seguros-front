@@ -1,9 +1,13 @@
 "use client";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+
+import React, { useState, useEffect } from 'react';
+import { useRouter, useParams } from 'next/navigation';
 import Swal from 'sweetalert2';
 
-export default function CrearAsegurador() {
+const EditarCliente = () => {
+  const router = useRouter();
+  const { id } = useParams();
+  const [user, setUser] = useState(null);
   const [formData, setFormData] = useState({
     email: "",
     name: "",
@@ -21,7 +25,44 @@ export default function CrearAsegurador() {
 
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
-  const router = useRouter();
+
+  useEffect(() => {
+    if (id) {
+      // Fetch user data from the endpoint
+      fetch(`http://localhost:3000/api/users/buscarCliente/${id}`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+        },
+      })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Error fetching user data');
+          }
+          return response.json();
+        })
+        .then(data => {
+          setUser(data);
+          setFormData({
+            email: data.email,
+            name: data.nombre,
+            lastname: data.apellido,
+            dni: data.dni,
+            phone: data.phone,
+            cuit: data.cuit,
+            domicilio: {
+              address: data.domicilio.address,
+              zip_code: data.domicilio.zip_code,
+              province: data.domicilio.province,
+              country: data.domicilio.country
+            }
+          });
+        })
+        .catch(error => {
+          console.error('Error fetching user data:', error);
+        });
+    }
+  }, [id]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -42,54 +83,56 @@ export default function CrearAsegurador() {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault(); 
+    e.preventDefault();
     setError(null);
     setSuccess(null);
     try {
-      const response = await fetch("http://localhost:3000/api/users/register/client", {
-        method: "POST",
+      const response = await fetch(`http://localhost:3000/api/users/editarCliente/${id}`, {
+        method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${sessionStorage.getItem('token')}`
+          Authorization: `Bearer ${sessionStorage.getItem("token")}`,
         },
         body: JSON.stringify(formData)
       });
 
       if (response.ok) {
-        setSuccess("Asegurado creado exitosamente");
+        setSuccess("Cliente actualizado exitosamente");
         Swal.fire({
           title: 'Éxito',
-          text: 'Asegurado creado exitosamente',
+          text: 'Cliente actualizado exitosamente',
           icon: 'success',
           confirmButtonText: 'OK'
         }).then(() => {
-          router.push('/listarClientes'); 
+          router.push('/listarClientes');
         });
       } else {
         const data = await response.json();
-        setError(data.message || "Error al crear el asegurado");
+        setError(data.error || "Error al actualizar el cliente");
       }
     } catch (error) {
       setError("Error al enviar la solicitud");
     }
   };
 
+  if (!user) return <div>Loading...</div>;
+
   return (
     <div className="flex h-screen bg-gray-100">
-      <div className="m-auto w-full max-w-2xl"> 
+      <div className="m-auto w-full max-w-2xl">
         <div className="mt-5 bg-white rounded-lg shadow-lg p-8">
           <div className="flex">
             <div className="flex-1 py-5 pl-5 overflow-hidden">
-              <h1 className="inline text-3xl font-semibold leading-none">Crear Asegurado</h1> 
+              <h1 className="inline text-3xl font-semibold leading-none">Editar Cliente</h1>
             </div>
           </div>
           <div className="px-5 pb-5">
             {error && <p className="text-red-500 mb-4">{error}</p>}
             {success && <p className="text-green-500 mb-4">{success}</p>}
-            <form onSubmit={handleSubmit} className="w-full p-6"> 
+            <form onSubmit={handleSubmit} className="w-full p-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="mb-4">
-                  <label htmlFor="email" className="block text-gray-700 text-lg">Email:</label> 
+                  <label htmlFor="email" className="block text-gray-700 text-lg">Email:</label>
                   <input
                     type="email"
                     id="email"
@@ -100,7 +143,7 @@ export default function CrearAsegurador() {
                     className="text-black placeholder-gray-600 w-full px-4 py-3 mt-2 text-base transition duration-500 ease-in-out transform border-transparent rounded-lg bg-gray-200 focus:border-blueGray-500 focus:bg-white focus:outline-none focus:shadow-outline focus:ring-2 ring-offset-current ring-offset-2 ring-gray-400"
                   />
                 </div>
-    
+
                 <div className="mb-4">
                   <label htmlFor="name" className="block text-gray-700 text-lg">Nombre:</label>
                   <input
@@ -113,7 +156,7 @@ export default function CrearAsegurador() {
                     className="text-black placeholder-gray-600 w-full px-4 py-3 mt-2 text-base transition duration-500 ease-in-out transform border-transparent rounded-lg bg-gray-200 focus:border-blueGray-500 focus:bg-white focus:outline-none focus:shadow-outline focus:ring-2 ring-offset-current ring-offset-2 ring-gray-400"
                   />
                 </div>
-    
+
                 <div className="mb-4">
                   <label htmlFor="lastname" className="block text-gray-700 text-lg">Apellido:</label>
                   <input
@@ -126,7 +169,7 @@ export default function CrearAsegurador() {
                     className="text-black placeholder-gray-600 w-full px-4 py-3 mt-2 text-base transition duration-500 ease-in-out transform border-transparent rounded-lg bg-gray-200 focus:border-blueGray-500 focus:bg-white focus:outline-none focus:shadow-outline focus:ring-2 ring-offset-current ring-offset-2 ring-gray-400"
                   />
                 </div>
-    
+
                 <div className="mb-4">
                   <label htmlFor="dni" className="block text-gray-700 text-lg">DNI:</label>
                   <input
@@ -223,7 +266,7 @@ export default function CrearAsegurador() {
                   </div>
                 </div>
               </div>
-  
+
               <div className="flex justify-center mt-6">
                 <button
                   type="submit"
@@ -239,7 +282,7 @@ export default function CrearAsegurador() {
                       </g>
                     </g>
                   </svg>
-                  <span className="pl-2 mx-1">Crear Asegurado</span>
+                  <span className="pl-2 mx-1">Guardar Cambios</span>
                 </button>
               </div>
             </form>
@@ -248,4 +291,6 @@ export default function CrearAsegurador() {
       </div>
     </div>
   );
-}
+};
+
+export default EditarCliente;
