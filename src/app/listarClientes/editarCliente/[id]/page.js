@@ -115,6 +115,10 @@ const EditarCliente = () => {
     }
   };
 
+  const handleCancel = () => {
+    router.push('/listarClientes');
+  };
+
   if (!user) return <div>Loading...</div>;
 
   return (
@@ -267,10 +271,10 @@ const EditarCliente = () => {
                 </div>
               </div>
 
-              <div className="flex justify-center mt-6">
+              <div className="grid grid-cols-2 gap-4 mt-6">
                 <button
                   type="submit"
-                  className="relative w-full max-w-xs flex justify-center items-center px-8 py-4 font-medium tracking-wide text-white capitalize bg-black rounded-md hover:bg-gray-900 focus:outline-none transition duration-300 transform active:scale-95 ease-in-out text-lg"
+                  className="relative w-full flex justify-center items-center px-8 py-4 font-medium tracking-wide text-white capitalize bg-black rounded-md hover:bg-gray-900 focus:outline-none transition duration-300 transform active:scale-95 ease-in-out text-lg"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24px" viewBox="0 0 24 24" width="24px" fill="#FFFFFF">
                     <g>
@@ -283,6 +287,23 @@ const EditarCliente = () => {
                     </g>
                   </svg>
                   <span className="pl-2 mx-1">Guardar Cambios</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={handleCancel}
+                  className="relative w-full flex justify-center items-center px-8 py-4 font-medium tracking-wide text-white capitalize bg-red-600 rounded-md hover:bg-red-700 focus:outline-none transition duration-300 transform active:scale-95 ease-in-out text-lg"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24px" viewBox="0 0 24 24" width="24px" fill="#FFFFFF">
+                    <g>
+                      <rect fill="none" height="24" width="24"></rect>
+                    </g>
+                    <g>
+                      <g>
+                        <path d="M19,13H5v-2h14V13z"></path>
+                      </g>
+                    </g>
+                  </svg>
+                  <span className="pl-2 mx-1">Cancelar Cambios</span>
                 </button>
               </div>
             </form>
