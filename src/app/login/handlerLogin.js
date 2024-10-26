@@ -1,4 +1,4 @@
-export async function handlerLogin(usuario, setErrors, setToken, setUser) {
+export async function handlerLogin(usuario, setErrors, setToken) {
   const api = process.env.NEXT_PUBLIC_URL_API;
   const url = `${api}users/login`;
   const MSG_ERROR_CONEXION =
@@ -14,11 +14,8 @@ export async function handlerLogin(usuario, setErrors, setToken, setUser) {
       case 200: {
         const response = await request.json();
         const token = response.token;
-        const usuarioData = JSON.stringify(response.user);
         setToken(token);
-        setUser(usuarioData);
         sessionStorage.setItem("token", token);
-        sessionStorage.setItem("user", usuarioData);
         break;
       }
       case 400: {
