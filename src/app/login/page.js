@@ -118,7 +118,9 @@ export default function PageLogin() {
           </small>
         )}{" "}
         <div className="mx-7 my-3 flex justify-end text-sm font-semibold">
-          <h1>Forget Password</h1>
+          <a href="/crearAsegurador" className="text-blue-500">
+            No tienes cuenta? Registrate aquí.
+          </a>
         </div>
       </div>
     </div>
