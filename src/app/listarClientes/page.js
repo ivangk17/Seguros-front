@@ -2,11 +2,11 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import ConfirmDeleteModal from "../componentes/ConfirmDeleteModal";
+import ConfirmDeleteModal from "../componentes/modals/ConfirmDeleteModal";
 import Table from "../componentes/table/Table";
+import ModalEdit from "../componentes/modals/ModalEdit";
 
 export default function ClientsList() {
-
   //Router
   const router = useRouter();
 
@@ -15,6 +15,7 @@ export default function ClientsList() {
 
   //Datos
   const [clientes, setClientes] = useState([]);
+  const [cambios, setCambios] = useState(false);
 
   //Filtros
   const [filtroNombreApellido, setFiltroNombreApellido] = useState("");
@@ -27,10 +28,10 @@ export default function ClientsList() {
   /*    const [loading, setLoading] = useState(false); */
 
   // Modal
-  const [showModal, setShowModal] = useState(false);
+  const [showModalDelete, setShowModalDelete] = useState(false);
+  const [showModalEdit, setShowModalEdit] = useState(false);
   const [clientToDelete, setClientToDelete] = useState(null);
-
-  
+  const [clientToEdit, setClientToEdit] = useState(null);
 
   const fetchClients = async (search, dni, email, phone) => {
     /* setLoading(true); */
@@ -58,18 +59,21 @@ export default function ClientsList() {
     } catch (error) {
       setError(error.message);
     } finally {
-      setPaginaActual(1)
+      setPaginaActual(1);
       /* setLoading(false); */
     }
   };
 
   useEffect(() => {
     fetchClients();
-  }, []);
+  }, [cambios]);
 
   const indexOfLastClient = paginaActual * clientesPorPagina;
   const indexOfFirstClient = indexOfLastClient - clientesPorPagina;
-  const clientesActuales = clientes.slice(indexOfFirstClient, indexOfLastClient);
+  const clientesActuales = clientes.slice(
+    indexOfFirstClient,
+    indexOfLastClient
+  );
 
   const paginate = (numeroPagina) => setPaginaActual(numeroPagina);
 
@@ -79,16 +83,17 @@ export default function ClientsList() {
   };
 
   const handleEdit = (cliente) => {
-    router.push(`/listarClientes/editarCliente/${cliente._id}`);
+    setClientToEdit(cliente);
+    setShowModalEdit(true);
   };
 
   const handleDelete = (cliente) => {
     setClientToDelete(cliente);
-    setShowModal(true);
+    setShowModalDelete(true);
   };
 
   const confirmDelete = async (id) => {
-    setShowModal(false);
+    setShowModalDelete(false);
     try {
       const url = `${api}users/${id}`;
       const response = await fetch(url, {
@@ -102,10 +107,30 @@ export default function ClientsList() {
       if (!response.ok) {
         throw new Error("Error al eliminar el cliente");
       }
-
-      setClien(clientes.filter((cliente) => cliente._id !== id));
+      cambios ? setCambios(false) : setCambios(true);
     } catch (error) {
       setError(error.message);
+    }
+  };
+
+  const confirmEdit = async (formData) => {
+    setShowModalEdit(false);
+    try {
+      const url = `${api}users/editarCliente/${clientToEdit._id}`;
+      const response = await fetch(url, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+        },
+        body: JSON.stringify(formData),
+      });
+      if (response.ok) {
+        console.log(await response.json());
+      }
+      cambios ? setCambios(false) : setCambios(true);
+    } catch (error) {
+      console.log("Error del servidor2:", error);
     }
   };
 
@@ -178,10 +203,51 @@ export default function ClientsList() {
         filtrosSubmit={handleSubmit}
       />
       <ConfirmDeleteModal
-        show={showModal}
-        client={clientToDelete}
+        show={showModalDelete}
+        dato={clientToDelete}
         onClose={() => setShowModal(false)}
         onConfirm={confirmDelete}
+        atributos={["name", "lastname", "dni"]}
+        mensaje={`¿Está seguro que desea eliminar al cliente?`}
+      />
+      <ModalEdit
+        show={showModalEdit}
+        dato={clientToEdit}
+        onClose={() => setShowModalEdit(false)}
+        onConfirm={confirmEdit}
+        atributos={[
+          { id: "name", name: "name", tipo: "text", placeholder: "Nombre" },
+          {
+            id: "lastname",
+            name: "lastname",
+            tipo: "text",
+            placeholder: "Apellido",
+          },
+          { id: "dni", name: "dni", tipo: "text", placeholder: "DNI" },
+          { id: "email", name: "email", tipo: "text", placeholder: "Email" },
+          { id: "phone", name: "phone", tipo: "text", placeholder: "Teléfono" },
+          { id: "cuit", name: "cuit", tipo: "text", placeholder: "CUIT" },
+          
+          {
+            id: "address",
+            name: "address",
+            tipo: "text",
+            placeholder: "Dirección",
+          },
+          {
+            id: "zip_code",
+            name: "zip_code",
+            tipo: "text",
+            placeholder: "Código Postal",
+          },
+          {
+            id: "province",
+            name: "province",
+            tipo: "text",
+            placeholder: "Provincia",
+          },
+          { id: "country", name: "country", tipo: "text", placeholder: "País" },
+        ]}
       />
     </div>
   );
