@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Swal from 'sweetalert2';
-import ClienteForm from '../componentes/ClienteForm';
+import ClienteForm from '../componentes/basura/ClienteForm';
 
 export default function CrearAsegurador() {
   const [formData, setFormData] = useState({

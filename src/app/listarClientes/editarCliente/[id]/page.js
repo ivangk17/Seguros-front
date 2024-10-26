@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import Swal from 'sweetalert2';
-import ClienteForm from '../../../componentes/ClienteForm';
+import ClienteForm from '../../../componentes/basura/ClienteForm';
 
 const EditarCliente = () => {
   const router = useRouter();

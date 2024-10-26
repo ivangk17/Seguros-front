@@ -1,60 +1,65 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import ClientsTable from "../componentes/ClientsTable";
-import Pagination from "../componentes/Pagination";
-import FilterForm from "../componentes/FilterForm";
-import ConfirmDeleteModal from "../componentes/ConfirmDeleteModal";
 import { useRouter } from "next/navigation";
+import ConfirmDeleteModal from "../componentes/ConfirmDeleteModal";
+import Table from "../componentes/table/Table";
 
 export default function ClientsList() {
-  const [clients, setClients] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [filterDni, setFilterDni] = useState("");
-  const [filterEmail, setFilterEmail] = useState("");
-  const [filterPhone, setFilterPhone] = useState(""); 
-  const [loading, setLoading] = useState(false);
+
+  //Router
+  const router = useRouter();
+
+  //URL Api
+  const api = process.env.NEXT_PUBLIC_URL_API;
+
+  //Datos
+  const [clientes, setClientes] = useState([]);
+
+  //Filtros
+  const [filtroNombreApellido, setFiltroNombreApellido] = useState("");
+  const [filtroDni, setFiltroDni] = useState("");
+  const [filtroEmail, setFiltroEmail] = useState("");
+  const [filtroTelefono, setFiltroTelefono] = useState("");
+  const [paginaActual, setPaginaActual] = useState(1);
+  const [clientesPorPagina] = useState(15);
   const [error, setError] = useState(null);
+  /*    const [loading, setLoading] = useState(false); */
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const [clientsPerPage] = useState(15);
-
-  // Estado para el modal
+  // Modal
   const [showModal, setShowModal] = useState(false);
   const [clientToDelete, setClientToDelete] = useState(null);
 
-  const router = useRouter();
+  
 
   const fetchClients = async (search, dni, email, phone) => {
-    setLoading(true);
+    /* setLoading(true); */
     try {
       const queryParams = new URLSearchParams({
         ...(search && { search }),
         ...(dni && { dni }),
         ...(email && { email }),
-        ...(phone && { phone }), 
+        ...(phone && { phone }),
       }).toString();
-
-      const response = await fetch(
-        `http://localhost:3000/api/users/clients?${queryParams}`,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${sessionStorage.getItem("token")}`,
-          },
-        }
-      );
+      const url = `${api}users/clients?${queryParams}`;
+      const response = await fetch(url, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+        },
+      });
 
       if (!response.ok) {
         throw new Error("Error fetching clients");
       }
 
       const data = await response.json();
-      setClients(data);
-    } catch (err) {
-      setError(err.message);
+      setClientes(data);
+    } catch (error) {
+      setError(error.message);
     } finally {
-      setLoading(false);
+      setPaginaActual(1)
+      /* setLoading(false); */
     }
   };
 
@@ -62,30 +67,31 @@ export default function ClientsList() {
     fetchClients();
   }, []);
 
-  const indexOfLastClient = currentPage * clientsPerPage;
-  const indexOfFirstClient = indexOfLastClient - clientsPerPage;
-  const currentClients = clients.slice(indexOfFirstClient, indexOfLastClient);
+  const indexOfLastClient = paginaActual * clientesPorPagina;
+  const indexOfFirstClient = indexOfLastClient - clientesPorPagina;
+  const clientesActuales = clientes.slice(indexOfFirstClient, indexOfLastClient);
 
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+  const paginate = (numeroPagina) => setPaginaActual(numeroPagina);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    fetchClients(searchTerm, filterDni, filterEmail, filterPhone);
+    fetchClients(filtroNombreApellido, filtroDni, filtroEmail, filtroTelefono);
   };
 
-  const handleEdit = (client) => {
-    router.push(`/listarClientes/editarCliente/${client._id}`);
+  const handleEdit = (cliente) => {
+    router.push(`/listarClientes/editarCliente/${cliente._id}`);
   };
 
-  const handleDelete = (client) => {
-    setClientToDelete(client); 
+  const handleDelete = (cliente) => {
+    setClientToDelete(cliente);
     setShowModal(true);
   };
 
   const confirmDelete = async (id) => {
     setShowModal(false);
     try {
-      const response = await fetch(`http://localhost:3000/api/users/${id}`, {
+      const url = `${api}users/${id}`;
+      const response = await fetch(url, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -97,42 +103,80 @@ export default function ClientsList() {
         throw new Error("Error al eliminar el cliente");
       }
 
-      setClients(clients.filter((client) => client._id !== id));
-    } catch (err) {
-      setError(err.message);
+      setClien(clientes.filter((cliente) => cliente._id !== id));
+    } catch (error) {
+      setError(error.message);
     }
   };
 
+  const acciones = [
+    {
+      nombre: "Editar",
+      funcion: handleEdit,
+      color: "bg-indigo-600",
+      hover: "hover:bg-indigo-700",
+    },
+    {
+      nombre: "Eliminar",
+      funcion: handleDelete,
+      color: "bg-red-600",
+      hover: "hover:bg-red-700",
+    },
+  ];
+
+  const paginado = {
+    total: clientes.length,
+    datosPorPagina: clientesPorPagina,
+    paginaActual: paginaActual,
+    funcion: paginate,
+  };
+
+  const filtros = [
+    {
+      valor: filtroNombreApellido,
+      funcion: setFiltroNombreApellido,
+      id: "name",
+      name: "nombre",
+      type: "text",
+      placeholder: "Nombre",
+    },
+    {
+      valor: filtroDni,
+      funcion: setFiltroDni,
+      id: "dni",
+      name: "dni",
+      type: "text",
+      placeholder: "DNI",
+    },
+    {
+      valor: filtroEmail,
+      funcion: setFiltroEmail,
+      id: "email",
+      name: "email",
+      type: "text",
+      placeholder: "Email",
+    },
+    {
+      valor: filtroTelefono,
+      funcion: setFiltroTelefono,
+      id: "telefono",
+      name: "telefono",
+      type: "text",
+      placeholder: "Teléfono",
+    },
+  ];
+
   return (
-    <div>
-      <FilterForm
-        searchTerm={searchTerm}
-        filterDni={filterDni}
-        filterEmail={filterEmail}
-        filterPhone={filterPhone}
-        setSearchTerm={setSearchTerm}
-        setFilterDni={setFilterDni}
-        setFilterEmail={setFilterEmail}
-        setFilterPhone={setFilterPhone}
-        handleSubmit={handleSubmit}
+    <div className="overflow-x-auto">
+      <Table
+        cabeceras={["Nombre", "Apellido", "DNI", "Email", "Teléfono", "CUIT"]}
+        datos={clientesActuales}
+        keys={["name", "lastname", "dni", "email", "phone", "cuit"]}
+        acciones={acciones}
+        paginado={paginado}
+        filtros={filtros}
+        filtrosSubmit={handleSubmit}
       />
-
-      <ClientsTable
-        clients={currentClients}
-        handleEdit={handleEdit}
-        handleDelete={handleDelete}
-      />
-
-      {loading && <p>Cargando clientes...</p>}
-      {error && <p>Error: {error}</p>}
-
-      <Pagination
-        totalClients={clients.length}
-        clientsPerPage={clientsPerPage}
-        currentPage={currentPage}
-        paginate={paginate}
-      />
-
       <ConfirmDeleteModal
         show={showModal}
         client={clientToDelete}
