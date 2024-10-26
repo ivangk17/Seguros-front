@@ -7,13 +7,13 @@ import Input from "../componentes/Input";
 
 export default function PageLogin() {
   const [errors, setErrors] = useState({ email: "", password: "", submit: "" });
-  const { token, setToken, user, setUser } = useAuth();
+  const { token, setToken } = useAuth();
   const [inicio, setInicio] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
     if (token) {
-      router.push("/welcome");
+      router.push("/administracion");
     }
   }, [token, inicio, router]);
 
@@ -60,7 +60,7 @@ export default function PageLogin() {
           email: email,
           password: password,
         };
-        await handlerLogin(usuario, setErrors, setToken, setUser);
+        await handlerLogin(usuario, setErrors, setToken);
       } else {
         setErrors((prev) => ({
           ...prev,
