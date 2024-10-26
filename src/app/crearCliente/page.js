@@ -12,7 +12,7 @@ export default function CrearAsegurador() {
     dni: "",
     phone: "",
     cuit: "",
-    domicilio: {
+    domicile: {
       address: "",
       zip_code: "",
       province: "",
@@ -26,11 +26,11 @@ export default function CrearAsegurador() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    if (name in formData.domicilio) {
+    if (name in formData.domicile) {
       setFormData({
         ...formData,
-        domicilio: {
-          ...formData.domicilio,
+        domicile: {
+          ...formData.domicile,
           [name]: value
         }
       });

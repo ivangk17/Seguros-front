@@ -105,7 +105,7 @@ const ClienteForm = ({ formData, handleChange, handleSubmit, handleCancel, butto
                       type="text"
                       id="address"
                       name="address"
-                      value={formData.domicilio.address}
+                      value={formData.domicile.address}
                       onChange={handleChange}
                       required
                       className="text-black placeholder-gray-600 w-full px-3 py-2 mt-1 text-sm transition duration-500 ease-in-out transform border-transparent rounded-lg bg-gray-200 focus:border-blueGray-500 focus:bg-white focus:outline-none focus:shadow-outline focus:ring-2 ring-offset-current ring-offset-2 ring-gray-400"
@@ -118,7 +118,7 @@ const ClienteForm = ({ formData, handleChange, handleSubmit, handleCancel, butto
                       type="text"
                       id="zip_code"
                       name="zip_code"
-                      value={formData.domicilio.zip_code}
+                      value={formData.domicile.zip_code}
                       onChange={handleChange}
                       required
                       className="text-black placeholder-gray-600 w-full px-3 py-2 mt-1 text-sm transition duration-500 ease-in-out transform border-transparent rounded-lg bg-gray-200 focus:border-blueGray-500 focus:bg-white focus:outline-none focus:shadow-outline focus:ring-2 ring-offset-current ring-offset-2 ring-gray-400"
@@ -131,7 +131,7 @@ const ClienteForm = ({ formData, handleChange, handleSubmit, handleCancel, butto
                       type="text"
                       id="province"
                       name="province"
-                      value={formData.domicilio.province}
+                      value={formData.domicile.province}
                       onChange={handleChange}
                       required
                       className="text-black placeholder-gray-600 w-full px-3 py-2 mt-1 text-sm transition duration-500 ease-in-out transform border-transparent rounded-lg bg-gray-200 focus:border-blueGray-500 focus:bg-white focus:outline-none focus:shadow-outline focus:ring-2 ring-offset-current ring-offset-2 ring-gray-400"
@@ -144,7 +144,7 @@ const ClienteForm = ({ formData, handleChange, handleSubmit, handleCancel, butto
                       type="text"
                       id="country"
                       name="country"
-                      value={formData.domicilio.country}
+                      value={formData.domicile.country}
                       onChange={handleChange}
                       required
                       className="text-black placeholder-gray-600 w-full px-3 py-2 mt-1 text-sm transition duration-500 ease-in-out transform border-transparent rounded-lg bg-gray-200 focus:border-blueGray-500 focus:bg-white focus:outline-none focus:shadow-outline focus:ring-2 ring-offset-current ring-offset-2 ring-gray-400"
