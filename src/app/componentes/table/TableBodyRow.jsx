@@ -11,7 +11,7 @@ export default function TableBodyRow(props) {
       ))}
       {acciones && (
         <td className="whitespace-nowrap px-6 py-4 text-center">
-          <Acciones acciones={acciones} />
+          <Acciones acciones={acciones} dato={dato} />
         </td>
       )}
     </tr>

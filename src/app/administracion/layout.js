@@ -1,18 +1,14 @@
 "use client";
 import localFont from "next/font/local";
 import "../globals.css";
-import { AuthProvider, useAuth } from "../../context/AuthContext";
+
 import SideBar from "../componentes/menu/SideBar";
+import ConfirmLogoutModal from "../componentes/modals/ConfirmModalLogout";
+import ScreenLoader from "../componentes/ScreenLoader";
+import { AuthProvider, useAuth } from "../../context/AuthContext";
+
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-
-const menuAsegurador = [
-  { url: "/administracion/clientes", descripcion: "Clientes" },
-  { url: "/administracion/polizas", descripcion: "Polizas" },
-  { url: "/administracion/solicitudes", descripcion: "Solicitudes" },
-  { url: "/administracion/editarPerfil", descripcion: "Editar perfil" },
-  { url: "/logout", descripcion: "Cerrar sesión" },
-];
 
 const geistSans = localFont({
   src: "../fonts/GeistVF.woff",
@@ -29,6 +25,8 @@ export default function RootLayout({ children }) {
   const router = useRouter();
   const { token, validateToken, setToken } = useAuth();
   const [valid, setValid] = useState(null);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [cerrandoSesion, setCerrandoSesion] = useState(false);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -49,20 +47,51 @@ export default function RootLayout({ children }) {
     checkAuth();
   }, [token, validateToken, setToken, router]);
 
+  const menuAsegurador = [
+    { url: "/administracion/clientes", descripcion: "Clientes" },
+    { url: "/administracion/polizas", descripcion: "Polizas" },
+    { url: "/administracion/solicitudes", descripcion: "Solicitudes" },
+    { url: "/administracion/editarPerfil", descripcion: "Editar perfil" },
+    {
+      url: "#",
+      descripcion: "Cerrar sesión",
+      onClick: () => {
+        setShowLogoutModal(true);
+      },
+    },
+  ];
+
+  const handleLogout = () => {
+    setShowLogoutModal(false);
+    setCerrandoSesion(true);
+    const timer = setTimeout(() => {
+      setCerrandoSesion(false);
+      setToken(null);
+      sessionStorage.removeItem("token");
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  };
+
   if (valid === null) {
     return null;
   }
 
   return (
-    <html lang="en">
-      <body
+    <AuthProvider>
+      <main
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <AuthProvider>
-          <SideBar items={menuAsegurador} />
-          <div className="p-4 sm:ml-64">{children}</div>
-        </AuthProvider>
-      </body>
-    </html>
+        {cerrandoSesion ? <ScreenLoader /> : ""}
+        <SideBar items={menuAsegurador} />
+        <div className="p-4 sm:ml-64">{children}</div>
+
+        <ConfirmLogoutModal
+          show={showLogoutModal}
+          onClose={() => setShowLogoutModal(false)}
+          onConfirm={handleLogout}
+        />
+      </main>
+    </AuthProvider>
   );
 }

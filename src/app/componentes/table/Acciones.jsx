@@ -1,6 +1,6 @@
 import { useState } from "react";
 export default function Acciones(props) {
-  const { acciones } = props;
+  const { acciones, dato } = props;
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleDropdown = () => {
@@ -44,7 +44,7 @@ export default function Acciones(props) {
                   href="#"
                   className="block px-4 py-2 hover:bg-gray-100"
                   onClick={() => {
-                    accion.funcion();
+                    accion.funcion(dato);
                     closeDropdown();
                   }}
                 >

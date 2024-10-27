@@ -2,19 +2,20 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import ConfirmDeleteModal from "@/app/componentes/ConfirmDeleteModal";
+import ConfirmDeleteModal from "@/app/componentes/modals/ConfirmDeleteModal";
+import ModalEdit from "@/app/componentes/modals/ModalEdit";
 import Table from "@/app/componentes/table/Table";
 import ScreenLoader from "@/app/componentes/ScreenLoader";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function ClientsList() {
-  //Router
-  const router = useRouter();
-
   //URL Api
   const api = process.env.NEXT_PUBLIC_URL_API;
 
   //Datos
   const [clientes, setClientes] = useState([]);
+  const [cambios, setCambios] = useState(false);
 
   //Filtros
   const [filtroNombreApellido, setFiltroNombreApellido] = useState("");
@@ -26,9 +27,11 @@ export default function ClientsList() {
   const [error, setError] = useState(null);
   /*    const [loading, setLoading] = useState(false); */
 
-  // Modal
-  const [showModal, setShowModal] = useState(false);
+  // Modals
+  const [showModalDelete, setShowModalDelete] = useState(false);
+  const [showModalEdit, setShowModalEdit] = useState(false);
   const [clientToDelete, setClientToDelete] = useState(null);
+  const [clientToEdit, setClientToEdit] = useState(null);
 
   //Loader
   const [loading, setLoading] = useState([]);
@@ -70,7 +73,7 @@ export default function ClientsList() {
 
   useEffect(() => {
     fetchClients();
-  }, []);
+  }, [cambios]);
 
   const indexOfLastClient = paginaActual * clientesPorPagina;
   const indexOfFirstClient = indexOfLastClient - clientesPorPagina;
@@ -81,22 +84,25 @@ export default function ClientsList() {
 
   const paginate = (numeroPagina) => setPaginaActual(numeroPagina);
 
-  const handleSubmit = (e) => {
+  const handleSubmitFilters = (e) => {
     e.preventDefault();
     fetchClients(filtroNombreApellido, filtroDni, filtroEmail, filtroTelefono);
   };
 
   const handleEdit = (cliente) => {
-    router.push(`/listarClientes/editarCliente/${cliente._id}`);
+    console.log(cliente);
+    setClientToEdit(cliente);
+    setShowModalEdit(true);
   };
 
   const handleDelete = (cliente) => {
+    console.log(cliente);
     setClientToDelete(cliente);
-    setShowModal(true);
+    setShowModalDelete(true);
   };
 
   const confirmDelete = async (id) => {
-    setShowModal(false);
+    setShowModalDelete(false);
     try {
       const url = `${api}users/${id}`;
       const response = await fetch(url, {
@@ -110,10 +116,33 @@ export default function ClientsList() {
       if (!response.ok) {
         throw new Error("Error al eliminar el cliente");
       }
-
-      setClien(clientes.filter((cliente) => cliente._id !== id));
+      setCambios((prev) => !prev);
+      toast.success("El cliente ha sido eleminado con éxito.");
     } catch (error) {
+      toast.error("Ocurrió un error al eliminar el cliente.");
       setError(error.message);
+    }
+  };
+
+  const confirmEdit = async (formData) => {
+    setShowModalEdit(false);
+    try {
+      const url = `${api}users/editarCliente/${clientToEdit._id}`;
+      const response = await fetch(url, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+        },
+        body: JSON.stringify(formData),
+      });
+      if (!response.ok) {
+        throw new Error("Error al editar el cliente");
+      }
+      setCambios((prev) => !prev);
+      toast.success("El cliente ha sido editado con éxito.");
+    } catch (error) {
+      toast.error("Ocurrió un error al editar el cliente.");
     }
   };
 
@@ -173,6 +202,18 @@ export default function ClientsList() {
   return (
     <>
       {loading ? <ScreenLoader /> : ""}
+      <ToastContainer
+        position="top-right"
+        autoClose={3500}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"
+      />
       <div className="bg-white shadow-lg rounded-lg w-full p-6">
         <h2 className="text-lg font-semibold">Administración de clientes</h2>
         <Table
@@ -182,15 +223,56 @@ export default function ClientsList() {
           acciones={acciones}
           paginado={paginado}
           filtros={filtros}
-          filtrosSubmit={handleSubmit}
+          filtrosSubmit={handleSubmitFilters}
         />
       </div>
-
       <ConfirmDeleteModal
-        show={showModal}
-        client={clientToDelete}
-        onClose={() => setShowModal(false)}
+        show={showModalDelete}
+        dato={clientToDelete}
+        onClose={() => setShowModalDelete(false)}
         onConfirm={confirmDelete}
+        atributos={["name", "lastname", "dni"]}
+        mensaje={`¿Está seguro que desea eliminar al cliente?`}
+      />
+      <ModalEdit
+        show={showModalEdit}
+        dato={clientToEdit}
+        onClose={() => setShowModalEdit(false)}
+        onConfirm={confirmEdit}
+        atributos={[
+          { id: "name", name: "name", tipo: "text", placeholder: "Nombre" },
+          {
+            id: "lastname",
+            name: "lastname",
+            tipo: "text",
+            placeholder: "Apellido",
+          },
+          { id: "dni", name: "dni", tipo: "text", placeholder: "DNI" },
+          { id: "email", name: "email", tipo: "text", placeholder: "Email" },
+          { id: "phone", name: "phone", tipo: "text", placeholder: "Teléfono" },
+          { id: "cuit", name: "cuit", tipo: "text", placeholder: "CUIT" },
+
+          {
+            id: "address",
+            name: "address",
+            tipo: "text",
+            placeholder: "Dirección",
+          },
+          {
+            id: "zip_code",
+            name: "zip_code",
+            tipo: "text",
+            placeholder: "Código Postal",
+          },
+          {
+            id: "province",
+            name: "province",
+            tipo: "text",
+            placeholder: "Provincia",
+          },
+          { id: "country", name: "country", tipo: "text", placeholder: "País" },
+        ]}
+        titulo="Editar cliente"
       />
     </>
   );
