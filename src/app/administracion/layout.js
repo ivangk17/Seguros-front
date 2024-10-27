@@ -7,10 +7,10 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 const menuAsegurador = [
-  { url: "/clientes", descripcion: "Clientes" },
-  { url: "/polizas", descripcion: "Polizas" },
-  { url: "/solicitudes", descripcion: "Solicitud" },
-  { url: "/editarPerfil", descripcion: "Editar perfil" },
+  { url: "/administracion/clientes", descripcion: "Clientes" },
+  { url: "/administracion/polizas", descripcion: "Polizas" },
+  { url: "/administracion/solicitudes", descripcion: "Solicitudes" },
+  { url: "/administracion/editarPerfil", descripcion: "Editar perfil" },
   { url: "/logout", descripcion: "Cerrar sesión" },
 ];
 
