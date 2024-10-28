@@ -92,12 +92,10 @@ export default function ClientsList() {
     fetchClients(filtroNombreApellido, filtroDni, filtroEmail, filtroTelefono);
   };
 
-  const handlePolizas = (cliente) => {
-    fetchPolizas(cliente._id);
+  const handlePolizas = async (cliente) => {
+    await fetchPolizas(cliente._id);
     setShowModalPolizas(true);
   };
-  
-
   const handleEdit = (cliente) => {
     console.log(cliente);
     setClientToEdit(cliente);
@@ -175,9 +173,7 @@ export default function ClientsList() {
       toast.error("Ocurrió un error al obtener las pólizas.");
     }
   };
-  
-
-  const acciones = [
+    const acciones = [
     {
       nombre: "Editar",
       funcion: handleEdit,
@@ -191,9 +187,7 @@ export default function ClientsList() {
       funcion: handlePolizas,
     },
   ];
-  
-
-  const paginado = {
+   const paginado = {
     total: clientes.length,
     datosPorPagina: clientesPorPagina,
     paginaActual: paginaActual,
@@ -316,5 +310,4 @@ export default function ClientsList() {
       />
     </>
   );
-  
 }
