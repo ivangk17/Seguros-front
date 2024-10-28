@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import ConfirmDeleteModal from "@/app/componentes/modals/ConfirmDeleteModal";
 import ModalEdit from "@/app/componentes/modals/ModalEdit";
+import ModalPolizas from "@/app/componentes/modals/ModalPolizas";
 import Table from "@/app/componentes/table/Table";
 import ScreenLoader from "@/app/componentes/ScreenLoader";
 import { ToastContainer, toast } from "react-toastify";
@@ -32,6 +33,8 @@ export default function ClientsList() {
   const [showModalEdit, setShowModalEdit] = useState(false);
   const [clientToDelete, setClientToDelete] = useState(null);
   const [clientToEdit, setClientToEdit] = useState(null);
+  const [showModalPolizas, setShowModalPolizas] = useState(false);
+  const [polizas, setPolizas] = useState([]);
 
   //Loader
   const [loading, setLoading] = useState([]);
@@ -88,6 +91,12 @@ export default function ClientsList() {
     e.preventDefault();
     fetchClients(filtroNombreApellido, filtroDni, filtroEmail, filtroTelefono);
   };
+
+  const handlePolizas = (cliente) => {
+    fetchPolizas(cliente._id);
+    setShowModalPolizas(true);
+  };
+  
 
   const handleEdit = (cliente) => {
     console.log(cliente);
@@ -146,6 +155,28 @@ export default function ClientsList() {
     }
   };
 
+  const fetchPolizas = async (clienteId) => {
+    try {
+      const url = `${api}polizas/listAsegurado/${clienteId}`;
+      const response = await fetch(url, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+        },
+      });
+  
+      if (!response.ok) {
+        throw new Error("Error fetching polizas");
+      }
+  
+      const data = await response.json();
+      setPolizas(data);
+    } catch (error) {
+      toast.error("Ocurrió un error al obtener las pólizas.");
+    }
+  };
+  
+
   const acciones = [
     {
       nombre: "Editar",
@@ -155,7 +186,12 @@ export default function ClientsList() {
       nombre: "Eliminar",
       funcion: handleDelete,
     },
+    {
+      nombre: "Ver Pólizas",
+      funcion: handlePolizas,
+    },
   ];
+  
 
   const paginado = {
     total: clientes.length,
@@ -226,6 +262,11 @@ export default function ClientsList() {
           filtrosSubmit={handleSubmitFilters}
         />
       </div>
+      <ModalPolizas
+        show={showModalPolizas}
+        onClose={() => setShowModalPolizas(false)}
+        polizas={polizas}
+      />
       <ConfirmDeleteModal
         show={showModalDelete}
         dato={clientToDelete}
@@ -251,7 +292,6 @@ export default function ClientsList() {
           { id: "email", name: "email", tipo: "text", placeholder: "Email" },
           { id: "phone", name: "phone", tipo: "text", placeholder: "Teléfono" },
           { id: "cuit", name: "cuit", tipo: "text", placeholder: "CUIT" },
-
           {
             id: "address",
             name: "address",
@@ -276,4 +316,5 @@ export default function ClientsList() {
       />
     </>
   );
+  
 }
