@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import ConfirmDeleteModal from "@/app/componentes/modals/ConfirmDeleteModal";
 import ModalEdit from "@/app/componentes/modals/ModalEdit";
 import ModalPolizas from "@/app/componentes/modals/ModalPolizas";
+import ModalCreate from "@/app/componentes/modals/ModalCreate";
 import Table from "@/app/componentes/table/Table";
 import ScreenLoader from "@/app/componentes/ScreenLoader";
 import Pagination from "@/app/componentes/table/Pagination";
@@ -28,6 +29,7 @@ export default function ClientsList() {
   const [clientToDelete, setClientToDelete] = useState(null);
   const [clientToEdit, setClientToEdit] = useState(null);
   const [showModalPolizas, setShowModalPolizas] = useState(false);
+  const [showModalCreate, setShowModalCreate] = useState(false);
   const [polizas, setPolizas] = useState([]);
 
   const fetchClients = async (search, dni, email, phone) => {
@@ -61,15 +63,48 @@ export default function ClientsList() {
     }
   };
 
+  const fetchPolizas = async (clienteId) => {
+    try {
+      const url = `${api}polizas/listAsegurado/${clienteId}`;
+      const response = await fetch(url, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Error fetching polizas");
+      }
+
+      const data = await response.json();
+      setPolizas(data);
+    } catch (error) {
+      toast.error("Ocurrió un error al obtener las pólizas.");
+    }
+  };
+
   useEffect(() => {
     fetchClients();
   }, [cambios]);
 
   const indexOfLastClient = paginaActual * clientesPorPagina;
   const indexOfFirstClient = indexOfLastClient - clientesPorPagina;
-  const clientesActuales = clientes.slice(indexOfFirstClient, indexOfLastClient);
+  const clientesActuales = clientes.slice(
+    indexOfFirstClient,
+    indexOfLastClient
+  );
 
   const paginate = (numeroPagina) => setPaginaActual(numeroPagina);
+
+  const handleClientesPorPaginaChange = (e) => {
+    const newClientesPorPagina = Number(e.target.value);
+    setClientesPorPagina(newClientesPorPagina);
+    const newTotalPages = Math.ceil(clientes.length / newClientesPorPagina);
+    if (paginaActual > newTotalPages) {
+      setPaginaActual(newTotalPages);
+    }
+  };
 
   const handleSubmitFilters = (e) => {
     e.preventDefault();
@@ -79,6 +114,16 @@ export default function ClientsList() {
   const handlePolizas = async (cliente) => {
     await fetchPolizas(cliente._id);
     setShowModalPolizas(true);
+  };
+
+  const handleAddClient = () => {
+    setShowModalCreate(true);
+  };
+
+  const confirmCreate = async (formData) => {
+    setShowModalCreate(false);
+
+    toast.success("El cliente ha sido agregado con éxito.");
   };
 
   const handleEdit = (cliente) => {
@@ -136,27 +181,6 @@ export default function ClientsList() {
     }
   };
 
-  const fetchPolizas = async (clienteId) => {
-    try {
-      const url = `${api}polizas/listAsegurado/${clienteId}`;
-      const response = await fetch(url, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${sessionStorage.getItem("token")}`,
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error("Error fetching polizas");
-      }
-
-      const data = await response.json();
-      setPolizas(data);
-    } catch (error) {
-      toast.error("Ocurrió un error al obtener las pólizas.");
-    }
-  };
-
   const acciones = [
     { nombre: "Editar", funcion: handleEdit },
     { nombre: "Eliminar", funcion: handleDelete },
@@ -171,34 +195,87 @@ export default function ClientsList() {
   };
 
   const filtros = [
-    { valor: filtroNombreApellido, funcion: setFiltroNombreApellido, id: "name", name: "nombre", type: "text", placeholder: "Nombre" },
-    { valor: filtroDni, funcion: setFiltroDni, id: "dni", name: "dni", type: "text", placeholder: "DNI" },
-    { valor: filtroEmail, funcion: setFiltroEmail, id: "email", name: "email", type: "text", placeholder: "Email" },
-    { valor: filtroTelefono, funcion: setFiltroTelefono, id: "telefono", name: "telefono", type: "text", placeholder: "Teléfono" },
+    {
+      valor: filtroNombreApellido,
+      funcion: setFiltroNombreApellido,
+      id: "name",
+      name: "nombre",
+      type: "text",
+      placeholder: "Nombre",
+    },
+    {
+      valor: filtroDni,
+      funcion: setFiltroDni,
+      id: "dni",
+      name: "dni",
+      type: "text",
+      placeholder: "DNI",
+    },
+    {
+      valor: filtroEmail,
+      funcion: setFiltroEmail,
+      id: "email",
+      name: "email",
+      type: "text",
+      placeholder: "Email",
+    },
+    {
+      valor: filtroTelefono,
+      funcion: setFiltroTelefono,
+      id: "telefono",
+      name: "telefono",
+      type: "text",
+      placeholder: "Teléfono",
+    },
   ];
-
-  const handleClientesPorPaginaChange = (e) => {
-    const newClientesPorPagina = Number(e.target.value);
-    setClientesPorPagina(newClientesPorPagina);
-    const newTotalPages = Math.ceil(clientes.length / newClientesPorPagina);
-    if (paginaActual > newTotalPages) {
-      setPaginaActual(newTotalPages);
-    }
-  };
 
   return (
     <>
       {loading && <ScreenLoader />}
-      <ToastContainer position="top-right" autoClose={3500} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover theme="colored" />
+      <ToastContainer
+        position="top-right"
+        autoClose={3500}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"
+      />
       <div className="bg-white shadow-lg rounded-lg w-full p-6">
-        <h2 className="text-lg font-semibold">Administración de clientes</h2>
-        <Table cabeceras={["Nombre", "Apellido", "DNI", "Email", "Teléfono", "CUIT"]} datos={clientesActuales} keys={["name", "lastname", "dni", "email", "phone", "cuit"]} acciones={acciones} paginado={paginado} filtros={filtros} filtrosSubmit={handleSubmitFilters} />
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-lg font-semibold">Administración de clientes</h2>
+          <button
+            onClick={handleAddClient}
+            className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 inline-flex items-center"
+          >
+            Agregar Cliente
+          </button>
+        </div>
+        <Table
+          cabeceras={["Nombre", "Apellido", "DNI", "Email", "Teléfono", "CUIT"]}
+          datos={clientesActuales}
+          keys={["name", "lastname", "dni", "email", "phone", "cuit"]}
+          acciones={acciones}
+          paginado={paginado}
+          filtros={filtros}
+          filtrosSubmit={handleSubmitFilters}
+        />
       </div>
       <div className="flex justify-between items-center mt-4">
         <Pagination paginado={paginado} />
         <div className="flex items-center">
-          <label htmlFor="clientesPorPagina" className="mr-2">Registros por página:</label>
-          <select id="clientesPorPagina" value={clientesPorPagina} onChange={handleClientesPorPaginaChange} className="border rounded px-4 py-2">
+          <label htmlFor="clientesPorPagina" className="mr-2">
+            Registros por página:
+          </label>
+          <select
+            id="clientesPorPagina"
+            value={clientesPorPagina}
+            onChange={handleClientesPorPaginaChange}
+            className="border rounded px-4 py-2"
+          >
             <option value={5}>5</option>
             <option value={10}>10</option>
             <option value={15}>15</option>
@@ -206,9 +283,37 @@ export default function ClientsList() {
           </select>
         </div>
       </div>
-      <ModalPolizas show={showModalPolizas} onClose={() => setShowModalPolizas(false)} polizas={polizas} />
-      <ModalEdit show={showModalEdit} onClose={() => setShowModalEdit(false)} onConfirm={confirmEdit} client={clientToEdit} />
-      <ConfirmDeleteModal show={showModalDelete} onClose={() => setShowModalDelete(false)} onConfirm={() => confirmDelete(clientToDelete?._id)} />
+      <ModalPolizas
+        show={showModalPolizas}
+        onClose={() => setShowModalPolizas(false)}
+        polizas={polizas}
+      />
+      <ModalEdit
+        show={showModalEdit}
+        onClose={() => setShowModalEdit(false)}
+        onConfirm={confirmEdit}
+        client={clientToEdit}
+      />
+      <ModalCreate
+        show={showModalCreate}
+        titulo="Registrar nuevo cliente"
+        onClose={() => setShowModalCreate(false)}
+        onSubmit={confirmCreate}
+        atributos={[
+          { id: "email", name: "email", type: "email", placeholder: "Email" },
+          { id: "name", name: "name", type: "text", placeholder: "Nombre" },
+          { id: "lastname", name: "lastname", type: "text", placeholder: "Apellido" },
+          { id: "dni", name: "dni", type: "text", placeholder: "DNI" },
+          { id: "cuit", name: "cuit", type: "text", placeholder: "CUIT" },
+          { id: "domicilio", name: "domicilio", type: "text", placeholder: "Domicilio" },
+          { id: "phone", name: "phone", type: "tel", placeholder: "Teléfono" },
+      ]}
+      />
+      <ConfirmDeleteModal
+        show={showModalDelete}
+        onClose={() => setShowModalDelete(false)}
+        onConfirm={() => confirmDelete(clientToDelete?._id)}
+      />
     </>
   );
 }

@@ -92,7 +92,7 @@ export default function ModalPolizas({ show, onClose, polizas }) {
                       ))}
                     </ul>
                   ) : (
-                    <p>No hay pólizas disponibles para este cliente.</p>
+                    <p className="mb-2">No hay pólizas disponibles para este cliente.</p>
                   )}
                 </div>
               ) : (
