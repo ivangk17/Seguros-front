@@ -4,6 +4,10 @@ export default function Pagination(props) {
     (_, i) => i + 1
   );
 
+  if (pageNumbers.length === 1) {
+    return null;
+  }
+
   return (
     <div className="fixed bottom-4 right-4">
       {pageNumbers.map((number) => (
