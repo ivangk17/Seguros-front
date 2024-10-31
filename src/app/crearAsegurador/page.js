@@ -125,7 +125,7 @@ const CrearAseguradorForm = () => {
     };
 
     try {
-      const response = await fetch("http://localhost:3000/api/users/register/asegurador", {
+      const response = await fetch("http://localhost:3000/api/users/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -144,10 +144,11 @@ const CrearAseguradorForm = () => {
         });
       } else {
         const data = await response.json();
-        setErrors((prev) => ({ ...prev, submit: data.message || "Error al crear la cuenta" }));
+        setErrors((prev) => ({ ...prev, submit: data.error || "Error al crear la cuenta" }));
       }
     } catch (error) {
-      setErrors((prev) => ({ ...prev, submit: "El dni o el mail ya se encuentra registrado en nuestra base de datos" }));
+      console.log(error);
+      setErrors((prev) => ({ ...prev, submit: "Error interno, refresque la pagina e intente nuevamente" }));
     }
   };
 
@@ -250,7 +251,7 @@ const CrearAseguradorForm = () => {
             />
           </div>
           {errors.submit && (
-            <small className="text-red-500 text-xs italic mt-1 text-center">
+            <small className="text-red-500 text-xs italic mt-1 text-center p-3">
               {errors.submit}
             </small>
           )}

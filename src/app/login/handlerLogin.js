@@ -34,6 +34,14 @@ export async function handlerLogin(usuario, setErrors, setToken) {
         }));
         break;
       }
+      case 403: {
+        const response = await request.json();
+        setErrors((prev) => ({
+          ...prev,
+          submit: response.error,
+        }));
+        break;
+      }
       default: {
         const response = await request.json();
         console.log(response);
