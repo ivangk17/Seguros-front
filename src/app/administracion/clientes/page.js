@@ -25,12 +25,12 @@ export default function ClientsList() {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [showModalDelete, setShowModalDelete] = useState(false);
-  const [showModalEdit, setShowModalEdit] = useState(false);
   const [clientToDelete, setClientToDelete] = useState(null);
-  const [clientToEdit, setClientToEdit] = useState(null);
   const [showModalPolizas, setShowModalPolizas] = useState(false);
   const [showModalCreate, setShowModalCreate] = useState(false);
   const [polizas, setPolizas] = useState([]);
+  const [showModalEdit, setShowModalEdit] = useState(false);
+  const [clienteSeleccionado, setClienteSeleccionado] = useState(null);
 
   const fetchClients = async (search, dni, email, phone) => {
     setLoading(true);
@@ -126,17 +126,17 @@ export default function ClientsList() {
     toast.success("El cliente ha sido agregado con éxito.");
   };
 
-  const handleEdit = (cliente) => {
-    setClientToEdit(cliente);
-    setShowModalEdit(true);
-  };
 
-  const handleDelete = (cliente) => {
-    setClientToDelete(cliente);
+
+  const handleDeleteClick = (cliente) => {
+    console.log(cliente);
+    
+    setClienteSeleccionado(cliente);
     setShowModalDelete(true);
   };
 
   const confirmDelete = async (id) => {
+    
     setShowModalDelete(false);
     try {
       const url = `${api}users/${id}`;
@@ -157,6 +157,20 @@ export default function ClientsList() {
       toast.error("Ocurrió un error al eliminar el cliente.");
       setError(error.message);
     }
+  };
+
+  const handleEditClick = (cliente) => {
+    console.log(cliente);
+    
+    setClienteSeleccionado(cliente); // Setea la póliza que se va a editar
+    setShowModalEdit(true); // Muestra el modal
+  };
+  
+  const handleEditConfirm = (updatedData) => {
+    // Aquí puedes actualizar `polizas` con `updatedData`
+    setShowModalEdit(false); // Cierra el modal
+    toast.success("Póliza actualizada exitosamente");
+    setCambios(!cambios); // Refresca la lista de pólizas si necesitas recargar
   };
 
   const confirmEdit = async (formData) => {
@@ -182,9 +196,10 @@ export default function ClientsList() {
   };
 
   const acciones = [
-    { nombre: "Editar", funcion: handleEdit },
-    { nombre: "Eliminar", funcion: handleDelete },
-    { nombre: "Ver Pólizas", funcion: handlePolizas },
+    { nombre: "Editar", funcion: (poliza) => handleEditClick(poliza) },
+    { nombre: "Eliminar", funcion: (poliza) => handleDeleteClick(poliza)},
+    // { nombre: "Eliminar", funcion: handleDelete },
+    // { nombre: "Ver Pólizas", funcion: handlePolizas },
   ];
 
   const paginado = {
@@ -290,9 +305,14 @@ export default function ClientsList() {
       />
       <ModalEdit
         show={showModalEdit}
+        dato={clienteSeleccionado}
+        atributos={[
+          { id: "phone", name: "phone", type: "phone", placeholder: "Telefono", required: true },
+          // Agrega más atributos aquí según los campos que necesites editar
+        ]}
         onClose={() => setShowModalEdit(false)}
-        onConfirm={confirmEdit}
-        client={clientToEdit}
+        onConfirm={handleEditConfirm}
+        titulo="Editar Póliza"
       />
       <ModalCreate
         show={showModalCreate}
@@ -311,9 +331,18 @@ export default function ClientsList() {
       />
       <ConfirmDeleteModal
         show={showModalDelete}
+        dato={clienteSeleccionado}
+        onClose={() => setShowModalDelete(false)}
+        onConfirm={confirmDelete}
+        atributos={["email", "phone"]} // Define aquí los atributos que quieres mostrar
+        mensaje="¿Estás seguro de eliminar esta póliza?"
+        acciones= {acciones}
+      />
+      {/* <ConfirmDeleteModal
+        show={showModalDelete}
         onClose={() => setShowModalDelete(false)}
         onConfirm={() => confirmDelete(clientToDelete?._id)}
-      />
+      /> */}
     </>
   );
 }

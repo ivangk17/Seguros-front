@@ -23,7 +23,7 @@ export default function ConfirmDeleteModal(props) {
         <h3 className="text-gray-500 mb-4">Esta acción es irreversible.</h3>
         <p>
           {atributos.map((atributo) => (
-            <span key={atributo}>{dato[atributo]} </span>
+            <span key={atributo}>{dato ? dato[atributo] : ""} </span>
           ))}
         </p>
         <div className="mt-4 flex justify-end">
