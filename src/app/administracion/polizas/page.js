@@ -114,10 +114,27 @@ export default function PolizasList() {
     setShowModalDelete(true);
   };
 
-  const confirmDelete = async () => {
-    console.log(selectedPoliza);
+  const confirmDelete = async (id) => {
+    setShowModalDelete(false);
+    try {
+      const url = `${api}polizas/${id}`;
+      const response = await fetch(url, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+        },
+      });
 
-    toast.success(`implementar logica para eliminar poliza`);
+      if (!response.ok) {
+        throw new Error("Error al eliminar la poliza");
+      }
+      setCambios((prev) => !prev);
+      toast.success("La poliza a sido eliminada con éxito.");
+    } catch (error) {
+      toast.error("Ocurrió un error al eliminar la poliza.");
+      setError(error.message);
+    }
     
     
   };
