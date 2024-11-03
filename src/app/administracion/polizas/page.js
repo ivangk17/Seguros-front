@@ -16,7 +16,7 @@ export default function PolizasList() {
   const [polizas, setPolizas] = useState([]);
   const [cambios, setCambios] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [filtroDominio, setFiltroDominio] = useState(""); // Nuevo estado para el filtro
+  const [filtroDominio, setFiltroDominio] = useState("");
 
 
   const fetchPolizas = async (dominio) => {
