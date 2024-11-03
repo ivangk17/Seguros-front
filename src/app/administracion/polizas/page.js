@@ -16,11 +16,16 @@ export default function PolizasList() {
   const [polizas, setPolizas] = useState([]);
   const [cambios, setCambios] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [filtroDominio, setFiltroDominio] = useState(""); // Nuevo estado para el filtro
 
-  const fetchPolizas = async () => {
+
+  const fetchPolizas = async (dominio) => {
     setLoading(true);
     try {
-      const url = `${api}polizas/list`;
+      const queryParams = new URLSearchParams({
+        ...(dominio && { dominio })
+      }).toString();
+      const url = `${api}polizas/list?${queryParams}`;
       const response = await fetch(url, {
         headers: {
           "Content-Type": "application/json",
@@ -35,7 +40,8 @@ export default function PolizasList() {
       }
 
       const data = await response.json();
-      const mapeo = data.map((poliza) => ({
+      console.log("Datos recibidos:", data);
+      const mapeo = await data.map((poliza) => ({
         dominio: poliza.dominio,
         marca: poliza.vehiculo.marca,
         modelo: poliza.vehiculo.modelo,
@@ -55,8 +61,27 @@ export default function PolizasList() {
   };
 
   useEffect(() => {
-    fetchPolizas();
+    fetchPolizas(); // Llamar con el filtro actual
   }, [cambios]);
+
+
+
+  const handleSubmitFilters = (e) => {
+    e.preventDefault();
+    fetchPolizas(filtroDominio); // Refrescar la tabla al cambiar el filtro
+  };
+
+  const filtros=[
+    {
+      valor: filtroDominio,
+      funcion: setFiltroDominio,
+      id: "dominio",
+      name: "dominio",
+      type: "text",
+      placeholder: "DOMINIO",
+    },
+  ]
+
 
   return (
     <>
@@ -97,10 +122,10 @@ export default function PolizasList() {
             "tipoCobertura",
             "primaSegura",
           ]}
-          /* acciones={acciones}
-          paginado={paginado}
           filtros={filtros}
-          filtrosSubmit={handleSubmitFilters} */
+          filtrosSubmit={handleSubmitFilters}
+          /* acciones={acciones}
+          paginado={paginado}*/
         />
       </div>
     </>
