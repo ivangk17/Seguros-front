@@ -121,9 +121,38 @@ export default function ClientsList() {
   };
 
   const confirmCreate = async (formData) => {
-    setShowModalCreate(false);
+    try {
+      const url = `${api}users/register/client`;
 
-    toast.success("El cliente ha sido agregado con éxito.");
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${sessionStorage.getItem("token")}`,
+        },
+        body: JSON.stringify(formData),
+      });
+      
+  
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        const text = await response.text();
+        throw new Error(`Unexpected response format: ${text}`);
+      }
+  
+      const data = await response.json();
+      if (response.ok) {
+        setShowModalCreate(false);
+        toast.success("El cliente ha sido agregado con éxito.");
+        setCambios((prev) => !prev);
+      } else {
+        toast.error(`Error: ${data.error || response.statusText}`);
+      }
+    } catch (error) {
+      console.log(error.message);
+      
+      toast.error(`Error: ${error.message}`);
+    }
   };
 
 
@@ -313,29 +342,37 @@ export default function ClientsList() {
         titulo="Editar Póliza"
       />
       <ModalCreate
-        show={showModalCreate}
-        titulo="Registrar nuevo cliente"
-        onClose={() => setShowModalCreate(false)}
-        onSubmit={confirmCreate}
-        atributos={[
-          
-          { id: "name", name: "name", type: "text", placeholder: "Nombre", required: true},
-          { id: "lastname", name: "lastname", type: "text", placeholder: "Apellido", required: true },
-          { id: "dni", name: "dni", type: "number", placeholder: "DNI", required: true },
-          { id: "cuit", name: "cuit", type: "number", placeholder: "CUIT", required: true },
-          { id: "email", name: "email", type: "email", placeholder: "Email", required: true},
-          { id: "phone", name: "phone", type: "number", placeholder: "Teléfono", required: true },
-          
-          
-          { id: "address", name: "address", type: "text", placeholder: "Calle", required: true },
-          { id: "number", name: "number", type: "number", placeholder: "Numero", required: true },
-          { id: "floor", name: "floor", type: "number", placeholder: "Piso", },
-          { id: "apartment", name: "apartment", type: "text", placeholder: "Departamento"},
-          { id: "zip_code", name: "zip_code", type: "number", placeholder: "Codigo Postal", required: true },
-
-      ]}
-        tipo= "cliente"
-      />
+  show={showModalCreate}
+  titulo="Registrar nuevo cliente"
+  onClose={() => setShowModalCreate(false)}
+  onSubmit={confirmCreate}
+  atributos={[
+    { id: "name", name: "name", type: "text", placeholder: "Nombre", required: true },
+    { id: "lastname", name: "lastname", type: "text", placeholder: "Apellido", required: true },
+    { id: "dni", name: "dni", type: "number", placeholder: "DNI", required: true },
+    { id: "cuit", name: "cuit", type: "number", placeholder: "CUIT", required: true },
+    {
+      id: "gender",
+      name: "gender",
+      type: "select",
+      placeholder: "Género",
+      required: true,
+      options: [
+        { value: "male", label: "Masculino" },
+        { value: "female", label: "Femenino" },
+      ],
+    },
+    { id: "email", name: "email", type: "email", placeholder: "Email", required: true },
+    { id: "phone", name: "phone", type: "number", placeholder: "Teléfono", required: true },
+    { id: "date_of_birth", name: "date_of_birth", type: "date", placeholder: "Fecha de nacimiento", required: true },
+    { id: "address", name: "address", type: "text", placeholder: "Calle", required: true },
+    { id: "number", name: "number", type: "number", placeholder: "Número", required: true },
+    { id: "floor", name: "floor", type: "number", placeholder: "Piso" },
+    { id: "apartment", name: "apartment", type: "text", placeholder: "Departamento" },
+    { id: "zip_code", name: "zip_code", type: "number", placeholder: "Código Postal", required: true },
+  ]}
+  tipo="cliente"
+/>
       <ConfirmDeleteModal
         show={showModalDelete}
         dato={clienteSeleccionado}
