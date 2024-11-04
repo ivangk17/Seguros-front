@@ -162,15 +162,14 @@ export default function ClientsList() {
   const handleEditClick = (cliente) => {
     console.log(cliente);
     
-    setClienteSeleccionado(cliente); // Setea la póliza que se va a editar
-    setShowModalEdit(true); // Muestra el modal
+    setClienteSeleccionado(cliente);
+    setShowModalEdit(true);
   };
   
   const handleEditConfirm = (updatedData) => {
-    // Aquí puedes actualizar `polizas` con `updatedData`
-    setShowModalEdit(false); // Cierra el modal
+    setShowModalEdit(false);
     toast.success("Póliza actualizada exitosamente");
-    setCambios(!cambios); // Refresca la lista de pólizas si necesitas recargar
+    setCambios(!cambios);
   };
 
   const confirmEdit = async (formData) => {
@@ -308,7 +307,6 @@ export default function ClientsList() {
         dato={clienteSeleccionado}
         atributos={[
           { id: "phone", name: "phone", type: "phone", placeholder: "Telefono", required: true },
-          // Agrega más atributos aquí según los campos que necesites editar
         ]}
         onClose={() => setShowModalEdit(false)}
         onConfirm={handleEditConfirm}
@@ -320,21 +318,30 @@ export default function ClientsList() {
         onClose={() => setShowModalCreate(false)}
         onSubmit={confirmCreate}
         atributos={[
-          { id: "email", name: "email", type: "email", placeholder: "Email" },
-          { id: "name", name: "name", type: "text", placeholder: "Nombre" },
-          { id: "lastname", name: "lastname", type: "text", placeholder: "Apellido" },
-          { id: "dni", name: "dni", type: "text", placeholder: "DNI" },
-          { id: "cuit", name: "cuit", type: "text", placeholder: "CUIT" },
-          { id: "domicilio", name: "domicilio", type: "text", placeholder: "Domicilio" },
-          { id: "phone", name: "phone", type: "tel", placeholder: "Teléfono" },
+          
+          { id: "name", name: "name", type: "text", placeholder: "Nombre", required: true},
+          { id: "lastname", name: "lastname", type: "text", placeholder: "Apellido", required: true },
+          { id: "dni", name: "dni", type: "number", placeholder: "DNI", required: true },
+          { id: "cuit", name: "cuit", type: "number", placeholder: "CUIT", required: true },
+          { id: "email", name: "email", type: "email", placeholder: "Email", required: true},
+          { id: "phone", name: "phone", type: "number", placeholder: "Teléfono", required: true },
+          
+          
+          { id: "address", name: "address", type: "text", placeholder: "Calle", required: true },
+          { id: "number", name: "number", type: "number", placeholder: "Numero", required: true },
+          { id: "floor", name: "floor", type: "number", placeholder: "Piso", },
+          { id: "apartment", name: "apartment", type: "text", placeholder: "Departamento"},
+          { id: "zip_code", name: "zip_code", type: "number", placeholder: "Codigo Postal", required: true },
+
       ]}
+        tipo= "cliente"
       />
       <ConfirmDeleteModal
         show={showModalDelete}
         dato={clienteSeleccionado}
         onClose={() => setShowModalDelete(false)}
         onConfirm={confirmDelete}
-        atributos={["email", "phone"]} // Define aquí los atributos que quieres mostrar
+        atributos={["email", "phone"]}
         mensaje="¿Estás seguro de eliminar esta póliza?"
         acciones= {acciones}
       />

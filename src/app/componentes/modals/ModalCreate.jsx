@@ -1,30 +1,20 @@
 import { motion } from "framer-motion";
 import Input from "../Input";
 import { useState, useEffect } from "react";
+import { validarCliente, validarPoliza } from "./validaciones/validaciones";
 
 export default function ModalCreate(props) {
-  const { titulo, show, onClose, onSubmit, atributos } = props;
+  const { titulo, show, onClose, onSubmit, atributos, tipo } = props;
   if (!show) return null;
 
   const [formData, setFormData] = useState({});
   const [errors, setErrors] = useState({});
 
-/*   useEffect(() => {
-    setFormData(dato || {});
-  }, [dato]); */
+  useEffect(() => {
+    setFormData({});
+  }, [show]);
 
-/*   const validate = () => {
-    const newErrors = {};
-    atributos.forEach((atributo) => {
-      if (atributo.required && !formData[atributo.name]) {
-        newErrors[atributo.name] = `${atributo.placeholder} es obligatorio`;
-      }
-    });
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  }; */
-
-/*   const handleChange = (e) => {
+  const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
@@ -33,16 +23,23 @@ export default function ModalCreate(props) {
     if (errors[name]) {
       setErrors({
         ...errors,
-        [name]: undefined, // Limpiar el error si el usuario corrige el campo
+        [name]: undefined,
       });
     }
-  }; */
+  };
 
-/*   const handleSubmit = () => {
-    if (validate()) {
-      onConfirm(formData);
+  const handleSubmit = () => {
+    let newErrors = {};
+    if (tipo === "cliente") {
+      newErrors = validarCliente(formData, atributos);
+    } else if (tipo === "poliza") {
+      newErrors = validarPoliza(formData, atributos);
     }
-  }; */
+    setErrors(newErrors);
+    if (Object.keys(newErrors).length === 0) {
+      onSubmit(formData);
+    }
+  };
 
   return (
     <motion.div
@@ -65,7 +62,7 @@ export default function ModalCreate(props) {
             onClick={onClose}
             className="text-gray-600 hover:text-gray-800"
           >
-            &times;
+            ×
           </button>
         </div>
 
@@ -77,6 +74,7 @@ export default function ModalCreate(props) {
                 name={atributo.name}
                 type={atributo.type}
                 placeholder={atributo.placeholder}
+                onChange={handleChange}
               />
               {errors[atributo.name] && (
                 <span className="text-red-500 text-sm">
@@ -90,13 +88,13 @@ export default function ModalCreate(props) {
         <div className="mt-4 flex justify-end">
           <button
             className="bg-gray-400 text-white px-4 py-2 rounded mr-2"
-            onClick={onClose} // Cerrar al hacer clic en Cancelar
+            onClick={onClose}
           >
             Cancelar
           </button>
           <button
             className="bg-blue-600 text-white px-4 py-2 rounded"
-            onClick={onSubmit}
+            onClick={handleSubmit}
           >
             Guardar
           </button>
