@@ -21,6 +21,10 @@ export default function WelcomePage() {
     router.push('/listarClientes');
   }
 
+  const listarSolicitudes = () => {
+    router.push('/solicitudes');
+  }
+
   if (!user) {
     return null;
   }
@@ -40,6 +44,12 @@ export default function WelcomePage() {
         className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
       >
         Listar Clientes
+      </button>
+      <button
+        onClick={listarSolicitudes}
+        className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
+      >
+        Solicitudes
       </button>
     </div>
   );
