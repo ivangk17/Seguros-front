@@ -11,6 +11,7 @@ import Table from "@/app/componentes/table/Table";
 import ScreenLoader from "@/app/componentes/ScreenLoader";
 import Pagination from "@/app/componentes/table/Pagination";
 import "react-toastify/dist/ReactToastify.css";
+import { crearPoliza } from "../polizas/polizaService";
 
 export default function ClientsList() {
   const api = process.env.NEXT_PUBLIC_URL_API;
@@ -28,9 +29,12 @@ export default function ClientsList() {
   const [clientToDelete, setClientToDelete] = useState(null);
   const [showModalPolizas, setShowModalPolizas] = useState(false);
   const [showModalCreate, setShowModalCreate] = useState(false);
+  const [showModalCreatePoliza, setShowModalCreatePoliza] = useState(false);
   const [polizas, setPolizas] = useState([]);
   const [showModalEdit, setShowModalEdit] = useState(false);
   const [clienteSeleccionado, setClienteSeleccionado] = useState(null);
+  const [clienteDNI, setClienteDNI] = useState(222); // Ejemplo de DNI prellenado
+
 
   const fetchClients = async (search, dni, email, phone) => {
     setLoading(true);
@@ -120,6 +124,11 @@ export default function ClientsList() {
     setShowModalCreate(true);
   };
 
+  const handleAddPoliza = (cliente) =>{
+    setClienteDNI(cliente.dni);
+    setShowModalCreatePoliza(true);
+  }
+
   const confirmCreate = async (formData) => {
     try {
       const url = `${api}users/register/client`;
@@ -131,13 +140,12 @@ export default function ClientsList() {
           'Authorization': `Bearer ${sessionStorage.getItem("token")}`,
         },
         body: JSON.stringify(formData),
-      });
-      
+      });      
   
       const contentType = response.headers.get('content-type');
       if (!contentType || !contentType.includes('application/json')) {
         const text = await response.text();
-        throw new Error(`Unexpected response format: ${text}`);
+        throw new Error(`Error: ${text}`);
       }
   
       const data = await response.json();
@@ -155,7 +163,15 @@ export default function ClientsList() {
     }
   };
 
-
+  const confirmCreatePoliza = async (formData) => {
+    try {
+      await crearPoliza(formData);
+      setShowModalCreatePoliza(false);
+      setCambios((prev) => !prev);
+    } catch (error) {
+      console.error(error.message);
+    }
+  };
 
   const handleDeleteClick = (cliente) => {
     console.log(cliente);
@@ -189,8 +205,6 @@ export default function ClientsList() {
   };
 
   const handleEditClick = (cliente) => {
-    console.log(cliente);
-    
     setClienteSeleccionado(cliente);
     setShowModalEdit(true);
   };
@@ -226,6 +240,7 @@ export default function ClientsList() {
   const acciones = [
     { nombre: "Editar", funcion: (poliza) => handleEditClick(poliza) },
     { nombre: "Eliminar", funcion: (poliza) => handleDeleteClick(poliza)},
+    { nombre: "Crear Poliza", funcion: (cliente) => handleAddPoliza(cliente)}
     // { nombre: "Eliminar", funcion: handleDelete },
     // { nombre: "Ver Pólizas", funcion: handlePolizas },
   ];
@@ -298,9 +313,9 @@ export default function ClientsList() {
           </button>
         </div>
         <Table
-          cabeceras={["Nombre", "Apellido", "DNI", "Email", "Teléfono", "CUIT"]}
+          cabeceras={["Nombre", "Apellido", "DNI", "Email", "Teléfono"]}
           datos={clientesActuales}
-          keys={["name", "lastname", "dni", "email", "phone", "cuit"]}
+          keys={["name", "lastname", "dni", "email", "phone"]}
           acciones={acciones}
           paginado={paginado}
           filtros={filtros}
@@ -358,8 +373,8 @@ export default function ClientsList() {
       placeholder: "Género",
       required: true,
       options: [
-        { value: "male", label: "Masculino" },
-        { value: "female", label: "Femenino" },
+        { value: "HOMBRE", label: "Masculino" },
+        { value: "MUJER", label: "Femenino" },
       ],
     },
     { id: "email", name: "email", type: "email", placeholder: "Email", required: true },
@@ -381,6 +396,51 @@ export default function ClientsList() {
         atributos={["email", "phone"]}
         mensaje="¿Estás seguro de eliminar esta póliza?"
         acciones= {acciones}
+      />
+      <ModalCreate
+        show={showModalCreatePoliza}
+        titulo="Añadir Póliza al Cliente"
+        onClose={() => setShowModalCreatePoliza(false)}
+        onSubmit={confirmCreatePoliza}
+        atributos={[
+          { id: "dni", name: "dni", type: "number", placeholder: "DNI de la persona", required: true },
+          { id: "aseguradora", name: "aseguradora", type: "text", placeholder: "Aseguradora", required: true },
+          {
+            id: "tipoCobertura",
+            name: "tipoCobertura",
+            type: "select",
+            placeholder: "Tipo de Cobertura",
+            required: true,
+            options: [
+              { value: "Responsabilidad Civil", label: "Responsabilidad Civil" },
+              { value: "Terceros Completo", label: "Terceros Completo" },
+              { value: "Terceros Completo con Daños Parciales", label: "Terceros Completo con Daños Parciales" },
+              { value: "Todo Riesgo", label: "Todo Riesgo" }
+            ],
+          },
+          { id: "primaSegura", name: "primaSegura", type: "number", placeholder: "Prima Segura", required: true },
+          { id: "deducible", name: "deducible", type: "number", placeholder: "Deducible", required: true },
+          { id: "dominio", name: "dominio", type: "text", placeholder: "Dominio", required: true },
+          { id: "marca", name: "marca", type: "text", placeholder: "Marca", required: true },
+          { id: "modelo", name: "modelo", type: "text", placeholder: "Modelo", required: true },
+          { id: "anio", name: "anio", type: "number", placeholder: "Año", required: true },
+          { id: "color", name: "color", type: "text", placeholder: "Color", required: true },
+          {
+            id: "tipoVehiculo",
+            name: "tipoVehiculo",
+            type: "select",
+            placeholder: "Tipo de Vehiculo",
+            required: true,
+            options: [
+              { value: "AUTO", label: "Auto" },
+              { value: "MOTO", label: "Moto" },
+              { value: "CAMION", label: "Camion" },
+            ],
+          },
+          { id: "numeroIdentificador", name: "numeroIdentificador", type: "text", placeholder: "Numero identificador", required: true }
+        ]}
+        tipo="poliza"
+        initialData={{ dni: clienteDNI }} // Cambiado a initialData
       />
       {/* <ConfirmDeleteModal
         show={showModalDelete}

@@ -28,6 +28,15 @@ export const validarPoliza = (formData, atributos) => {
     if (atributo.required && !value) {
       newErrors[atributo.name] = `${atributo.placeholder} es obligatorio`;
     }
+    if (atributo.name === "dni" && (value?.length < 7 || value?.length > 8)) {
+      newErrors[atributo.name] = "El DNI debe tener entre 7 y 8 caracteres";
+    }
+    if (!isNaN(value) && value < 1) {
+      newErrors[atributo.name] = "No es valido"
+    }
+    if (atributo.name === "anio" && (value?.length < 4)) {
+      newErrors[atributo.name] = "Año no valido"
+    }
 
   });
   return newErrors;

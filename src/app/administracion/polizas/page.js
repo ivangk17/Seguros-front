@@ -11,6 +11,7 @@ import ScreenLoader from "@/app/componentes/ScreenLoader";
 import Pagination from "@/app/componentes/table/Pagination";
 import "react-toastify/dist/ReactToastify.css";
 import ModalCreate from "@/app/componentes/modals/ModalCreate";
+import { crearPoliza } from "./polizaService";
 
 export default function PolizasList() {
   const api = process.env.NEXT_PUBLIC_URL_API;
@@ -44,7 +45,6 @@ export default function PolizasList() {
       }
 
       const data = await response.json();
-      console.log("Datos recibidos:", data);
       const mapeo = await data.map((poliza) => ({
         _id: poliza._id,
         dominio: poliza.dominio,
@@ -82,9 +82,13 @@ export default function PolizasList() {
   };
 
   const confirmCreate = async (formData) => {
-    setShowModalCreate(false);
-
-    toast.success("La poliza ha sido agregada con éxito.");
+    try {
+      await crearPoliza(formData);
+      setShowModalCreate(false);
+      setCambios((prev) => !prev);
+    } catch (error) {
+      console.error(error.message);
+    }
   };
 
   const filtros=[
@@ -232,12 +236,43 @@ export default function PolizasList() {
         onClose={() => setShowModalCreate(false)}
         onSubmit={confirmCreate}
         atributos={[
-          { id: "dominio", name: "dominio", type: "dominio", placeholder: "Dominio" },
-          { id: "tipoCobertura", name: "tipoCobertura", type: "tipoCobertura", placeholder: "Tipo de Cobertura" },
-          { id: "aseguradora", name: "aseguradora", type: "aseguradora", placeholder: "Aseguradora" },
-          { id: "primaSegura", name: "primaSegura", type: "primaSegura", placeholder: "Prima Segura" },
-          { id: "deducible", name: "deducible", type: "deducible", placeholder: "Deducible" }
+          { id: "dni", name: "dni", type: "number", placeholder: "DNI de la persona", required: true },
+          { id: "aseguradora", name: "aseguradora", type: "aseguradora", placeholder: "Aseguradora", required: true  },
+          {
+            id: "tipoCobertura",
+            name: "tipoCobertura",
+            type: "select",
+            placeholder: "Tipo de Cobertura",
+            required: true,
+            options: [
+              { value: "Responsabilidad Civil", label: "Responsabilidad Civil" },
+              { value: "Terceros Completo", label: "Terceros Completo" },
+              { value: "Terceros Completo con Daños Parciales", label: "Terceros Completo con Daños Parciales" },
+              { value: "Todo Riesgo", label: "Todo Riesgo" }
+            ],
+          },
+          { id: "primaSegura", name: "primaSegura", type: "number", placeholder: "Prima Segura", required: true  },
+          { id: "deducible", name: "deducible", type: "number", placeholder: "Deducible", required: true  },
+          { id: "dominio", name: "dominio", type: "dominio", placeholder: "Dominio", required: true  },
+          { id: "marca", name: "marca", type: "text", placeholder: "Marca", required: true  },
+          { id: "modelo", name: "modelo", type: "text", placeholder: "Modelo", required: true  },
+          { id: "anio", name: "anio", type: "number", placeholder: "Año", required: true  },
+          { id: "color", name: "color", type: "text", placeholder: "Color", required: true  },
+          {
+            id: "tipoVehiculo",
+            name: "tipoVehiculo",
+            type: "select",
+            placeholder: "Tipo de Vehiculo",
+            required: true,
+            options: [
+              { value: "AUTO", label: "Auto" },
+              { value: "MOTO", label: "Moto" },
+              { value: "CAMION", label: "Camion" },
+            ],
+          },
+          { id: "numeroIdentificador", name: "numeroIdentificador", type: "text", placeholder: "Numero identificador", required: true  }
         ]}
+        tipo= "poliza"
       />
     </>
   );
