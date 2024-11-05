@@ -11,20 +11,22 @@ export default function ModalCreate(props) {
   const [errors, setErrors] = useState({});
 
   useEffect(() => {
-    setFormData(initialData);
-  }, [show, initialData]);
+    if (show) {
+      setFormData(initialData);
+    }
+  }, [show]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
+    setFormData((prevFormData) => ({
+      ...prevFormData,
       [name]: value,
-    });
+    }));
     if (errors[name]) {
-      setErrors({
-        ...errors,
+      setErrors((prevErrors) => ({
+        ...prevErrors,
         [name]: undefined,
-      });
+      }));
     }
   };
 
@@ -80,12 +82,8 @@ export default function ModalCreate(props) {
                 options={atributo.options || []}
                 onChange={handleChange}
                 value={formData[atributo.name] || ''}
+                error={errors[atributo.name]}
               />
-              {errors[atributo.name] && (
-                <span className="text-red-500 text-sm p-1">
-                  {errors[atributo.name]}
-                </span>
-              )}
             </div>
           ))}
         </div>

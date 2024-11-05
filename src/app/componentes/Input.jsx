@@ -1,4 +1,6 @@
-export default function Input({ name, label, type = "text", error, options = [], ...rest }) {
+import React from 'react';
+
+export default function Input({ name, label, type = "text", error, options = [], value, onChange, ...rest }) {
   return (
     <div className="mb-4">
       {label && (
@@ -10,8 +12,10 @@ export default function Input({ name, label, type = "text", error, options = [],
         <select
           id={name}
           name={name}
-          {...rest}
+          value={value}
+          onChange={onChange}
           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 mb-3"
+          {...rest}
         >
           <option value="">Seleccione una opción</option>
           {options.map((option, index) => (
@@ -25,8 +29,10 @@ export default function Input({ name, label, type = "text", error, options = [],
           id={name}
           name={name}
           type={type}
-          {...rest}
+          value={value}
+          onChange={onChange}
           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 mb-3"
+          {...rest}
         />
       )}
       {error && (
