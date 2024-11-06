@@ -107,10 +107,42 @@ export default function PolizasList() {
     setShowEditModal(true); // Muestra el modal
   };
   
-  const handleEditConfirm = (updatedData) => {
-    setShowEditModal(false); // Cierra el modal
-    toast.success("Póliza actualizada exitosamente");
-    setCambios(!cambios); // Refresca la lista de pólizas si necesitas recargar
+  const handleEditConfirm = async (updatedPoliza) => {
+    const { _id } = updatedPoliza;
+    const fieldsToUpdate = {
+      tipoCobertura: updatedPoliza.tipoCobertura,
+      primaSegura: updatedPoliza.primaSegura,
+      deducible: updatedPoliza.deducible
+    }
+    try {
+      const response = await fetch(`${api}polizas/${_id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+        },
+        body: JSON.stringify(fieldsToUpdate),
+      });
+
+
+      if (!response.ok) {
+        throw new Error('Error al actualizar la póliza');
+      }
+
+      const data = await response.json();
+      
+      setPolizas((prev) =>
+        prev.map((poliza) =>
+          poliza._id === data._id ? data : poliza
+        )
+      );
+
+      toast.success("Póliza actualizada exitosamente");
+      setShowEditModal(false);
+      setCambios(!cambios)
+    } catch (err) {
+      toast.error(err.message);
+    }
   };
 
   const handleDeleteClick = (poliza) => {
@@ -213,9 +245,9 @@ export default function PolizasList() {
         dato={selectedPoliza}
         onConfirm={handleEditConfirm}
         atributos={[
-          { id: "tipoCobertura", name: "tipoCobertura", type: "tipoCobertura", placeholder: "Tipo de Cobertura" },
-          { id: "primaSegura", name: "primaSegura", type: "primaSegura", placeholder: "Prima Segura" },
-          { id: "deducible", name: "deducible", type: "deducible", placeholder: "Deducible" }
+          { id: "tipoCobertura", name: "tipoCobertura", tipo: "text", placeholder: "Tipo de Cobertura", required: true },
+          { id: "primaSegura", name: "primaSegura", tipo: "number", placeholder: "Prima Segura", required: true },
+          { id: "deducible", name: "deducible", tipo: "number", placeholder: "Deducible", required: true }
         ]}
         onClose={() => setShowEditModal(false)}
         titulo="Editar Póliza"
