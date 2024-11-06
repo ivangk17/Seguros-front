@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import Input from "../Input";
 import { useState, useEffect } from "react";
+import { validarPoliza } from "./validaciones/validaciones";
 
 export default function ModalEdit({
   show,
@@ -9,6 +10,7 @@ export default function ModalEdit({
   onClose,
   onConfirm,
   titulo,
+  tipo
 }) {
   if (!show) return null; // Si no se debe mostrar, no renderiza nada
 
@@ -45,7 +47,14 @@ export default function ModalEdit({
   };
 
   const handleSubmit = () => {
-    if (validate()) {
+    let newErrors = {};
+    if (tipo === "cliente") {
+      // newErrors = validarCliente(formData, atributos);
+    } else if (tipo === "poliza") {
+      newErrors = validarPoliza(formData, atributos);
+    }
+    setErrors(newErrors);
+    if (Object.keys(newErrors).length === 0) {
       onConfirm(formData);
     }
   };
@@ -75,23 +84,22 @@ export default function ModalEdit({
           </button>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-1 gap-4">
           {atributos.map((atributo, index) => (
             <div className="flex flex-col mb-4" key={index}>
+              <label htmlFor={atributo.id} className="mb-1 text-gray-700 p-1">
+                {atributo.placeholder}
+              </label>
               <Input
                 id={atributo.id}
                 name={atributo.name}
-                type={atributo.tipo}
+                type={atributo.type}
                 placeholder={atributo.placeholder}
-                value={formData[atributo.name] || ""}
+                options={atributo.options || []}
                 onChange={handleChange}
-                className={errors[atributo.name] ? "border-red-500" : ""}
+                value={formData[atributo.name] || ''}
+                error={errors[atributo.name]}
               />
-              {errors[atributo.name] && (
-                <span className="text-red-500 text-sm">
-                  {errors[atributo.name]}
-                </span>
-              )}
             </div>
           ))}
         </div>

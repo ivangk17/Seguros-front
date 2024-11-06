@@ -245,13 +245,14 @@ export default function PolizasList() {
         dato={selectedPoliza}
         onConfirm={handleEditConfirm}
         atributos={[
-          { id: "tipoCobertura", name: "tipoCobertura", tipo: "text", placeholder: "Tipo de Cobertura", required: true },
-          { id: "primaSegura", name: "primaSegura", tipo: "number", placeholder: "Prima Segura", required: true },
-          { id: "deducible", name: "deducible", tipo: "number", placeholder: "Deducible", required: true }
+          { id: "tipoCobertura", name: "tipoCobertura", type: "text", placeholder: "Tipo de Cobertura", required: true },
+          { id: "primaSegura", name: "primaSegura", type: "number", placeholder: "Prima Segura", required: true },
+          { id: "deducible", name: "deducible", type: "number", placeholder: "Deducible", required: true }
         ]}
         onClose={() => setShowEditModal(false)}
         titulo="Editar Póliza"
         acciones = {acciones}
+        tipo="poliza"
       />
       <ConfirmDeleteModal
         show={showModalDelete}
