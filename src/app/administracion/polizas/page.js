@@ -46,16 +46,16 @@ export default function PolizasList() {
       const data = await response.json();
       console.log("Datos recibidos:", data);
       const mapeo = await data.map((poliza) => ({
-          _id: poliza._id,
-          dominio: poliza.dominio,
-          marca: poliza.vehiculo.marca,
-          modelo: poliza.vehiculo.modelo,
-          anio: poliza.vehiculo.anio,
-          tipoVehiculo: poliza.vehiculo.tipoVehiculo,
-          aseguradora: poliza.aseguradora,
-          tipoCobertura: poliza.tipoCobertura,
-          primaSegura: poliza.primaSegura,
-          deducible: poliza.deducible
+        _id: poliza._id,
+        dominio: poliza.dominio,
+        marca: poliza.vehiculo.marca,
+        modelo: poliza.vehiculo.modelo,
+        anio: poliza.vehiculo.anio,
+        tipoVehiculo: poliza.vehiculo.tipoVehiculo,
+        aseguradora: poliza.aseguradora,
+        tipoCobertura: poliza.tipoCobertura,
+        primaSegura: poliza.primaSegura,
+        deducible: poliza.deducible
       }));
 
       setPolizas(mapeo);
