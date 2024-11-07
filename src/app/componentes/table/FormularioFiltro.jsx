@@ -13,6 +13,7 @@ export default function FormularioFiltro(props) {
             placeholder={filtro.placeholder}
             value={filtro.valor}
             onChange={(e) => filtro.funcion(e.target.value)}
+            options={filtro.options || []}
           />
         </div>
       ))}

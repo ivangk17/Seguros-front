@@ -199,9 +199,9 @@ export default function PolizasList() {
         pauseOnHover
         theme="colored"
       />
-      <div className="bg-white shadow-lg rounded-lg w-full p-6">
+      <div className="bg-white shadow-lg rounded-lg w-full p-6 dark:bg-gray-800">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-lg font-semibold">Administración de polizas</h2>
+          <h2 className="text-lg font-semibold text-black dark:text-white">Administración de polizas</h2>
           <button
           onClick={handleAddPoliza}
           className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 inline-flex items-center"
@@ -278,6 +278,7 @@ export default function PolizasList() {
             placeholder: "Tipo de Cobertura",
             required: true,
             options: [
+              { value: "Tipo de Cobertura", label: "Tipo de Cobertura" },
               { value: "Responsabilidad Civil", label: "Responsabilidad Civil" },
               { value: "Terceros Completo", label: "Terceros Completo" },
               { value: "Terceros Completo con Daños Parciales", label: "Terceros Completo con Daños Parciales" },
@@ -298,6 +299,7 @@ export default function PolizasList() {
             placeholder: "Tipo de Vehiculo",
             required: true,
             options: [
+              { value: "", label: "Tipo de Vehiculo" },
               { value: "AUTO", label: "Auto" },
               { value: "MOTO", label: "Moto" },
               { value: "CAMION", label: "Camion" },
