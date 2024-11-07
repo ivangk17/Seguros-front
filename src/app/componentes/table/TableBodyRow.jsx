@@ -6,6 +6,7 @@ const getNestedValue = (obj, path) => {
 
 export default function TableBodyRow(props) {
   const { dato, keys, acciones } = props;
+  const accionesDinamicas = typeof acciones === 'function' ? acciones(dato) : acciones;
   return (
     <tr key={dato._id} className="dark:text-black"> 
       {keys.map((key) => (
@@ -15,7 +16,7 @@ export default function TableBodyRow(props) {
       ))}
       {acciones && (
         <td className="whitespace-nowrap px-6 py-4 text-center dark:text-black">
-          <Acciones acciones={acciones} dato={dato} />
+          <Acciones acciones={accionesDinamicas} dato={dato} />
         </td>
       )}
     </tr>

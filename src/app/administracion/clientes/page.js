@@ -12,6 +12,7 @@ import ScreenLoader from "@/app/componentes/ScreenLoader";
 import Pagination from "@/app/componentes/table/Pagination";
 import "react-toastify/dist/ReactToastify.css";
 import { crearPoliza } from "../polizas/polizaService";
+import { cambiarEstadoCliente } from "./clienteSerice";
 
 export default function ClientsList() {
   const api = process.env.NEXT_PUBLIC_URL_API;
@@ -21,6 +22,7 @@ export default function ClientsList() {
   const [filtroDni, setFiltroDni] = useState("");
   const [filtroEmail, setFiltroEmail] = useState("");
   const [filtroTelefono, setFiltroTelefono] = useState("");
+  const [filtroEstado, setFiltroEstado] = useState("");
   const [paginaActual, setPaginaActual] = useState(1);
   const [clientesPorPagina, setClientesPorPagina] = useState(10);
   const [error, setError] = useState(null);
@@ -36,7 +38,7 @@ export default function ClientsList() {
   const [clienteDNI, setClienteDNI] = useState(222); // Ejemplo de DNI prellenado
 
 
-  const fetchClients = async (search, dni, email, phone) => {
+  const fetchClients = async (search, dni, email, phone, estado) => {
     setLoading(true);
     try {
       const queryParams = new URLSearchParams({
@@ -44,6 +46,7 @@ export default function ClientsList() {
         ...(dni && { dni }),
         ...(email && { email }),
         ...(phone && { phone }),
+        ...(estado && {estado})
       }).toString();
       const url = `${api}users/clients?${queryParams}`;
       const response = await fetch(url, {
@@ -112,7 +115,7 @@ export default function ClientsList() {
 
   const handleSubmitFilters = (e) => {
     e.preventDefault();
-    fetchClients(filtroNombreApellido, filtroDni, filtroEmail, filtroTelefono);
+    fetchClients(filtroNombreApellido, filtroDni, filtroEmail, filtroTelefono, filtroEstado);
   };
 
   const handlePolizas = async (cliente) => {
@@ -215,6 +218,15 @@ export default function ClientsList() {
     setCambios(!cambios);
   };
 
+  const handleCambiarEstado = (cliente) =>{
+    try {
+      cambiarEstadoCliente(cliente)
+      setCambios((prev) => !prev);
+    } catch (error) {
+      console.log(error.message);
+    }
+  }
+
   const confirmEdit = async (formData) => {
     setShowModalEdit(false);
     try {
@@ -237,13 +249,20 @@ export default function ClientsList() {
     }
   };
 
-  const acciones = [
-    { nombre: "Editar", funcion: (poliza) => handleEditClick(poliza) },
-    { nombre: "Eliminar", funcion: (poliza) => handleDeleteClick(poliza)},
-    { nombre: "Crear Poliza", funcion: (cliente) => handleAddPoliza(cliente)}
-    // { nombre: "Eliminar", funcion: handleDelete },
-    // { nombre: "Ver Pólizas", funcion: handlePolizas },
-  ];
+  const acciones = (cliente) => {
+    const accionesBase = [
+      { nombre: "Editar", funcion: (poliza) => handleEditClick(poliza) },
+      { nombre: "Eliminar", funcion: (poliza) => handleDeleteClick(poliza) },
+      { nombre: "Crear Poliza", funcion: (cliente) => handleAddPoliza(cliente) }
+    ];
+  
+    const accionEstado = cliente.estado === "ACTIVO"
+    
+      ? { nombre: "Inactivar", funcion: (cliente) => handleCambiarEstado(cliente) }
+      : { nombre: "Activar", funcion: (cliente) => handleCambiarEstado(cliente) };
+      console.log(`${cliente.email} ${cliente.estado}`);
+    return [...accionesBase, accionEstado];
+  };
 
   const paginado = {
     total: clientes.length,
@@ -285,6 +304,19 @@ export default function ClientsList() {
       type: "text",
       placeholder: "Teléfono",
     },
+    {
+      valor: filtroEstado,
+      funcion: setFiltroEstado,
+      id: "estado",
+      name: "estado",
+      type: "select",
+      placeholder: "Estado",
+      options: [
+        { value: "", label: "Estado" },
+        { value: "ACTIVO", label: "Activo" },
+        { value: "INACTIVO", label: "Inactivo" },
+      ]
+    }
   ];
 
   return (
@@ -313,9 +345,9 @@ export default function ClientsList() {
           </button>
         </div>
         <Table
-          cabeceras={["Nombre", "Apellido", "DNI", "Email", "Teléfono"]}
+          cabeceras={["Nombre", "Apellido", "DNI", "Email", "Teléfono", "Estado"]}
           datos={clientesActuales}
-          keys={["name", "lastname", "dni", "email", "phone"]}
+          keys={["name", "lastname", "dni", "email", "phone", "estado"]}
           acciones={acciones}
           paginado={paginado}
           filtros={filtros}
