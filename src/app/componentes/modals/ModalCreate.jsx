@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import Input from "../Input";
+import SelectWithSearch from "../SelectWithSearch";
 import { useState, useEffect } from "react";
 import { validarCliente, validarPoliza } from "./validaciones/validaciones";
 
@@ -16,8 +17,9 @@ export default function ModalCreate(props) {
     }
   }, [show]);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
+  const handleChange = (selectedOption, actionMeta) => {
+    const { name } = actionMeta;
+    const value = selectedOption ? selectedOption.value : '';
     setFormData((prevFormData) => ({
       ...prevFormData,
       [name]: value,
@@ -74,16 +76,29 @@ export default function ModalCreate(props) {
               <label htmlFor={atributo.id} className="mb-1 text-gray-700 dark:text-gray-300 p-1">
                 {atributo.placeholder}
               </label>
-              <Input
-                id={atributo.id}
-                name={atributo.name}
-                type={atributo.type}
-                placeholder={atributo.placeholder}
-                options={atributo.options || []}
-                onChange={handleChange}
-                value={formData[atributo.name] || ''}
-                error={errors[atributo.name]}
-              />
+              {atributo.type === "custom" ? (
+                atributo.component
+              ) : atributo.type === "select" ? (
+                <SelectWithSearch
+                  id={atributo.id}
+                  name={atributo.name}
+                  options={atributo.options}
+                  onChange={handleChange}
+                  value={atributo.options.find(option => option.value === formData[atributo.name])}
+                  placeholder={atributo.placeholder}
+                />
+              ) : (
+                <Input
+                  id={atributo.id}
+                  name={atributo.name}
+                  type={atributo.type}
+                  placeholder={atributo.placeholder}
+                  options={atributo.options || []}
+                  onChange={handleChange}
+                  value={formData[atributo.name] || ''}
+                  error={errors[atributo.name]}
+                />
+              )}
             </div>
           ))}
         </div>

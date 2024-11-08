@@ -12,6 +12,7 @@ import Pagination from "@/app/componentes/table/Pagination";
 import "react-toastify/dist/ReactToastify.css";
 import ModalCreate from "@/app/componentes/modals/ModalCreate";
 import { crearPoliza } from "./polizaService";
+import SelectWithSearch from "@/app/componentes/SelectWithSearch";
 
 export default function PolizasList() {
   const api = process.env.NEXT_PUBLIC_URL_API;
@@ -23,6 +24,8 @@ export default function PolizasList() {
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedPoliza, setSelectedPoliza] = useState(null);
   const [showModalDelete, setShowModalDelete] = useState(false);
+  const [dnis, setDnis] = useState([]); 
+  const [formData, setFormData] = useState({}); 
 
   const fetchPolizas = async (dominio) => {
     setLoading(true);
@@ -66,11 +69,35 @@ export default function PolizasList() {
     }
   };
 
+  const fetchDnis = async () => {
+    try {
+      const url = `${api}users/clients`;
+      const response = await fetch(url, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Error fetching clients");
+      }
+
+      const data = await response.json();
+      const dnis = data.map(client => ({
+        dni: client.dni,
+        nombre: `${client.name} ${client.lastname}`
+      })); 
+      setDnis(dnis);
+    } catch (error) {
+      toast.error("Ocurrió un error al obtener los DNI.");
+    }
+  };
+
   useEffect(() => {
-    fetchPolizas(); 
+    fetchPolizas();
+    fetchDnis(); 
   }, [cambios]);
-
-
 
   const handleSubmitFilters = (e) => {
     e.preventDefault();
@@ -91,20 +118,26 @@ export default function PolizasList() {
     }
   };
 
-  const filtros=[
-    {
-      valor: filtroDominio,
-      funcion: setFiltroDominio,
-      id: "dominio",
-      name: "dominio",
-      type: "text",
-      placeholder: "DOMINIO",
-    },
-  ]
+  const handleChange = (selectedOption) => {
+    const { name, value } = selectedOption;
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      [name]: value,
+    }));
+  };
+
+  const filtros=[{
+    valor: filtroDominio,
+    funcion: setFiltroDominio,
+    id: "dominio",
+    name: "dominio",
+    type: "text",
+    placeholder: "DOMINIO",
+  }];
 
   const handleEditClick = (poliza) => {
-    setSelectedPoliza(poliza); // Setea la póliza que se va a editar
-    setShowEditModal(true); // Muestra el modal
+    setSelectedPoliza(poliza); 
+    setShowEditModal(true); 
   };
   
   const handleEditConfirm = async (updatedPoliza) => {
@@ -123,7 +156,6 @@ export default function PolizasList() {
         },
         body: JSON.stringify(fieldsToUpdate),
       });
-
 
       if (!response.ok) {
         throw new Error('Error al actualizar la póliza');
@@ -171,18 +203,12 @@ export default function PolizasList() {
       toast.error("Ocurrió un error al eliminar la poliza.");
       setError(error.message);
     }
-    
-    
   };
 
-
   const acciones = [
-    { nombre: "Editar", funcion: (poliza) => handleEditClick(poliza) }, // Cambié a `funcion`
+    { nombre: "Editar", funcion: (poliza) => handleEditClick(poliza) },
     { nombre: "Eliminar", funcion: (poliza) => handleDeleteClick(poliza) },
   ];
-  
-  
-
 
   return (
     <>
@@ -203,8 +229,8 @@ export default function PolizasList() {
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg font-semibold text-black dark:text-white">Administración de polizas</h2>
           <button
-          onClick={handleAddPoliza}
-          className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 inline-flex items-center"
+            onClick={handleAddPoliza}
+            className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 inline-flex items-center"
           >
             Agregar Poliza
           </button>
@@ -238,7 +264,6 @@ export default function PolizasList() {
           acciones={acciones}
           /*paginado={paginado}*/
         />
-
       </div>
       <ModalEdit
         show={showEditModal}
@@ -251,17 +276,17 @@ export default function PolizasList() {
         ]}
         onClose={() => setShowEditModal(false)}
         titulo="Editar Póliza"
-        acciones = {acciones}
+        acciones={acciones}
         tipo="poliza"
       />
       <ConfirmDeleteModal
         show={showModalDelete}
         dato={selectedPoliza}
         onConfirm={confirmDelete}
-        atributos={["email", "phone"]} // Define aquí los atributos que quieres mostrar
+        atributos={["email", "phone"]}
         onClose={() => setShowModalDelete(false)}
         mensaje="¿Estás seguro de eliminar esta póliza?"
-        acciones= {acciones}
+        acciones={acciones}
       />
       <ModalCreate
         show={showModalCreate}
@@ -269,8 +294,31 @@ export default function PolizasList() {
         onClose={() => setShowModalCreate(false)}
         onSubmit={confirmCreate}
         atributos={[
-          { id: "dni", name: "dni", type: "number", placeholder: "DNI de la persona", required: true },
-          { id: "aseguradora", name: "aseguradora", type: "aseguradora", placeholder: "Aseguradora", required: true  },
+          {
+            id: "dni",
+            name: "dni",
+            type: "custom",
+            component: (
+              <div>
+                <label htmlFor="dni" className="block text-sm font-medium text-gray-900">DNI de la persona</label>
+                <div className="relative mt-1.5">
+                  <SelectWithSearch
+                    name="dni"
+                    id="dni"
+                    options={dnis.map(dni => ({
+                      value: dni.dni,
+                      label: `${dni.dni} // ${dni.nombre}`
+                    }))}
+                    onChange={handleChange}
+                    value={dnis.find(dni => dni.dni === formData.dni)}
+                    placeholder="Dni de la persona"
+                  />
+                </div>
+              </div>
+            ),
+            required: true
+          },
+          { id: "aseguradora", name: "aseguradora", type: "text", placeholder: "Aseguradora", required: true },
           {
             id: "tipoCobertura",
             name: "tipoCobertura",
@@ -285,13 +333,13 @@ export default function PolizasList() {
               { value: "Todo Riesgo", label: "Todo Riesgo" }
             ],
           },
-          { id: "primaSegura", name: "primaSegura", type: "number", placeholder: "Prima Segura", required: true  },
-          { id: "deducible", name: "deducible", type: "number", placeholder: "Deducible", required: true  },
-          { id: "dominio", name: "dominio", type: "dominio", placeholder: "Dominio", required: true  },
-          { id: "marca", name: "marca", type: "text", placeholder: "Marca", required: true  },
-          { id: "modelo", name: "modelo", type: "text", placeholder: "Modelo", required: true  },
-          { id: "anio", name: "anio", type: "number", placeholder: "Año", required: true  },
-          { id: "color", name: "color", type: "text", placeholder: "Color", required: true  },
+          { id: "primaSegura", name: "primaSegura", type: "number", placeholder: "Prima Segura", required: true },
+          { id: "deducible", name: "deducible", type: "number", placeholder: "Deducible", required: true },
+          { id: "dominio", name: "dominio", type: "text", placeholder: "Dominio", required: true },
+          { id: "marca", name: "marca", type: "text", placeholder: "Marca", required: true },
+          { id: "modelo", name: "modelo", type: "text", placeholder: "Modelo", required: true },
+          { id: "anio", name: "anio", type: "number", placeholder: "Año", required: true },
+          { id: "color", name: "color", type: "text", placeholder: "Color", required: true },
           {
             id: "tipoVehiculo",
             name: "tipoVehiculo",
@@ -305,9 +353,11 @@ export default function PolizasList() {
               { value: "CAMION", label: "Camion" },
             ],
           },
-          { id: "numeroIdentificador", name: "numeroIdentificador", type: "text", placeholder: "Numero identificador", required: true  }
+          { id: "numeroIdentificador", name: "numeroIdentificador", type: "text", placeholder: "Numero identificador", required: true }
         ]}
-        tipo= "poliza"
+        tipo="poliza"
+        formData={formData}
+        handleChange={handleChange}
       />
     </>
   );
