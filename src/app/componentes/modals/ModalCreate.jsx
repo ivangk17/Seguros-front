@@ -17,9 +17,8 @@ export default function ModalCreate(props) {
     }
   }, [show]);
 
-  const handleChange = (selectedOption, actionMeta) => {
-    const { name } = actionMeta;
-    const value = selectedOption ? selectedOption.value : '';
+  const handleChange = (e, actionMeta) => {
+    const { name, value } = e.target ? e.target : actionMeta;
     setFormData((prevFormData) => ({
       ...prevFormData,
       [name]: value,
@@ -83,7 +82,7 @@ export default function ModalCreate(props) {
                   id={atributo.id}
                   name={atributo.name}
                   options={atributo.options}
-                  onChange={handleChange}
+                  onChange={(selectedOption) => handleChange(selectedOption, { name: atributo.name })}
                   value={atributo.options.find(option => option.value === formData[atributo.name])}
                   placeholder={atributo.placeholder}
                 />
