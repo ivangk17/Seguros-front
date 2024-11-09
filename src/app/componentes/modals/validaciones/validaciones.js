@@ -18,7 +18,6 @@ export const validarCliente = (formData, atributos) => {
   return newErrors;
 };
 
-// Validaciones para la creación de pólizas
 export const validarPoliza = (formData, atributos) => {
   const newErrors = {};
   atributos.forEach((atributo) => {
@@ -26,7 +25,7 @@ export const validarPoliza = (formData, atributos) => {
     if (atributo.required && !value) {
       newErrors[atributo.name] = `${atributo.placeholder} es obligatorio`;
     }
-    if (atributo.name === "anio" && (value?.length !== 4 || isNaN(value))) {
+    if (atributo.name === "anio" && (isNaN(value) || value < 1900 || value > 2024)) {
       newErrors[atributo.name] = "Año no válido";
     }
     if (atributo.name === "primaSegura" && (isNaN(value) || value <= 0)) {
@@ -85,7 +84,7 @@ const isValidEmail = (email) => {
 };
 
 const isValidDominio = (dominio) => {
-  const regex = /^[A-Z]{3} \d{3}$|^[A-Z]{2} \d{3} [A-Z]{2}$/i; // Ejemplo de validación de dominio (ABC 123 o AB 123 CD)
+  const regex = /^[A-Z]{3} \d{3}$|^[A-Z]{2} \d{3} [A-Z]{2}$/i; 
   return regex.test(dominio);
 };
 
