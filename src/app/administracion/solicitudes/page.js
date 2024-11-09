@@ -35,6 +35,7 @@ const SolicitudesPage = () => {
         ...(nombrePropietarioAsegurado && { nombrePropietarioAsegurado }),
         ...(fechaOcurrencia && { fechaDesde: fechaOcurrencia }),
       }).toString();
+
       const url = `${api}solicitudes/list?${queryParams}`;
       const response = await fetch(url, {
         headers: {
@@ -77,7 +78,7 @@ const SolicitudesPage = () => {
 
       await response.json();
       toast.success("Solicitud aceptada con éxito");
-      fetchSolicitudes(); // Recargar la lista de solicitudes
+      fetchSolicitudes();
     } catch (err) {
       setError(err.message);
       toast.error("Error al aceptar la solicitud");
@@ -102,7 +103,7 @@ const SolicitudesPage = () => {
 
       await response.json();
       toast.success("Solicitud rechazada con éxito");
-      fetchSolicitudes(); // Recargar la lista de solicitudes
+      fetchSolicitudes();
     } catch (err) {
       setError(err.message);
       toast.error("Error al aceptar la solicitud");
@@ -283,9 +284,9 @@ const SolicitudesPage = () => {
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleModalClose}>
-            Cancelar
+            Cerrar
           </Button>
-          <Button variant="primary" onClick={handleModalSubmit}>
+          <Button variant="danger" onClick={handleModalSubmit}>
             Rechazar
           </Button>
         </Modal.Footer>
