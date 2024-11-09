@@ -6,14 +6,22 @@ export const validarCliente = (formData, atributos) => {
     acc[key] = formData[key]?.trim() || ""; // Se trimea el valor o se asigna una cadena vacía si es undefined
     return acc;
   }, {});
+
   atributos.forEach((atributo) => {
     const value = formDataTrimeado[atributo.name];
+
     if (atributo.required && !value) {
       newErrors[atributo.name] = `${atributo.placeholder} es obligatorio`;
     }
 
-    if (atributo.name === "dni" && (value?.length < 7 || value?.length > 8)) {
-      newErrors[atributo.name] = "El DNI debe tener entre 7 y 8 caracteres";
+    if (atributo.name === "dni") {
+      if (!value || value.length < 7 || value.length > 8) {
+        newErrors[atributo.name] = "El DNI debe tener entre 7 y 8 caracteres";
+      } else if (!validator.isNumeric(value)) {
+        newErrors[atributo.name] = "El DNI debe ser numérico";
+      } else if (parseInt(value) <= 0) {
+        newErrors[atributo.name] = "El DNI no puede ser negativo";
+      }
     }
 
     if (atributo.name === "email" && value && !validator.isEmail(value)) {
@@ -60,6 +68,8 @@ export const validarCliente = (formData, atributos) => {
       } else if (value.length < 7 || value.length > 12) {
         newErrors[atributo.name] =
           "El teléfono debe tener entre 7 y 12 dígitos";
+      } else if (parseInt(value) <= 0) {
+        newErrors[atributo.name] = "El teléfono debe ser mayor que 0";
       }
     }
 
@@ -69,6 +79,8 @@ export const validarCliente = (formData, atributos) => {
       } else if (value.length !== 4) {
         newErrors[atributo.name] =
           "El código postal debe tener exactamente 4 dígitos";
+      } else if (parseInt(value) <= 0) {
+        newErrors[atributo.name] = "El código postal debe ser mayor que 0";
       }
     }
 
@@ -84,6 +96,8 @@ export const validarCliente = (formData, atributos) => {
       if (!validator.isNumeric(value)) {
         newErrors[atributo.name] =
           "El número de la calle debe ser un valor numérico";
+      } else if (parseInt(value) <= 0) {
+        newErrors[atributo.name] = "El número de la calle debe ser mayor que 0";
       }
     }
 
@@ -91,11 +105,14 @@ export const validarCliente = (formData, atributos) => {
     if (atributo.name === "floor" && value) {
       if (!validator.isNumeric(value)) {
         newErrors[atributo.name] = "El piso debe ser un valor numérico";
+      } else if (parseInt(value) < 0) {
+        newErrors[atributo.name] = "El piso debe ser mayor o igual que 0";
       } else if (parseInt(value) > MAX_FLOOR) {
         newErrors[atributo.name] = `El piso no puede ser mayor a ${MAX_FLOOR}`;
       }
     }
   });
+
   return newErrors;
 };
 
