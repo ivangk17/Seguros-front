@@ -2,17 +2,14 @@
 
 import { useState, useEffect } from "react";
 import { ToastContainer, toast } from "react-toastify";
-import { useRouter } from "next/navigation";
 import ConfirmDeleteModal from "@/app/componentes/modals/ConfirmDeleteModal";
 import ModalEdit from "@/app/componentes/modals/ModalEdit";
-import ModalPolizas from "@/app/componentes/modals/ModalPolizas";
 import Table from "@/app/componentes/table/Table";
 import ScreenLoader from "@/app/componentes/ScreenLoader";
 import Pagination from "@/app/componentes/table/Pagination";
 import "react-toastify/dist/ReactToastify.css";
 import ModalCreate from "@/app/componentes/modals/ModalCreate";
 import { crearPoliza } from "./polizaService";
-import SelectWithSearch from "@/app/componentes/SelectWithSearch";
 
 export default function PolizasList() {
   const api = process.env.NEXT_PUBLIC_URL_API;
@@ -63,7 +60,7 @@ export default function PolizasList() {
 
       setPolizas(mapeo);
     } catch (error) {
-      toast.error(error);
+      toast.error(error.message);
     } finally {
       setLoading(false);
     }
@@ -85,8 +82,8 @@ export default function PolizasList() {
 
       const data = await response.json();
       const dnis = data.map(client => ({
-        dni: client.dni,
-        nombre: `${client.name} ${client.lastname}`
+        value: client.dni,
+        label: `${client.dni} - ${client.name} ${client.lastname}`
       })); 
       setDnis(dnis);
     } catch (error) {
@@ -118,8 +115,8 @@ export default function PolizasList() {
     }
   };
 
-  const handleChange = (selectedOption) => {
-    const { name, value } = selectedOption;
+  const handleChange = (e) => {
+    const { name, value } = e.target;
     setFormData((prevFormData) => ({
       ...prevFormData,
       [name]: value,
@@ -262,7 +259,6 @@ export default function PolizasList() {
           filtros={filtros}
           filtrosSubmit={handleSubmitFilters}
           acciones={acciones}
-          /*paginado={paginado}*/
         />
       </div>
       <ModalEdit
@@ -297,25 +293,9 @@ export default function PolizasList() {
           {
             id: "dni",
             name: "dni",
-            type: "custom",
-            component: (
-              <div>
-                <label htmlFor="dni" className="block text-sm font-medium text-gray-900">DNI de la persona</label>
-                <div className="relative mt-1.5">
-                  <SelectWithSearch
-                    name="dni"
-                    id="dni"
-                    options={dnis.map(dni => ({
-                      value: dni.dni,
-                      label: `${dni.dni} // ${dni.nombre}`
-                    }))}
-                    onChange={handleChange}
-                    value={dnis.find(dni => dni.dni === formData.dni)}
-                    placeholder="Dni de la persona"
-                  />
-                </div>
-              </div>
-            ),
+            type: "select",
+            placeholder: "DNI de la persona",
+            options: dnis,
             required: true
           },
           { id: "aseguradora", name: "aseguradora", type: "text", placeholder: "Aseguradora", required: true },

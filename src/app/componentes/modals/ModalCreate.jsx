@@ -1,27 +1,42 @@
 import { motion } from "framer-motion";
 import Input from "../Input";
-import SelectWithSearch from "../SelectWithSearch";
+import Select from "react-select";
 import { useState, useEffect } from "react";
 import { validarCliente, validarPoliza } from "./validaciones/validaciones";
 
-export default function ModalCreate(props) {
+export default function ModalForm(props) {
   const { titulo, show, onClose, onSubmit, atributos, tipo, initialData = {} } = props;
   if (!show) return null;
 
   const [formData, setFormData] = useState(initialData);
   const [errors, setErrors] = useState({});
+  const [initialized, setInitialized] = useState(false); // Track initialization
 
   useEffect(() => {
-    if (show) {
+    if (show && !initialized) {
       setFormData(initialData);
+      setInitialized(true);
     }
-  }, [show]);
+  }, [show, initialData, initialized]);
 
-  const handleChange = (e, actionMeta) => {
-    const { name, value } = e.target ? e.target : actionMeta;
+  const handleChange = (e) => {
+    const { name, value } = e.target;
     setFormData((prevFormData) => ({
       ...prevFormData,
       [name]: value,
+    }));
+    if (errors[name]) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        [name]: undefined,
+      }));
+    }
+  };
+
+  const handleSelectChange = (selectedOption, name) => {
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      [name]: selectedOption ? selectedOption.value : "",
     }));
     if (errors[name]) {
       setErrors((prevErrors) => ({
@@ -39,8 +54,10 @@ export default function ModalCreate(props) {
       newErrors = validarPoliza(formData, atributos);
     }
     setErrors(newErrors);
+
     if (Object.keys(newErrors).length === 0) {
       onSubmit(formData);
+      setInitialized(false);
     }
   };
 
@@ -62,7 +79,10 @@ export default function ModalCreate(props) {
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg font-semibold text-black dark:text-white">{titulo}</h2>
           <button
-            onClick={onClose}
+            onClick={() => {
+              onClose();
+              setInitialized(false);
+            }}
             className="text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200"
           >
             ×
@@ -75,26 +95,38 @@ export default function ModalCreate(props) {
               <label htmlFor={atributo.id} className="mb-1 text-gray-700 dark:text-gray-300 p-1">
                 {atributo.placeholder}
               </label>
-              {atributo.type === "custom" ? (
-                atributo.component
+              {atributo.type === "select" && atributo.name === "dni" ? (
+                <Select
+                  id={atributo.id}
+                  options={atributo.options}
+                  onChange={(selectedOption) => handleSelectChange(selectedOption, atributo.name)}
+                  placeholder={atributo.placeholder}
+                  isClearable
+                  className="p-2 border rounded-md"
+                />
               ) : atributo.type === "select" ? (
-                <SelectWithSearch
+                <select
                   id={atributo.id}
                   name={atributo.name}
-                  options={atributo.options}
-                  onChange={(selectedOption) => handleChange(selectedOption, { name: atributo.name })}
-                  value={atributo.options.find(option => option.value === formData[atributo.name])}
-                  placeholder={atributo.placeholder}
-                />
+                  value={formData[atributo.name] || ""}
+                  onChange={handleChange}
+                  className="p-2 border rounded-md"
+                >
+                  <option value="" disabled>{atributo.placeholder}</option>
+                  {atributo.options.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
               ) : (
                 <Input
                   id={atributo.id}
                   name={atributo.name}
                   type={atributo.type}
                   placeholder={atributo.placeholder}
-                  options={atributo.options || []}
                   onChange={handleChange}
-                  value={formData[atributo.name] || ''}
+                  value={formData[atributo.name] || ""}
                   error={errors[atributo.name]}
                 />
               )}
