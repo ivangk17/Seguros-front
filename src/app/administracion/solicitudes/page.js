@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import ScreenLoader from "@/app/componentes/ScreenLoader";
-import { ToastContainer } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import Table from "@/app/componentes/table/Table";
 import { motion } from "framer-motion";
 import SolicitudDetalles from "@/app/administracion/solicitudes/SolicitudDetalles";
@@ -47,7 +47,6 @@ const SolicitudesPage = () => {
 
       const data = await response.json();
       setSolicitudes(data);
-      console.log(data);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -59,19 +58,6 @@ const SolicitudesPage = () => {
   useEffect(() => {
     fetchSolicitudes();
   }, []);
-
-  const indexOfLastSolicitud = paginaActual * solicitudesPorPagina;
-  const indexOfFirstSolicitud = indexOfLastSolicitud - solicitudesPorPagina;
-  const solicitudesActuales = solicitudes.slice(
-    indexOfFirstSolicitud,
-    indexOfLastSolicitud
-  );
-
-  const paginate = (numeroPagina) => setPaginaActual(numeroPagina);
-
-  const handleView = (solicitud) => {
-    setSelectedSolicitud(solicitud);
-  };
 
   const handleAccept = async (solicitud) => {
     try {
@@ -89,26 +75,43 @@ const SolicitudesPage = () => {
 
       if (!response.ok) throw new Error("Error al aceptar la solicitud");
 
-      const updatedSolicitud = await response.json();
-      setSolicitudes(
-        solicitudes.map((s) =>
-          s.id === updatedSolicitud.id ? updatedSolicitud : s
-        )
-      );
+      await response.json();
+      toast.success("Solicitud aceptada con éxito");
+      fetchSolicitudes(); // Recargar la lista de solicitudes
     } catch (err) {
       setError(err.message);
+      toast.error("Error al aceptar la solicitud");
     }
   };
 
-  const handleReject = (solicitud) => {
-    setSelectedSolicitud(solicitud); // Establecer la solicitud seleccionada
-    setRejectReason(""); // Limpiar el motivo de rechazo
-    setShowModal(true); // Mostrar el modal
+  const handleReject = async (solicitud) => {
+    try {
+      const response = await fetch(`${api}solicitudes/modificarEstado`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+        },
+        body: JSON.stringify({
+          idSolicitud: solicitud._id,
+          nuevoEstado: "RECHAZADO",
+        }),
+      });
+
+      if (!response.ok) throw new Error("Error al rechazar la solicitud");
+
+      await response.json();
+      toast.success("Solicitud rechazada con éxito");
+      fetchSolicitudes(); // Recargar la lista de solicitudes
+    } catch (err) {
+      setError(err.message);
+      toast.error("Error al aceptar la solicitud");
+    }
   };
 
   const handleModalClose = () => {
     setShowModal(false);
-    setRejectReason(""); // Limpiar el motivo de rechazo al cerrar el modal
+    setRejectReason("");
   };
 
   const handleModalSubmit = async () => {
@@ -120,31 +123,28 @@ const SolicitudesPage = () => {
           Authorization: `Bearer ${sessionStorage.getItem("token")}`,
         },
         body: JSON.stringify({
-          idSolicitud: selectedSolicitud.id,
+          idSolicitud: selectedSolicitud._id,
           nuevoEstado: "RECHAZADO",
-          razonRechazo: rejectReason, // Si necesitas enviar la razón del rechazo
+          razonRechazo: rejectReason,
         }),
       });
 
       if (!response.ok) throw new Error("Error al rechazar la solicitud");
 
-      const updatedSolicitud = await response.json();
-      setSolicitudes(
-        solicitudes.map((s) =>
-          s.id === updatedSolicitud.id ? updatedSolicitud : s
-        )
-      );
-      setShowModal(false);
-      setRejectReason(""); // Limpiar el motivo de rechazo después del envío
+      await response.json();
+      toast.success("Solicitud rechazada con éxito");
+      fetchSolicitudes();
+      handleModalClose();
     } catch (err) {
       setError(err.message);
+      toast.error("Error al rechazar la solicitud");
     }
   };
 
   const acciones = [
     {
       nombre: "Ver",
-      funcion: handleView,
+      funcion: (solicitud) => setSelectedSolicitud(solicitud),
     },
     {
       nombre: "Aceptar",
@@ -160,7 +160,7 @@ const SolicitudesPage = () => {
     total: solicitudes.length,
     datosPorPagina: solicitudesPorPagina,
     paginaActual: paginaActual,
-    funcion: paginate,
+    funcion: (numeroPagina) => setPaginaActual(numeroPagina),
   };
 
   const handleSubmitFilters = (e) => {
@@ -172,54 +172,10 @@ const SolicitudesPage = () => {
     );
   };
 
-  const filtros = [
-    {
-      valor: filtroEstado,
-      funcion: setFiltroEstado,
-      id: "estado",
-      name: "estado",
-      type: "select",
-      placeholder: "Estado",
-      options: [
-        { value: "", label: "Estado" },
-        { value: "ACEPTADO", label: "Aceptado" },
-        { value: "PENDIENTE", label: "Pendiente" },
-        { value: "RECHAZADO", label: "Rechazado" },
-      ],
-    },
-    {
-      valor: filtroNombrePropietario,
-      funcion: setFiltroNombrePropietario,
-      id: "propietario",
-      name: "propietario",
-      type: "text",
-      placeholder: "Nombre completo",
-    },
-    {
-      valor: filtroFechaOcurrencia,
-      funcion: setFiltroFechaOcurrencia,
-      id: "fechaOcurrencia",
-      name: "fechaOcurrencia",
-      type: "date",
-      placeholder: "Fecha desde",
-    },
-  ];
-
   return (
     <>
       {loading && <ScreenLoader />}
-      <ToastContainer
-        position="top-right"
-        autoClose={3500}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="colored"
-      />
+      <ToastContainer position="top-right" autoClose={3500} />
       <div className="bg-white shadow-lg rounded-lg w-full p-6 dark:bg-gray-800">
         <h2 className="text-lg font-semibold text-black dark:text-white">
           Administración de solicitudes
@@ -233,7 +189,10 @@ const SolicitudesPage = () => {
             "Teléfono",
             "Fecha Siniestro",
           ]}
-          datos={solicitudesActuales}
+          datos={solicitudes.slice(
+            (paginaActual - 1) * solicitudesPorPagina,
+            paginaActual * solicitudesPorPagina
+          )}
           keys={[
             "propietarioAsegurado.datosPersona.nombreCompleto",
             "estado",
@@ -244,7 +203,38 @@ const SolicitudesPage = () => {
           ]}
           acciones={acciones}
           paginado={paginado}
-          filtros={filtros}
+          filtros={[
+            {
+              valor: filtroEstado,
+              funcion: setFiltroEstado,
+              id: "estado",
+              name: "estado",
+              type: "select",
+              placeholder: "Estado",
+              options: [
+                { value: "", label: "Estado" },
+                { value: "ACEPTADO", label: "Aceptado" },
+                { value: "PENDIENTE", label: "Pendiente" },
+                { value: "RECHAZADO", label: "Rechazado" },
+              ],
+            },
+            {
+              valor: filtroNombrePropietario,
+              funcion: setFiltroNombrePropietario,
+              id: "propietario",
+              name: "propietario",
+              type: "text",
+              placeholder: "Nombre completo",
+            },
+            {
+              valor: filtroFechaOcurrencia,
+              funcion: setFiltroFechaOcurrencia,
+              id: "fechaOcurrencia",
+              name: "fechaOcurrencia",
+              type: "date",
+              placeholder: "Fecha desde",
+            },
+          ]}
           filtrosSubmit={handleSubmitFilters}
         />
         {selectedSolicitud && (
@@ -281,14 +271,14 @@ const SolicitudesPage = () => {
 
       <Modal show={showModal} onHide={handleModalClose}>
         <Modal.Header closeButton>
-          <Modal.Title>Razón del Rechazo</Modal.Title>
+          <Modal.Title>Razón del rechazo</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <textarea
             value={rejectReason}
             onChange={(e) => setRejectReason(e.target.value)}
-            className="form-control"
-            placeholder="Escribe el motivo del rechazo..."
+            className="w-full p-2 border rounded-md"
+            placeholder="Especifica la razón del rechazo"
           />
         </Modal.Body>
         <Modal.Footer>
