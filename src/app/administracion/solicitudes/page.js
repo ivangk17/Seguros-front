@@ -6,6 +6,7 @@ import Table from "@/app/componentes/table/Table";
 import { motion } from "framer-motion";
 import SolicitudDetalles from "@/app/administracion/solicitudes/SolicitudDetalles";
 import { Modal, Button } from "react-bootstrap";
+import "react-toastify/dist/ReactToastify.css";
 
 const SolicitudesPage = () => {
   const api = process.env.NEXT_PUBLIC_URL_API;
@@ -61,6 +62,11 @@ const SolicitudesPage = () => {
   }, []);
 
   const handleAccept = async (solicitud) => {
+    if (solicitud.estado !== "PENDIENTE") {
+      toast.warning("Solo se pueden aceptar solicitudes en estado pendiente.");
+      return;
+    }
+
     try {
       const response = await fetch(`${api}solicitudes/modificarEstado`, {
         method: "PUT",
@@ -86,6 +92,11 @@ const SolicitudesPage = () => {
   };
 
   const handleReject = async (solicitud) => {
+    if (solicitud.estado !== "PENDIENTE") {
+      toast.warning("Solo se pueden rechazar solicitudes en estado pendiente.");
+      return;
+    }
+
     try {
       const response = await fetch(`${api}solicitudes/modificarEstado`, {
         method: "PUT",
@@ -106,7 +117,7 @@ const SolicitudesPage = () => {
       fetchSolicitudes();
     } catch (err) {
       setError(err.message);
-      toast.error("Error al aceptar la solicitud");
+      toast.error("Error al rechazar la solicitud");
     }
   };
 
@@ -116,6 +127,11 @@ const SolicitudesPage = () => {
   };
 
   const handleModalSubmit = async () => {
+    if (selectedSolicitud.estado !== "PENDIENTE") {
+      toast.warning("Solo se pueden rechazar solicitudes en estado pendiente.");
+      return;
+    }
+
     try {
       const response = await fetch(`${api}solicitudes/modificarEstado`, {
         method: "PUT",
@@ -150,10 +166,12 @@ const SolicitudesPage = () => {
     {
       nombre: "Aceptar",
       funcion: handleAccept,
+      disabled: (solicitud) => solicitud.estado !== "PENDIENTE",
     },
     {
       nombre: "Rechazar",
       funcion: handleReject,
+      disabled: (solicitud) => solicitud.estado !== "PENDIENTE",
     },
   ];
 
