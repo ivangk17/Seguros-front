@@ -15,6 +15,5 @@ export const useModals = () => {
     showModalViewPolizas,
     setShowModalViewPolizas,
     showModalCreatePoliza,
-    setShowModalCreatePoliza,
   };
 };
