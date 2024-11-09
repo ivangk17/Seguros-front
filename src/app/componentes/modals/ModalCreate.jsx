@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import Input from "../Input";
-import Select from "react-select";
+import SelectWithError from "../SelectWithError";
 import { useState, useEffect } from "react";
 import { validarCliente, validarPoliza } from "./validaciones/validaciones";
 
@@ -21,6 +21,12 @@ export default function ModalForm(props) {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+
+    // Validar que los campos 'marca' y 'color' solo contengan letras
+    if ((name === "marca" || name === "color") && !/^[a-zA-Z\s]*$/.test(value)) {
+      return;
+    }
+
     setFormData((prevFormData) => ({
       ...prevFormData,
       [name]: value,
@@ -95,30 +101,15 @@ export default function ModalForm(props) {
               <label htmlFor={atributo.id} className="mb-1 text-gray-700 dark:text-gray-300 p-1">
                 {atributo.placeholder}
               </label>
-              {atributo.type === "select" && atributo.name === "dni" ? (
-                <Select
+              {atributo.type === "select" ? (
+                <SelectWithError
                   id={atributo.id}
                   options={atributo.options}
                   onChange={(selectedOption) => handleSelectChange(selectedOption, atributo.name)}
                   placeholder={atributo.placeholder}
-                  isClearable
-                  className="p-2 border rounded-md"
+                  error={errors[atributo.name]}
+                  value={formData[atributo.name]}
                 />
-              ) : atributo.type === "select" ? (
-                <select
-                  id={atributo.id}
-                  name={atributo.name}
-                  value={formData[atributo.name] || ""}
-                  onChange={handleChange}
-                  className="p-2 border rounded-md"
-                >
-                  <option value="" disabled>{atributo.placeholder}</option>
-                  {atributo.options.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </select>
               ) : (
                 <Input
                   id={atributo.id}

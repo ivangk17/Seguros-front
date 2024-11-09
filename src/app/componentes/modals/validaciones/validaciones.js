@@ -60,7 +60,7 @@ export const validarPoliza = (formData, atributos) => {
       newErrors[atributo.name] = "Tipo de Cobertura es obligatorio";
     }
     if (atributo.name === "tipoVehiculo" && !value) {
-      newErrors[atributo.name] = "Tipo de Vehiculo es obligatorio";
+      newErrors[atributo.name] = "Tipo de Vehículo es obligatorio";
     }
   });
   return newErrors;
