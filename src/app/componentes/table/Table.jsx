@@ -21,3 +21,24 @@ export default function Table(props) {
     </>
   );
 }
+
+
+{/* <div className="flex justify-between items-center mt-4">
+<Pagination paginado={paginado} />
+<div className="flex items-center">
+  <label htmlFor="clientesPorPagina" className="mr-2">
+    Registros por página:
+  </label>
+  <select
+    id="clientesPorPagina"
+    value={clientesPorPagina}
+    onChange={handleClientesPorPaginaChange}
+    className="border rounded px-4 py-2"
+  >
+    <option value={5}>5</option>
+    <option value={10}>10</option>
+    <option value={15}>15</option>
+    <option value={20}>20</option>
+  </select>
+</div>
+</div> */}

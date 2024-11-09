@@ -13,7 +13,6 @@ export default function ModalEdit({
   tipo
 }) {
   if (!show) return null; // Si no se debe mostrar, no renderiza nada
-
   const [formData, setFormData] = useState({});
   const [errors, setErrors] = useState({});
 
