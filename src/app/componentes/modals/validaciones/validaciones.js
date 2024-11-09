@@ -117,7 +117,7 @@ export const validarCliente = (formData, atributos) => {
 };
 
 //TODO
-//completar las validaciones para la creacion de polizas
+//completar las validaciones para la creacion de polizasdd
 export const validarPoliza = (formData, atributos) => {
   const newErrors = {};
   atributos.forEach((atributo) => {
