@@ -4,7 +4,16 @@ import { useState, useEffect } from "react";
 import { validarCliente, validarPoliza } from "./validaciones/validaciones";
 
 export default function ModalCreate(props) {
-  const { titulo, show, onClose, onSubmit, atributos, tipo, initialData = {} } = props;
+  const {
+    titulo,
+    show,
+    onClose,
+    onSubmit,
+    atributos,
+    tipo,
+    initialData = {},
+    disabled
+  } = props;
   if (!show) return null;
 
   const [formData, setFormData] = useState(initialData);
@@ -59,7 +68,9 @@ export default function ModalCreate(props) {
         transition={{ duration: 0.3 }}
       >
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-lg font-semibold text-black dark:text-white">{titulo}</h2>
+          <h2 className="text-lg font-semibold text-black dark:text-white">
+            {titulo}
+          </h2>
           <button
             onClick={onClose}
             className="text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200"
@@ -71,7 +82,10 @@ export default function ModalCreate(props) {
         <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
           {atributos.map((atributo, index) => (
             <div className="flex flex-col mb-4" key={index}>
-              <label htmlFor={atributo.id} className="mb-1 text-gray-700 dark:text-gray-300 p-1">
+              <label
+                htmlFor={atributo.id}
+                className="mb-1 text-gray-700 dark:text-gray-300 p-1"
+              >
                 {atributo.placeholder}
               </label>
               <Input
@@ -81,8 +95,9 @@ export default function ModalCreate(props) {
                 placeholder={atributo.placeholder}
                 options={atributo.options || []}
                 onChange={handleChange}
-                value={formData[atributo.name] || ''}
+                value={formData[atributo.name] || ""}
                 error={errors[atributo.name]}
+                disabled={atributo.disabled ? atributo.disabled : false}
               />
             </div>
           ))}

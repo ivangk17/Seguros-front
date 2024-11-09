@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { fetchClients } from "./clientsService";
+import { fetchClients } from "../services/clientsService";
 
 export const useClients = () => {
   const api = process.env.NEXT_PUBLIC_URL_API;
@@ -14,6 +14,8 @@ export const useClients = () => {
   const [clientesPorPagina, setClientesPorPagina] = useState(10);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [clienteDNI, setClienteDNI] = useState();
+  const [clienteSeleccionado, setClienteSeleccionado] = useState(null);
 
   const fetchClientsData = async () => {
     setLoading(true);
@@ -57,5 +59,9 @@ export const useClients = () => {
     setClientesPorPagina,
     setCambios,
     setLoading,
+    clienteDNI,
+    setClienteDNI,
+    clienteSeleccionado,
+    setClienteSeleccionado
   };
 };

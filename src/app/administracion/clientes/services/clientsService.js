@@ -1,25 +1,23 @@
-import { toast } from "react-toastify";
-
 const api = process.env.NEXT_PUBLIC_URL_API;
 
-const CLIENTE_ACTIVO = "ACTIVO";
-const CLIENTE_INACTIVO = "INACTIVO";
+export const changeStateClient = async (cliente, newState) => {
+  const validStates = ["payment_blocked", "active"];
 
-export const cambiarEstadoCliente = async (cliente) => {
-  const estado =
-    cliente.estado === CLIENTE_ACTIVO ? CLIENTE_INACTIVO : CLIENTE_ACTIVO;
+  if (!validStates.includes(newState)) {
+    throw new Error("El estado proporcionado no es válido.");
+  }
 
   const { _id } = cliente;
+
   try {
     const url = `${api}users/editarEstado/${_id}`;
-
     const response = await fetch(url, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${sessionStorage.getItem("token")}`,
       },
-      body: JSON.stringify({ estado }),
+      body: JSON.stringify({ newState }),
     });
 
     const contentType = response.headers.get("content-type");
@@ -28,13 +26,15 @@ export const cambiarEstadoCliente = async (cliente) => {
       throw new Error(`Error: ${text}`);
     }
 
-    if (response.ok) {
-      toast.success(`El cliente ${cliente.fullName} ahora esta ${estado}`);
-    } else {
-      toast.error(`Error`);
+    if (!response.ok) {
+      throw new Error("Error al cambiar el estado cliente.");
     }
+    const data = await response.json();
+    return data;
   } catch (error) {
-    toast.error(`Error catch:`, error.message);
+    throw new Error(
+      error.message || "Error inesperado en la creación del cliente"
+    );
   }
 };
 
@@ -61,7 +61,18 @@ export const fetchClients = async (search, dni, email, phone, state) => {
     }
 
     const data = await response.json();
-    return data;
+    const stateMap = {
+      active: "Activo",
+      payment_blocked: "Bloqueo falta de pago",
+      blocked: "Bloqueo de seguridad",
+    };
+
+    const dataMapped = data.map((client) => {
+      const stateToShow = stateMap[client.state] || "Estado desconocido";
+
+      return { ...client, stateToShow };
+    });
+    return dataMapped;
   } catch (error) {
     throw new Error(error.message || "Error fetching clients");
   }
@@ -91,6 +102,30 @@ export const createCliente = async (formData) => {
     const data = await response.json();
     return data;
   } catch (error) {
-    throw new Error(error.message || "Error fetching clients");
+    throw new Error(
+      error.message || "Error inesperado en la creación del cliente"
+    );
+  }
+};
+
+export const deleteCliente = async (idAsegurado) => {
+  try {
+    const url = `${api}users/${idAsegurado}`;
+    const response = await fetch(url, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+      },
+    });
+    if (!response.ok) {
+      throw new Error("Error al eliminar el cliente");
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    throw new Error(
+      error.message || "Error inesperado en la eliminación del cliente"
+    );
   }
 };

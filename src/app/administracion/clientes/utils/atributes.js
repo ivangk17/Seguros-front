@@ -82,3 +82,112 @@ export const atributosCliente = [
     required: true,
   },
 ];
+
+export const atributosClienteDelete = ["email", "name", "lastname"];
+
+export const atributosPoliza = [
+  {
+    id: "dni",
+    name: "dni",
+    type: "number",
+    placeholder: "DNI de la persona",
+    required: true,
+    disabled: true,
+  },
+  {
+    id: "aseguradora",
+    name: "aseguradora",
+    type: "text",
+    placeholder: "Aseguradora",
+    required: true,
+  },
+  {
+    id: "tipoCobertura",
+    name: "tipoCobertura",
+    type: "select",
+    placeholder: "Tipo de Cobertura",
+    required: true,
+    options: [
+      { value: "Tipo de Cobertura", label: "Tipo de Cobertura" },
+      {
+        value: "Responsabilidad Civil",
+        label: "Responsabilidad Civil",
+      },
+      { value: "Terceros Completo", label: "Terceros Completo" },
+      {
+        value: "Terceros Completo con Daños Parciales",
+        label: "Terceros Completo con Daños Parciales",
+      },
+      { value: "Todo Riesgo", label: "Todo Riesgo" },
+    ],
+  },
+  {
+    id: "primaSegura",
+    name: "primaSegura",
+    type: "number",
+    placeholder: "Prima Segura",
+    required: true,
+  },
+  {
+    id: "deducible",
+    name: "deducible",
+    type: "number",
+    placeholder: "Deducible",
+    required: true,
+  },
+  {
+    id: "dominio",
+    name: "dominio",
+    type: "text",
+    placeholder: "Dominio",
+    required: true,
+  },
+  {
+    id: "marca",
+    name: "marca",
+    type: "text",
+    placeholder: "Marca",
+    required: true,
+  },
+  {
+    id: "modelo",
+    name: "modelo",
+    type: "text",
+    placeholder: "Modelo",
+    required: true,
+  },
+  {
+    id: "anio",
+    name: "anio",
+    type: "number",
+    placeholder: "Año",
+    required: true,
+  },
+  {
+    id: "color",
+    name: "color",
+    type: "text",
+    placeholder: "Color",
+    required: true,
+  },
+  {
+    id: "tipoVehiculo",
+    name: "tipoVehiculo",
+    type: "select",
+    placeholder: "Tipo de Vehiculo",
+    required: true,
+    options: [
+      { value: "", label: "Tipo de Vehiculo" },
+      { value: "AUTO", label: "Auto" },
+      { value: "MOTO", label: "Moto" },
+      { value: "CAMION", label: "Camion" },
+    ],
+  },
+  {
+    id: "numeroIdentificador",
+    name: "numeroIdentificador",
+    type: "text",
+    placeholder: "Numero identificador",
+    required: true,
+  },
+];

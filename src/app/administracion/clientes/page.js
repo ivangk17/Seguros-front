@@ -1,24 +1,47 @@
 "use client";
 
+//hooks
 import { useState, useEffect } from "react";
-import { ToastContainer, toast } from "react-toastify";
 import { useRouter } from "next/navigation";
+import { useClients } from "./hooks/useClients";
+import { usePaginado } from "./hooks/usePaginado";
+import { usePolizas } from "./hooks/usePolizas";
+
+//componentes
+import { ToastContainer, toast } from "react-toastify";
 import ConfirmDeleteModal from "@/app/componentes/modals/ConfirmDeleteModal";
-import ModalEdit from "@/app/componentes/modals/ModalEdit";
 import ModalPolizas from "@/app/componentes/modals/ModalPolizas";
 import ModalCreate from "@/app/componentes/modals/ModalCreate";
 import Table from "@/app/componentes/table/Table";
 import ScreenLoader from "@/app/componentes/ScreenLoader";
+
+//estilos
 import "react-toastify/dist/ReactToastify.css";
-import { crearPoliza } from "../polizas/polizaService";
-import { cambiarEstadoCliente, createCliente } from "./utils/clientsService";
-import { useClients } from "./utils/useClients";
+
+//servicios
+import {
+  changeStateClient,
+  createCliente,
+  deleteCliente,
+} from "./services/clientsService";
+import { getPolizasByAsegurado, crearPoliza } from "./services/polizasService";
+
+//utiliades
+
 import { filtrosConfig } from "./utils/filters";
-import { atributosCliente } from "./utils/atributes";
+import {
+  atributosCliente,
+  atributosClienteDelete,
+  atributosPoliza,
+} from "./utils/atributes";
+import { getAccionesPorEstado } from "./utils/clientsActions";
 import Header from "@/app/componentes/clientes/Header";
-import { useModals } from "./utils/useModals";
+import { useModals } from "./hooks/useModals";
+import { keysTabla } from "./utils/keys";
+import { cabecerasTabla } from "./utils/cabeceras";
 
 export default function ClientsList() {
+  //hooks
   const {
     clientes,
     clientesPorPagina,
@@ -38,13 +61,33 @@ export default function ClientsList() {
     setPaginaActual,
     setCambios,
     setLoading,
+    clienteDNI,
+    setClienteDNI,
+    clienteSeleccionado,
+    setClienteSeleccionado,
   } = useClients();
 
   const {
     showModalCreateAsegurado,
-    setShowModalCreateAsegurado
+    setShowModalCreateAsegurado,
+    showModalDeleteAsegurado,
+    setShowModalDeleteAsegurado,
+    showModalViewPolizas,
+    setShowModalViewPolizas,
+    showModalCreatePoliza,
+    setShowModalCreatePoliza,
   } = useModals();
 
+  const { clientesActuales, paginado } = usePaginado(
+    paginaActual,
+    clientesPorPagina,
+    clientes,
+    setPaginaActual
+  );
+
+  const { polizas, setPolizas } = usePolizas();
+
+  //utilities
   const filtros = filtrosConfig(
     filtroNombreApellido,
     setFiltroNombreApellido,
@@ -58,6 +101,17 @@ export default function ClientsList() {
     setFiltroEstado
   );
 
+  const acciones = (cliente) => {
+    return getAccionesPorEstado(
+      cliente,
+      handleDeleteClientClick,
+      handleClickCreatePoliza,
+      handleChangeState,
+      handleViewPolizas
+    );
+  };
+
+  //handleClicks
   const handleSubmitFilters = (e) => {
     e.preventDefault();
     setCambios((prev) => !prev);
@@ -78,146 +132,70 @@ export default function ClientsList() {
     }
   };
 
-  const [showModalDelete, setShowModalDelete] = useState(false);
-  const [clientToDelete, setClientToDelete] = useState(null);
-  const [showModalPolizas, setShowModalPolizas] = useState(false);
-  const [showModalCreate, setShowModalCreate] = useState(false);
+  const handleDeleteClientClick = (cliente) => {
+    setClienteSeleccionado(cliente);
+    setShowModalDeleteAsegurado(true);
+  };
 
-  const [showModalCreatePoliza, setShowModalCreatePoliza] = useState(false);
-  const [polizas, setPolizas] = useState([]);
-
-  const [clienteSeleccionado, setClienteSeleccionado] = useState(null);
-  const [clienteDNI, setClienteDNI] = useState();
-
-  const fetchPolizas = async (clienteId) => {
+  const handleSubmitDeleteCliente = async (idAsegurado) => {
+    setLoading(true);
     try {
-      const url = `${api}polizas/listAsegurado/${clienteId}`;
-      const response = await fetch(url, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${sessionStorage.getItem("token")}`,
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error("Error fetching polizas");
-      }
-
-      const data = await response.json();
-      setPolizas(data);
+      await deleteCliente(idAsegurado);
+      setLoading(false);
+      toast.success("El cliente ha sido elimando exitosamente.");
+      setCambios((prev) => !prev);
     } catch (error) {
-      toast.error("Ocurrió un error al obtener las pólizas.");
+      setLoading(false);
+      toast.error(error.message);
+    } finally {
+      setShowModalDeleteAsegurado(false);
     }
   };
 
-  const indexOfLastClient = paginaActual * clientesPorPagina;
-  const indexOfFirstClient = indexOfLastClient - clientesPorPagina;
-  const clientesActuales = clientes.slice(
-    indexOfFirstClient,
-    indexOfLastClient
-  );
-
-  const paginate = (numeroPagina) => setPaginaActual(numeroPagina);
-
-  const handlePolizas = async (cliente) => {
-    await fetchPolizas(cliente._id);
-    setShowModalPolizas(true);
+  const handleViewPolizas = async (cliente) => {
+    setLoading(true);
+    try {
+      const data = await getPolizasByAsegurado(cliente._id);
+      setPolizas(data);
+      setShowModalViewPolizas(true);
+    } catch (error) {
+      toast.error(error.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleAddPoliza = (cliente) => {
+  const handleClickCreatePoliza = (cliente) => {
     setClienteDNI(cliente.dni);
     setShowModalCreatePoliza(true);
   };
 
-  const confirmCreatePoliza = async (formData) => {
+  const handleSubmitCreatePoliza = async (formData) => {
+    setLoading(true);
     try {
       await crearPoliza(formData);
+      setLoading(false);
+      toast.success("La poliza ha sido creada exitosamente.");
       setShowModalCreatePoliza(false);
       setCambios((prev) => !prev);
     } catch (error) {
-      console.error(error.message);
+      setLoading(false);
+      toast.error(error.message);
     }
   };
 
-  const handleDeleteClick = (cliente) => {
-    console.log(cliente);
-
-    setClienteSeleccionado(cliente);
-    setShowModalDelete(true);
-  };
-
-  const confirmDelete = async (id) => {
-    setShowModalDelete(false);
+  const handleChangeState = async (cliente, newState) => {
+    setLoading(true);
     try {
-      const url = `${api}users/${id}`;
-      const response = await fetch(url, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${sessionStorage.getItem("token")}`,
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error("Error al eliminar el cliente");
-      }
-      setCambios((prev) => !prev);
-      toast.success("El cliente ha sido eliminado con éxito.");
-    } catch (error) {
-      toast.error("Ocurrió un error al eliminar el cliente.");
-      setError(error.message);
-    }
-  };
-
-  const handleCambiarEstado = (cliente) => {
-    try {
-      cambiarEstadoCliente(cliente);
+      await changeStateClient(cliente, newState);
+      setLoading(false);
+      toast.success("El estao de cliente ha sido modificado exitosamente.");
+      setShowModalCreatePoliza(false);
       setCambios((prev) => !prev);
     } catch (error) {
-      console.log(error.message);
+      setLoading(false);
+      toast.error(error.message);
     }
-  };
-
- 
-
-  const acciones = (cliente) => {
-    let acciones = [];
-    switch (cliente.state) {
-      case "active":
-        acciones = [
-          { nombre: "Eliminar", funcion: () => handleDeleteClick(cliente) },
-          { nombre: "Crear Poliza", funcion: () => handleAddPoliza(cliente) },
-          { nombre: "Bloquear", funcion: () => handleCambiarEstado(cliente) },
-          {
-            nombre: "Bloquear impago",
-            funcion: () => handleCambiarEstado(cliente),
-          },
-        ];
-        break;
-      case "blocked":
-        acciones = [
-          { nombre: "Eliminar", funcion: () => handleDeleteClick(cliente) },
-          { nombre: "Activar", funcion: () => handleCambiarEstado(cliente) },
-        ];
-        break;
-      case "payment_blocked":
-        acciones = [
-          { nombre: "Eliminar", funcion: () => handleDeleteClick(cliente) },
-          { nombre: "Activar", funcion: () => handleCambiarEstado(cliente) },
-        ];
-        break;
-      default:
-        break;
-    }
-
-    return acciones;
-  };
-
-  const paginado = {
-    total: clientes.length,
-    datosPorPagina: clientesPorPagina,
-    paginaActual: paginaActual,
-    funcion: paginate,
   };
 
   return (
@@ -243,16 +221,9 @@ export default function ClientsList() {
           texto="Agregar cliente"
         />
         <Table
-          cabeceras={[
-            "Nombre",
-            "Apellido",
-            "DNI",
-            "Email",
-            "Teléfono",
-            "Estado",
-          ]}
+          cabeceras={cabecerasTabla}
           datos={clientesActuales}
-          keys={["name", "lastname", "dni", "email", "phone", "state"]}
+          keys={keysTabla}
           acciones={acciones}
           paginado={paginado}
           filtros={filtros}
@@ -267,220 +238,29 @@ export default function ClientsList() {
         atributos={atributosCliente}
         tipo="cliente"
       />
-
-      <ModalPolizas
-        show={showModalPolizas}
-        onClose={() => setShowModalPolizas(false)}
-        polizas={polizas}
-      />
-
       <ConfirmDeleteModal
-        show={showModalDelete}
+        show={showModalDeleteAsegurado}
         dato={clienteSeleccionado}
-        onClose={() => setShowModalDelete(false)}
-        onConfirm={confirmDelete}
-        atributos={["email", "phone"]}
-        mensaje="¿Estás seguro de eliminar esta póliza?"
+        onClose={() => setShowModalDeleteAsegurado(false)}
+        onConfirm={handleSubmitDeleteCliente}
+        atributos={atributosClienteDelete}
+        mensaje="¿Estás seguro de eliminar esta cliente?"
         acciones={acciones}
+      />
+      <ModalPolizas
+        show={showModalViewPolizas}
+        onClose={() => setShowModalViewPolizas(false)}
+        polizas={polizas}
       />
       <ModalCreate
         show={showModalCreatePoliza}
         titulo="Añadir Póliza al Cliente"
         onClose={() => setShowModalCreatePoliza(false)}
-        onSubmit={confirmCreatePoliza}
-        atributos={[
-          {
-            id: "dni",
-            name: "dni",
-            type: "number",
-            placeholder: "DNI de la persona",
-            required: true,
-          },
-          {
-            id: "aseguradora",
-            name: "aseguradora",
-            type: "text",
-            placeholder: "Aseguradora",
-            required: true,
-          },
-          {
-            id: "tipoCobertura",
-            name: "tipoCobertura",
-            type: "select",
-            placeholder: "Tipo de Cobertura",
-            required: true,
-            options: [
-              { value: "Tipo de Cobertura", label: "Tipo de Cobertura" },
-              {
-                value: "Responsabilidad Civil",
-                label: "Responsabilidad Civil",
-              },
-              { value: "Terceros Completo", label: "Terceros Completo" },
-              {
-                value: "Terceros Completo con Daños Parciales",
-                label: "Terceros Completo con Daños Parciales",
-              },
-              { value: "Todo Riesgo", label: "Todo Riesgo" },
-            ],
-          },
-          {
-            id: "primaSegura",
-            name: "primaSegura",
-            type: "number",
-            placeholder: "Prima Segura",
-            required: true,
-          },
-          {
-            id: "deducible",
-            name: "deducible",
-            type: "number",
-            placeholder: "Deducible",
-            required: true,
-          },
-          {
-            id: "dominio",
-            name: "dominio",
-            type: "text",
-            placeholder: "Dominio",
-            required: true,
-          },
-          {
-            id: "marca",
-            name: "marca",
-            type: "text",
-            placeholder: "Marca",
-            required: true,
-          },
-          {
-            id: "modelo",
-            name: "modelo",
-            type: "text",
-            placeholder: "Modelo",
-            required: true,
-          },
-          {
-            id: "anio",
-            name: "anio",
-            type: "number",
-            placeholder: "Año",
-            required: true,
-          },
-          {
-            id: "color",
-            name: "color",
-            type: "text",
-            placeholder: "Color",
-            required: true,
-          },
-          {
-            id: "tipoVehiculo",
-            name: "tipoVehiculo",
-            type: "select",
-            placeholder: "Tipo de Vehiculo",
-            required: true,
-            options: [
-              { value: "", label: "Tipo de Vehiculo" },
-              { value: "AUTO", label: "Auto" },
-              { value: "MOTO", label: "Moto" },
-              { value: "CAMION", label: "Camion" },
-            ],
-          },
-          {
-            id: "numeroIdentificador",
-            name: "numeroIdentificador",
-            type: "text",
-            placeholder: "Numero identificador",
-            required: true,
-          },
-        ]}
+        onSubmit={handleSubmitCreatePoliza}
+        atributos={atributosPoliza}
         tipo="poliza"
-        initialData={{ dni: clienteDNI }} // Cambiado a initialData
+        initialData={{ dni: clienteDNI }}
       />
     </>
   );
 }
-
-{
-  /* <ConfirmDeleteModal
-        show={showModalDelete}
-        onClose={() => setShowModalDelete(false)}
-        onConfirm={() => confirmDelete(clientToDelete?._id)}
-      /> */
-}
-
-{
-  /*  <div className="flex justify-between items-center mt-4">
-        <Pagination paginado={paginado} />
-        <div className="flex items-center">
-          <label htmlFor="clientesPorPagina" className="mr-2">
-            Registros por página:
-          </label>
-          <select
-            id="clientesPorPagina"
-            value={clientesPorPagina}
-            onChange={handleClientesPorPaginaChange}
-            className="border rounded px-4 py-2"
-          >
-            <option value={5}>5</option>
-            <option value={10}>10</option>
-            <option value={15}>15</option>
-            <option value={20}>20</option>
-          </select>
-        </div>
-      </div> */
-}
-/* const handleClientesPorPaginaChange = (e) => {
-    const newClientesPorPagina = Number(e.target.value);
-    setClientesPorPagina(newClientesPorPagina);
-    const newTotalPages = Math.ceil(clientes.length / newClientesPorPagina);
-    if (paginaActual > newTotalPages) {
-      setPaginaActual(newTotalPages);
-    }
-  }; */
-{
-  /*    <ModalEdit
-        show={showModalEditCliente}
-        dato={clienteSeleccionado}
-        atributos={[
-          {
-            id: "phone",
-            name: "phone",
-            type: "phone",
-            placeholder: "Telefono",
-            required: true,
-          },
-        ]}
-        onClose={() => setshowModalEditCliente(false)}
-        onConfirm={handleEditConfirm}
-        titulo="Editar Póliza"
-      /> */
-}
-
-/* const handleEditConfirm = (updatedData) => {
-    setShowModalEdit(false);
-    toast.success("Póliza actualizada exitosamente");
-    setCambios(!cambios);
-  }; */
-
-
-  /*  const confirmEdit = async (formData) => {
-    setShowModalEdit(false);
-    try {
-      const url = `${api}users/editarCliente/${clientToEdit._id}`;
-      const response = await fetch(url, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${sessionStorage.getItem("token")}`,
-        },
-        body: JSON.stringify(formData),
-      });
-      if (!response.ok) {
-        throw new Error("Error al editar el cliente");
-      }
-      setCambios((prev) => !prev);
-      toast.success("El cliente ha sido editado con éxito.");
-    } catch (error) {
-      toast.error("Ocurrió un error al editar el cliente.");
-    }
-  }; */
