@@ -23,14 +23,20 @@ export default function ModalForm(props) {
   const handleChange = (e) => {
     const { name, value } = e.target;
 
+    // Normalizar el valor del campo 'dominio'
+    let normalizedValue = value;
+    if (name === "dominio") {
+      normalizedValue = value.replace(/\s+/g, '').toUpperCase();
+    }
+
     // Validar que los campos 'marca' y 'color' solo contengan letras
-    if ((name === "marca" || name === "color") && !/^[a-zA-Z\s]*$/.test(value)) {
+    if ((name === "marca" || name === "color") && !/^[a-zA-Z\s]*$/.test(normalizedValue)) {
       return;
     }
 
     setFormData((prevFormData) => ({
       ...prevFormData,
-      [name]: value,
+      [name]: normalizedValue,
     }));
     if (errors[name]) {
       setErrors((prevErrors) => ({
