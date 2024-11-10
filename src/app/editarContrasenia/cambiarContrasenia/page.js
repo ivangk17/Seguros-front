@@ -3,7 +3,9 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import ScreenLoader from "../componentes/ScreenLoader";
+import ScreenLoader from "@/app/componentes/ScreenLoader";
+import { validarContraseña } from "@/app/componentes/modals/validaciones/validaciones";
+
 
 
 export default function PaginaRecuperacionContrasenia() {
@@ -24,14 +26,7 @@ export default function PaginaRecuperacionContrasenia() {
   const handleCambioContrasenia = async (event) => {
     event.preventDefault();
     const token = new URLSearchParams(window.location.search).get('token');
-  
-    const validarContraseña = (contrasenia) => {
-      const caracteresMinimos = 8;
-      const tieneMayus = /[A-Z]/.test(contrasenia);
-      const tieneCaracteresEspeciales = /[!@#$%^&*(),.?":{}|<>]/.test(contrasenia);
-      return contrasenia.length >= caracteresMinimos && tieneMayus && tieneCaracteresEspeciales;
-    };
-  
+    
     if (contrasenia === "" || confirmacionContrasenia === "") {
       setErrores({ submit: MSG_ERROR_CONTRASENIA_VACIA });
     } else if (!validarContraseña(contrasenia)) {

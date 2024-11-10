@@ -122,6 +122,11 @@ export default function PageLogin() {
             No tienes cuenta? Regístrate aquí.
           </a>
         </div>
+        <div className="mx-7 my-3 flex justify-end text-sm font-semibold">
+          <a href="/editarContrasenia/mailRecuperacion" className="text-blue-500">
+            Olvide la contraseña.
+          </a>
+        </div>
       </div>
     </div>
   );

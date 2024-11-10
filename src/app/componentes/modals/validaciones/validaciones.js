@@ -79,9 +79,16 @@ const isValidCUIT = (cuit) => {
   return mod11 === checkDigit || (mod11 === 11 && checkDigit === 0);
 };
 
-const isValidEmail = (email) => {
+export const validarEmail = (email) => {
   const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return regex.test(email);
+};
+
+export const validarContraseña = (contrasenia) => {
+  const caracteresMinimos = 8;
+  const tieneMayus = /[A-Z]/.test(contrasenia);
+  const tieneCaracteresEspeciales = /[!@#$%^&*(),.?":{}|<>]/.test(contrasenia);
+  return contrasenia.length >= caracteresMinimos && tieneMayus && tieneCaracteresEspeciales;
 };
 
 const isValidDominio = (dominio) => {
