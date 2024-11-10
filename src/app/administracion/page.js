@@ -1,17 +1,14 @@
 "use client";
-import { useAuth } from "../../context/AuthContext";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import ScreenLoader from "../componentes/ScreenLoader";
 
 export default function AdministracionPage() {
- 
-  const crearAsegurador = () => {
-    router.push("/crearAsegurador");
-  };
+  const router = useRouter();
 
-  const listarClientes = () => {
-    router.push("/listarClientes");
-  };
+  useEffect(() => {
+    router.push("/administracion/clientes");
+  }, [router]);
 
-  return <h1>Admisnitracion</h1>;
+  return <ScreenLoader/>;
 }

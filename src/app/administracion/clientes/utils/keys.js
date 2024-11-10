@@ -1,0 +1,1 @@
+export const keysTabla = ["name", "lastname", "dni", "email", "phone", "stateToShow"];
