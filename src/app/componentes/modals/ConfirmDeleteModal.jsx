@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 
 export default function ConfirmDeleteModal(props) {
   const { show, dato, onClose, onConfirm, atributos, mensaje } = props;
-  if (!show) return null; // Si no se debe mostrar, no renderiza nada
+  if (!show) return null;
 
   return (
     <motion.div
