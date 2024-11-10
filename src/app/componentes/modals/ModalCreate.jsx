@@ -64,7 +64,6 @@ export default function ModalForm(props) {
 
     if (Object.keys(newErrors).length === 0) {
       onSubmit(formData);
-      setInitialized(false);
     }
   };
 
