@@ -6,7 +6,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import ScreenLoader from "../componentes/ScreenLoader";
 
 
-export default function ResetPasswordPage() {
+export default function PaginaRecuperacionContrasenia() {
   const api = process.env.NEXT_PUBLIC_URL_API;
   const [errores, setErrores] = useState({});
   const [contrasenia, setContrasenia] = useState('');
