@@ -203,7 +203,6 @@ const SolicitudesPage = () => {
           cabeceras={[
             "Nombre Completo",
             "Estado",
-            "CUIT",
             "Email",
             "Teléfono",
             "Fecha Siniestro",
@@ -215,7 +214,6 @@ const SolicitudesPage = () => {
           keys={[
             "propietarioAsegurado.datosPersona.nombreCompleto",
             "estado",
-            "propietarioAsegurado.datosPersona.cuit",
             "propietarioAsegurado.datosPersona.email",
             "propietarioAsegurado.datosPersona.telefono",
             "datosSiniestro.fechaOcurrencia",
