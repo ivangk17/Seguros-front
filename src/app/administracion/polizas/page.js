@@ -23,7 +23,6 @@ export default function PolizasList() {
   const [showModalDelete, setShowModalDelete] = useState(false);
   const [dnis, setDnis] = useState([]); 
   const [formData, setFormData] = useState({}); 
-
   const fetchPolizas = async (dominio) => {
     setLoading(true);
     try {

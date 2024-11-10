@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useClients } from "./hooks/useClients";
 import { usePaginado } from "./hooks/usePaginado";
 import { usePolizas } from "./hooks/usePolizas";
+import { useAuth } from "@/context/AuthContext";
 
 //componentes
 import { ToastContainer, toast } from "react-toastify";
@@ -40,8 +41,28 @@ import { useModals } from "./hooks/useModals";
 import { keysTabla } from "./utils/keys";
 import { cabecerasTabla } from "./utils/cabeceras";
 
+import jwt from "jsonwebtoken";
+
 export default function ClientsList() {
-  //hooks
+  const { token, role } = useAuth();
+  const router = useRouter();
+  const [canUse, setCanUse] = useState(null);
+
+  useEffect(() => {
+    if (token) {
+      try {
+        const decode = jwt.decode(token);
+        const role = decode.role;
+        setCanUse(role === "asegurador");
+      } catch (error) {
+        console.error("Error al decodificar el token", error);
+        setCanUse(false);
+      }
+    } else {
+      setCanUse(false);
+    }
+  }, [token, role]);
+
   const {
     clientes,
     clientesPorPagina,
@@ -189,7 +210,7 @@ export default function ClientsList() {
     try {
       await changeStateClient(cliente, newState);
       setLoading(false);
-      toast.success("El estao de cliente ha sido modificado exitosamente.");
+      toast.success("El estado de cliente ha sido modificado exitosamente.");
       setShowModalCreatePoliza(false);
       setCambios((prev) => !prev);
     } catch (error) {
@@ -197,6 +218,11 @@ export default function ClientsList() {
       toast.error(error.message);
     }
   };
+  if (canUse === null) return <ScreenLoader />;
+  if (!canUse) {
+    router.push("/");
+    return null;
+  }
 
   return (
     <>

@@ -10,7 +10,6 @@ export const getPolizasByAsegurado = async (clienteId) => {
       },
     });
 
-    console.log(response);
     if (!response.ok) {
       throw new Error("Error al recuperar las pólizas del usuario.");
     }
