@@ -1,22 +1,34 @@
 "use client";
 import { createContext, useContext, useState, useEffect } from "react";
+import jwt from "jsonwebtoken";
+import { useRouter } from "next/navigation";
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(sessionStorage.getItem("token"));
+  const [role, setRole] = useState(sessionStorage.getItem("role"));
+  const router = useRouter();
   const api = process.env.NEXT_PUBLIC_URL_API;
-
   useEffect(() => {
     const storedToken = sessionStorage.getItem("token");
-    if (storedToken !== token) {
+    const storeRole = sessionStorage.getItem("role");
+    if (storedToken !== token || storeRole !== role) {
       setToken(storedToken);
+      try {
+        const decode = jwt.decode(token);
+        setRole(decode.role);
+        sessionStorage.setItem("role", role);
+        sessionStorage.setItem("token", token);
+      } catch (error) {
+        sessionStorage.removeItem("token");
+        sessionStorage.removeItem("role");
+      }
     }
-  }, [token]);
+  }, [token, role]);
 
   const validateToken = async () => {
     if (!token) return false;
-
     try {
       const url = `${api}test/validateToken`;
       const response = await fetch(url, {
@@ -33,7 +45,9 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ token, setToken, validateToken }}>
+    <AuthContext.Provider
+      value={{ token, setToken, validateToken, role, setRole }}
+    >
       {children}
     </AuthContext.Provider>
   );

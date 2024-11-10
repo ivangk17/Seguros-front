@@ -16,7 +16,6 @@ export const useClients = () => {
   const [error, setError] = useState(null);
   const [clienteDNI, setClienteDNI] = useState();
   const [clienteSeleccionado, setClienteSeleccionado] = useState(null);
-
   const fetchClientsData = async () => {
     setLoading(true);
     try {

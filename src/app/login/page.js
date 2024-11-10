@@ -7,7 +7,7 @@ import Input from "../componentes/Input";
 
 export default function PageLogin() {
   const [errors, setErrors] = useState({ email: "", password: "", submit: "" });
-  const { token, setToken } = useAuth();
+  const { token, setToken, setRole } = useAuth();
   const [inicio, setInicio] = useState(false);
   const router = useRouter();
 
