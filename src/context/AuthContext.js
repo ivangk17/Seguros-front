@@ -5,6 +5,9 @@ const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(sessionStorage.getItem("token"));
+  const [menu, setMenu] = useState([])
+  const [role, setRole] = useState("");
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
   const api = process.env.NEXT_PUBLIC_URL_API;
 
   useEffect(() => {
@@ -31,9 +34,9 @@ export const AuthProvider = ({ children }) => {
       return false;
     }
   };
-
+  
   return (
-    <AuthContext.Provider value={{ token, setToken, validateToken }}>
+    <AuthContext.Provider value={{ token, setToken, validateToken, menu, showLogoutModal, setShowLogoutModal, setRole, role, setMenu }}>
       {children}
     </AuthContext.Provider>
   );
