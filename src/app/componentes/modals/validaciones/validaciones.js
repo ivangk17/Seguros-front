@@ -123,32 +123,54 @@ export const validarPoliza = (formData, atributos) => {
     if (atributo.required && !value) {
       newErrors[atributo.name] = `${atributo.placeholder} es obligatorio`;
     }
-    if (atributo.name === "anio" && (isNaN(value) || value < 1900 || value > 2024)) {
+    if (atributo.name === "anio") {
+      const yearRegex = /^\d{4}$/;
+      if (!yearRegex.test(value) || isNaN(value) || value < 1950 || value > 2024) {
       newErrors[atributo.name] = "Año no válido";
+      }
+    } 
+    if (atributo.name === "primaSegura" && (isNaN(value) || value > 10000000)) {
+      newErrors[atributo.name] = "Prima Segura maxima es de 100000000(diez millones)";
     }
-    if (atributo.name === "primaSegura" && (isNaN(value) || value <= 0)) {
-      newErrors[atributo.name] = "Prima Segura no válida";
+
+    if (atributo.name === "primaSegura" && (isNaN(value) || value <= 10000)) {
+      newErrors[atributo.name] = "Prima Segura minima es de 10000(diez mil)";
     }
-    if (atributo.name === "deducible" && (isNaN(value) || value < 0)) {
-      newErrors[atributo.name] = "Deducible no válido";
+    if (atributo.name === "deducible" && (isNaN(value) || value <= 10000 || value > 10000000)) {
+      newErrors[atributo.name] = "Deducible maximo es de 10000000(diez millones)";
+    }
+
+    if (atributo.name === "deducible" && (isNaN(value) || value <= 10000)) {
+      newErrors[atributo.name] = "Deducible minimo es de 10000(diez mil)";
     }
     if (atributo.name === "dominio" && !isValidDominio(value)) {
       newErrors[atributo.name] = "Dominio no válido";
     }
+   
+    if (atributo.name === "aseguradora" && (!value || value.length > 20)) {
+      newErrors[atributo.name] = "Aseguradora debe tener  menos de 20 caracteres";
+    }
+
     if (atributo.name === "aseguradora" && (!value || value.length < 3)) {
       newErrors[atributo.name] = "Aseguradora debe tener al menos 3 caracteres";
+    }
+
+    if (atributo.name === "marca" && (!value || value.length > 20)) {
+      newErrors[atributo.name] = "Marca debe tener  menos de 20 caracteres";
     }
     if (atributo.name === "marca" && (!value || value.length < 3)) {
       newErrors[atributo.name] = "Marca debe tener al menos 3 caracteres";
     }
+  
     if (atributo.name === "modelo" && (!value || value.length < 3)) {
       newErrors[atributo.name] = "Modelo debe tener al menos 3 caracteres";
     }
+
     if (atributo.name === "color" && (!value || value.length < 3)) {
       newErrors[atributo.name] = "Color es obligatorio";
     }
-    if (atributo.name === "numeroIdentificador" && !value) {
-      newErrors[atributo.name] = "Número identificador es obligatorio";
+    if (atributo.name === "numeroIdentificador" && !isValidVIN(value)) {
+      newErrors[atributo.name] = "Número identificador (VIN) no válido,debe tener 17 caracteres alfanuméricos";
     }
     if (atributo.name === "dni" && !value) {
       newErrors[atributo.name] = "DNI es obligatorio";
@@ -161,6 +183,11 @@ export const validarPoliza = (formData, atributos) => {
     }
   });
   return newErrors;
+};
+
+const isValidVIN = (vin) => {
+  const vinRegex = /^[A-HJ-NPR-Z0-9]{17}$/;
+  return vinRegex.test(vin);
 };
 
 const isValidCUIT = (cuit) => {
@@ -182,7 +209,7 @@ const isValidEmail = (email) => {
 };
 
 const isValidDominio = (dominio) => {
-  const regex = /^[A-Z]{3} \d{3}$|^[A-Z]{2} \d{3} [A-Z]{2}$/i; 
+  const regex = /^[A-Z]{3}\d{3}$|^[A-Z]{2}\d{3}[A-Z]{2}$|^[A-Z]{3} \d{3}$|^[A-Z]{2} \d{3} [A-Z]{2}$/i; 
   return regex.test(dominio);
 };
 

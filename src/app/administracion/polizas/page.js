@@ -266,9 +266,22 @@ export default function PolizasList() {
         dato={selectedPoliza}
         onConfirm={handleEditConfirm}
         atributos={[
-          { id: "tipoCobertura", name: "tipoCobertura", type: "text", placeholder: "Tipo de Cobertura", required: true },
-          { id: "primaSegura", name: "primaSegura", type: "number", placeholder: "Prima Segura", required: true },
-          { id: "deducible", name: "deducible", type: "number", placeholder: "Deducible", required: true }
+          {
+            id: "tipoCobertura",
+            name: "tipoCobertura",
+            type: "select",
+            placeholder: "Tipo de Cobertura",
+            required: true,
+            options: [
+              { value: "Tipo de Cobertura", label: "Tipo de Cobertura" },
+              { value: "Responsabilidad Civil", label: "Responsabilidad Civil" },
+              { value: "Terceros Completo", label: "Terceros Completo" },
+              { value: "Terceros Completo con Daños Parciales", label: "Terceros Completo con Daños Parciales" },
+              { value: "Todo Riesgo", label: "Todo Riesgo" }
+            ],
+          },          
+          { id: "primaSegura", name: "primaSegura", type: "number", placeholder: "Prima Segura", required: true, pattern: "[0-9]*" },
+          { id: "deducible", name: "deducible", type: "number", placeholder: "Deducible", required: true, pattern: "[0-9]*" }
         ]}
         onClose={() => setShowEditModal(false)}
         titulo="Editar Póliza"
@@ -306,20 +319,38 @@ export default function PolizasList() {
             placeholder: "Tipo de Cobertura",
             required: true,
             options: [
-              { value: "Tipo de Cobertura", label: "Tipo de Cobertura" },
               { value: "Responsabilidad Civil", label: "Responsabilidad Civil" },
               { value: "Terceros Completo", label: "Terceros Completo" },
               { value: "Terceros Completo con Daños Parciales", label: "Terceros Completo con Daños Parciales" },
               { value: "Todo Riesgo", label: "Todo Riesgo" }
             ],
           },
-          { id: "primaSegura", name: "primaSegura", type: "number", placeholder: "Prima Segura", required: true },
-          { id: "deducible", name: "deducible", type: "number", placeholder: "Deducible", required: true },
+          { id: "primaSegura", name: "primaSegura", type: "number", placeholder: "Prima Segura", required: true},
+          { id: "deducible", name: "deducible", type: "number", placeholder: "Deducible", required: true},
           { id: "dominio", name: "dominio", type: "text", placeholder: "Dominio", required: true },
           { id: "marca", name: "marca", type: "text", placeholder: "Marca", required: true },
+          {
+            id: "color",
+            name: "color",
+            type: "select",
+            placeholder: "Color",
+            required: true,
+            options: [
+              { value: "Rojo", label: "Rojo" },
+              { value: "Azul", label: "Azul" },
+              { value: "Verde", label: "Verde" },
+              { value: "Negro", label: "Negro" },
+              { value: "Amarillo", label: "Amarillo" },
+              { value: "Gris", label: "Gris" },
+              { value: "Naranja", label: "Naranja" },
+              { value: "Rosa", label: "Rosa" },
+              { value: "Marrón", label: "Marrón" },
+              { value: "Blanco", label: "Blanco" },
+            ],
+          },
           { id: "modelo", name: "modelo", type: "text", placeholder: "Modelo", required: true },
-          { id: "anio", name: "anio", type: "number", placeholder: "Año", required: true },
-          { id: "color", name: "color", type: "text", placeholder: "Color", required: true },
+          { id: "anio", name: "anio", type: "number", placeholder: "Año", required: true},
+         ,
           {
             id: "tipoVehiculo",
             name: "tipoVehiculo",
@@ -327,7 +358,6 @@ export default function PolizasList() {
             placeholder: "Tipo de Vehiculo",
             required: true,
             options: [
-              { value: "", label: "Tipo de Vehiculo" },
               { value: "AUTO", label: "Auto" },
               { value: "MOTO", label: "Moto" },
               { value: "CAMION", label: "Camion" },
