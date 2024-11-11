@@ -6,7 +6,7 @@ import { useClientsDni } from "./hooks/useClientsDni";
 import { useCrearPoliza } from "./hooks/useCrearPoliza";
 import { useEliminarPoliza } from "./hooks/useEliminarPoliza";
 import { useEditarPoliza } from "./hooks/useEditarPoliza";
-import { ToastContainer } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import ConfirmDeleteModal from "@/app/componentes/modals/ConfirmDeleteModal";
 import ModalEdit from "@/app/componentes/modals/ModalEdit";
 import ModalCreate from "@/app/componentes/modals/ModalCreate";
@@ -20,17 +20,15 @@ import { atributosPolizaDelete } from "./utils/atributosPolizaDelete";
 import { filtrosConfigPolizas } from "./utils/filtrosConfig";
 
 export default function PolizasList() {
-  const aseguradoId = "ID_DEL_ASEGURADO"; // Obtén este ID del contexto de autenticación o estado de la app.
+  const aseguradoId = "ID_DEL_ASEGURADO";
 
-  // Pasa `aseguradoId` como argumento al hook `usePolizas`
   const {
     polizas,
     loading,
     filtroDominio,
     setFiltroDominio,
     fetchPolizasData,
-  } = usePolizas(aseguradoId);  // <-- Aquí pasamos el ID del asegurado
-
+  } = usePolizas(aseguradoId);
   const {
     showModalCreate,
     setShowModalCreate,
@@ -92,7 +90,7 @@ export default function PolizasList() {
     try {
       await eliminarPoliza(selectedPoliza._id);
       setShowModalDelete(false);
-      fetchPolizasData(); // Actualiza la lista de pólizas después de eliminar
+      fetchPolizasData(); 
     } catch (error) {
       console.error(error.message);
     }
@@ -112,26 +110,25 @@ export default function PolizasList() {
             Agregar Póliza
           </button>
         </div>
-<Table
-  cabeceras={cabecerasTablaPolizas}
-  datos={polizas}
-  keys={[
-    "aseguradoNombre", // Cambia asegurado por aseguradoNombre
-    "dominio",
-    "marca",
-    "modelo",
-    "anio",
-    "tipoVehiculo",
-    "aseguradora",
-    "tipoCobertura",
-    "primaSegura",
-    "deducible",
-  ]}
-  filtros={filtros}
-  filtrosSubmit={fetchPolizasData}
-  acciones={acciones}
-/>
-
+        <Table
+          cabeceras={cabecerasTablaPolizas}
+          datos={polizas}
+          keys={[
+            "aseguradoNombre", 
+            "dominio",
+            "marca",
+            "modelo",
+            "anio",
+            "tipoVehiculo",
+            "aseguradora",
+            "tipoCobertura",
+            "primaSegura",
+            "deducible",
+          ]}
+          filtros={filtros}
+          filtrosSubmit={fetchPolizasData}
+          acciones={acciones}
+        />
       </div>
 
       <ModalCreate
@@ -151,6 +148,7 @@ export default function PolizasList() {
         onConfirm={confirmEdit}
         atributos={atributosPolizaEditables}
         onClose={() => setShowEditModal(false)}
+        tipo="poliza"
       />
 
       <ConfirmDeleteModal
