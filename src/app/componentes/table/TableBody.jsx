@@ -1,7 +1,7 @@
 import TableBodyRow from "./TableBodyRow";
 
 export default function TableBody(props) {
-  const { keys, datos, acciones } = props;
+  const { keys, datos, acciones, columnasVisibles } = props;
   return (
     <tbody className="divide-y divide-gray-200">
       {datos.length === 0 ? (
@@ -17,6 +17,7 @@ export default function TableBody(props) {
             keys={keys}
             dato={dato}
             acciones={acciones}
+            columnasVisibles={columnasVisibles}
           />
         ))
       )}

@@ -25,3 +25,9 @@ body {
     text-wrap: balance;
   }
 }
+
+@media (max-width: 639px) {
+  .col-xs-visible {
+    display: table-cell;
+  }
+}

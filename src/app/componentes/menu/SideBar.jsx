@@ -1,12 +1,27 @@
+import { useState } from "react";
 import SideBarItem from "./SideBarItem";
 
 export default function SideBar(props) {
   const { items } = props;
+
+  // Estado para manejar la visibilidad del sidebar
+  const [isOpen, setIsOpen] = useState(false);
+
+  // Función para alternar el estado del sidebar
+  const toggleSidebar = () => {
+    setIsOpen((prevState) => !prevState);
+  };
+
+  // Función para cerrar el sidebar directamente
+  const closeSidebar = () => {
+    setIsOpen(false);
+  };
+
   return (
     <>
+      {/* Botón hamburguesa */}
       <button
-        data-drawer-target="logo-sidebar"
-        data-drawer-toggle="logo-sidebar"
+        onClick={toggleSidebar}
         aria-controls="logo-sidebar"
         type="button"
         className="inline-flex items-center p-2 mt-2 ms-3 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
@@ -27,13 +42,19 @@ export default function SideBar(props) {
         </svg>
       </button>
 
+      {/* Sidebar */}
       <aside
         id="logo-sidebar"
-        className="fixed top-0 left-0 z-40 w-64 h-screen transition-transform -translate-x-full sm:translate-x-0"
+        className={`fixed top-0 left-0 z-40 w-64 h-screen transition-transform duration-300 ease-in-out ${
+          isOpen ? "translate-x-0" : "-translate-x-full"
+        } sm:translate-x-0`} // Cambiar la clase dependiendo del estado
         aria-label="Sidebar"
       >
         <div className="h-full px-3 py-4 overflow-y-auto bg-gray-50 dark:bg-gray-800">
-          <a href="https://flowbite.com/" className="flex items-center ps-2.5 mb-5">
+          <a
+            href="#"
+            className="flex items-center ps-2.5 mb-5"
+          >
             <img
               src="https://flowbite.com/docs/images/logo.svg"
               className="h-6 me-3 sm:h-7"
@@ -44,9 +65,17 @@ export default function SideBar(props) {
             </span>
           </a>
           <ul className="space-y-2 font-medium">
+            {/* Mapear los items principales */}
             {items.map((item, index) => (
               <SideBarItem key={index} item={item} />
             ))}
+            {/* Agregar un item para ocultar el sidebar */}
+            <li
+              onClick={closeSidebar}
+              className="text-gray-500 dark:text-gray-400 cursor-pointer sm:hidden hover:bg-gray-100 dark:hover:bg-gray-700 p-2 rounded-lg"
+            >
+              <span>Cerrar menú</span>
+            </li>
           </ul>
         </div>
       </aside>
