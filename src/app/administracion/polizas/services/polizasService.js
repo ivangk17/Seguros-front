@@ -34,7 +34,6 @@ export const fetchPolizas = async (dominio) => {
 
 
 export const fetchClientById = async (clienteId) => {
-  const api = process.env.NEXT_PUBLIC_URL_API;
   const url = `${api}users/buscarCliente/${clienteId}`;
   
   const response = await fetch(url, {

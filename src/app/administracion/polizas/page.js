@@ -112,7 +112,6 @@ export default function PolizasList() {
             Agregar Póliza
           </button>
         </div>
-        // PolizasList.js
 <Table
   cabeceras={cabecerasTablaPolizas}
   datos={polizas}
