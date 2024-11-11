@@ -2,8 +2,17 @@ import { toast } from 'react-toastify';
 
 const api = process.env.NEXT_PUBLIC_URL_API;
 
-export const fetchPolizas = async (dominio) => {
-  const queryParams = new URLSearchParams({ ...(dominio && { dominio }) }).toString();
+
+
+
+export const fetchPolizas = async ( dominio, asegurado, tipoCobertura) => {
+  try{
+  const queryParams = new URLSearchParams({
+    ...(dominio && { dominio }),
+    ...(asegurado && { asegurado }),
+    ...(tipoCobertura && { tipoCobertura }),
+  }).toString();
+
   const url = `${api}polizas/list?${queryParams}`;
   const response = await fetch(url, {
     headers: {
@@ -28,8 +37,11 @@ export const fetchPolizas = async (dominio) => {
     tipoCobertura: poliza.tipoCobertura,
     primaSegura: poliza.primaSegura,
     deducible: poliza.deducible,
-    asegurado: poliza.asegurado, 
+    asegurado: poliza.asegurado,
   }));
+} catch (error) {
+  throw new Error(error.message || "Error fetching clients");
+}
 };
 
 

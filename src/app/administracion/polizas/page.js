@@ -1,12 +1,12 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { usePolizas } from "./hooks/usePolizas";
 import { useModals } from "./hooks/useModals";
 import { useClientsDni } from "./hooks/useClientsDni";
 import { useCrearPoliza } from "./hooks/useCrearPoliza";
 import { useEliminarPoliza } from "./hooks/useEliminarPoliza";
 import { useEditarPoliza } from "./hooks/useEditarPoliza";
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import ConfirmDeleteModal from "@/app/componentes/modals/ConfirmDeleteModal";
 import ModalEdit from "@/app/componentes/modals/ModalEdit";
 import ModalCreate from "@/app/componentes/modals/ModalCreate";
@@ -18,17 +18,22 @@ import "react-toastify/dist/ReactToastify.css";
 import { atributosPolizaEditables } from "./utils/atributosPolizaEditables";
 import { atributosPolizaDelete } from "./utils/atributosPolizaDelete";
 import { filtrosConfigPolizas } from "./utils/filtrosConfig";
+import { keysTablaPoliza } from "./utils/keys";
 
 export default function PolizasList() {
-  const aseguradoId = "ID_DEL_ASEGURADO";
 
   const {
     polizas,
     loading,
     filtroDominio,
     setFiltroDominio,
+    filtroAsegurado,
+    setFiltroAsegurado,
+    filtroCobertura,
+    setFiltroCobertura,
     fetchPolizasData,
-  } = usePolizas(aseguradoId);
+    setCambios,
+  } = usePolizas();
   const {
     showModalCreate,
     setShowModalCreate,
@@ -48,7 +53,14 @@ export default function PolizasList() {
 
   const handleAddPoliza = () => setShowModalCreate(true);
 
-  const filtros = filtrosConfigPolizas(filtroDominio, setFiltroDominio);
+  const filtros = filtrosConfigPolizas(
+    filtroDominio,
+    setFiltroDominio,
+    filtroAsegurado,
+    setFiltroAsegurado,
+    filtroCobertura,
+    setFiltroCobertura
+  );
 
   const handleDeleteClick = (poliza) => {
     setSelectedPoliza(poliza);
@@ -67,7 +79,7 @@ export default function PolizasList() {
 
   const confirmEdit = async (updatedData) => {
     try {
-      const { _id, ...datosSinId } = updatedData; 
+      const { _id, ...datosSinId } = updatedData;
       await actualizarPoliza(selectedPoliza._id, datosSinId);
       setShowEditModal(false);
       fetchPolizasData();
@@ -90,11 +102,18 @@ export default function PolizasList() {
     try {
       await eliminarPoliza(selectedPoliza._id);
       setShowModalDelete(false);
-      fetchPolizasData(); 
+      fetchPolizasData();
     } catch (error) {
       console.error(error.message);
     }
   };
+
+  const handleSubmitFilters = (e) => {
+    e.preventDefault();
+    setCambios((prev) => !prev);
+  };
+
+  
 
   return (
     <>
@@ -113,20 +132,11 @@ export default function PolizasList() {
         <Table
           cabeceras={cabecerasTablaPolizas}
           datos={polizas}
-          keys={[
-            "aseguradoNombre", 
-            "dominio",
-            "marca",
-            "modelo",
-            "anio",
-            "tipoVehiculo",
-            "aseguradora",
-            "tipoCobertura",
-            "primaSegura",
-            "deducible",
-          ]}
+          keys={keysTablaPoliza
+           
+          }
           filtros={filtros}
-          filtrosSubmit={fetchPolizasData}
+          filtrosSubmit={handleSubmitFilters}
           acciones={acciones}
         />
       </div>
