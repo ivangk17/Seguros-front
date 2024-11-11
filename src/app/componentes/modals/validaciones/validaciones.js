@@ -133,15 +133,15 @@ export const validarPoliza = (formData, atributos) => {
       newErrors[atributo.name] = "Prima Segura maxima es de 100000000(diez millones)";
     }
 
-    if (atributo.name === "primaSegura" && (isNaN(value) || value <= 10000)) {
-      newErrors[atributo.name] = "Prima Segura minima es de 10000(diez mil)";
+    if (atributo.name === "primaSegura" && (isNaN(value) || value <= 1000)) {
+      newErrors[atributo.name] = "Prima Segura minima es de 1000(mil)";
     }
-    if (atributo.name === "deducible" && (isNaN(value) || value <= 10000 || value > 10000000)) {
+    if (atributo.name === "deducible" && (isNaN(value)  || value > 10000000)) {
       newErrors[atributo.name] = "Deducible maximo es de 10000000(diez millones)";
     }
 
-    if (atributo.name === "deducible" && (isNaN(value) || value <= 10000)) {
-      newErrors[atributo.name] = "Deducible minimo es de 10000(diez mil)";
+    if (atributo.name === "deducible" && (isNaN(value) || value <= 2000)) {
+      newErrors[atributo.name] = "Deducible minimo es de 2000(dos mil)";
     }
     if (atributo.name === "dominio" && !isValidDominio(value)) {
       newErrors[atributo.name] = "Dominio no válido";
@@ -203,20 +203,14 @@ const isValidCUIT = (cuit) => {
   return mod11 === checkDigit || (mod11 === 11 && checkDigit === 0);
 };
 
-export const validarEmail = (email) => {
+const isValidEmail = (email) => {
   const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return regex.test(email);
 };
 
-export const validarContraseña = (contrasenia) => {
-  const caracteresMinimos = 8;
-  const tieneMayus = /[A-Z]/.test(contrasenia);
-  const tieneCaracteresEspeciales = /[!@#$%^&*(),.?":{}|<>]/.test(contrasenia);
-  return contrasenia.length >= caracteresMinimos && tieneMayus && tieneCaracteresEspeciales;
-};
-
 const isValidDominio = (dominio) => {
-  const regex = /^[A-Z]{3}\d{3}$|^[A-Z]{2}\d{3}[A-Z]{2}$|^[A-Z]{3} \d{3}$|^[A-Z]{2} \d{3} [A-Z]{2}$/i; 
+  const regex = /^[A-Z]{3}\d{3}$|^[A-Z]{2}\d{3}[A-Z]{2}$|^[A-Z]{3} \d{3}$|^[A-Z]{2} \d{3} [A-Z]{2}$|^[A-Z]\d{3}[A-Z]{3}$/i;
   return regex.test(dominio);
 };
+
 
