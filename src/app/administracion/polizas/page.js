@@ -33,6 +33,7 @@ export default function PolizasList() {
     setFiltroCobertura,
     fetchPolizasData,
     setCambios,
+    aseguradosOptions,
   } = usePolizas();
   const {
     showModalCreate,
@@ -59,7 +60,8 @@ export default function PolizasList() {
     filtroAsegurado,
     setFiltroAsegurado,
     filtroCobertura,
-    setFiltroCobertura
+    setFiltroCobertura,
+    aseguradosOptions
   );
 
   const handleDeleteClick = (poliza) => {
@@ -113,8 +115,6 @@ export default function PolizasList() {
     setCambios((prev) => !prev);
   };
 
-  
-
   return (
     <>
       {loading && <ScreenLoader />}
@@ -132,9 +132,7 @@ export default function PolizasList() {
         <Table
           cabeceras={cabecerasTablaPolizas}
           datos={polizas}
-          keys={keysTablaPoliza
-           
-          }
+          keys={keysTablaPoliza}
           filtros={filtros}
           filtrosSubmit={handleSubmitFilters}
           acciones={acciones}

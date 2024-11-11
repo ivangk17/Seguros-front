@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { fetchPolizas, fetchClientById } from "../services/polizasService";
+import { fetchPolizas, fetchClients } from "../services/polizasService";
 
 export const usePolizas = () => {
   const [polizas, setPolizas] = useState([]);
@@ -9,27 +9,21 @@ export const usePolizas = () => {
   const [filtroAsegurado, setFiltroAsegurado] = useState("");
   const [filtroCobertura, setFiltroCobertura] = useState("");
   const [cambios, setCambios] = useState(false);
+  const [aseguradosOptions, setAseguradosOptions] = useState([]);
 
   const fetchPolizasData = async () => {
     setLoading(true);
     try {
       const polizasData = await fetchPolizas(
         filtroDominio.toUpperCase(),
-        filtroAsegurado,
+        filtroAsegurado || null,
         filtroCobertura
       );
 
-      const polizasWithClientNames = await Promise.all(
-        polizasData.map(async (poliza) => {
-          try {
-            const cliente = await fetchClientById(poliza.asegurado);
-            const nombreCompleto = `${cliente.name} ${cliente.lastname}`;
-            return { ...poliza, aseguradoNombre: nombreCompleto };
-          } catch {
-            return { ...poliza, aseguradoNombre: "Cliente no encontrado" };
-          }
-        })
-      );
+      const polizasWithClientNames = polizasData.map((poliza) => ({
+        ...poliza,
+        aseguradoNombre: `${poliza.aseguradoNombre} ${poliza.aseguradoApellido}`,
+      }));
 
       setPolizas(polizasWithClientNames);
     } catch (err) {
@@ -39,9 +33,26 @@ export const usePolizas = () => {
     }
   };
 
+  const fetchAseguradosOptions = async () => {
+    try {
+      const clients = await fetchClients();
+      const options = clients.map(client => ({
+        value: client._id,
+        label: `${client.name} ${client.lastname}`
+      }));
+      setAseguradosOptions(options);
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
   useEffect(() => {
     fetchPolizasData();
   }, [cambios]);
+
+  useEffect(() => {
+    fetchAseguradosOptions();
+  }, []);
 
   return {
     polizas,
@@ -55,5 +66,6 @@ export const usePolizas = () => {
     setFiltroCobertura,
     fetchPolizasData,
     setCambios,
+    aseguradosOptions,
   };
 };

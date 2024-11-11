@@ -2,48 +2,47 @@ import { toast } from 'react-toastify';
 
 const api = process.env.NEXT_PUBLIC_URL_API;
 
+export const fetchPolizas = async (dominio, asegurado, tipoCobertura) => {
+  try {
+    const queryParams = new URLSearchParams({
+      ...(dominio && { dominio }),
+      ...(asegurado && { asegurado }),
+      ...(tipoCobertura && { tipoCobertura }),
+    }).toString();
 
+    const url = `${api}polizas/list?${queryParams}`;
+    const response = await fetch(url, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+      },
+    });
 
+    if (!response.ok) {
+      throw new Error("Error al obtener las pólizas");
+    }
 
-export const fetchPolizas = async ( dominio, asegurado, tipoCobertura) => {
-  try{
-  const queryParams = new URLSearchParams({
-    ...(dominio && { dominio }),
-    ...(asegurado && { asegurado }),
-    ...(tipoCobertura && { tipoCobertura }),
-  }).toString();
+    const data = await response.json();
 
-  const url = `${api}polizas/list?${queryParams}`;
-  const response = await fetch(url, {
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${sessionStorage.getItem("token")}`,
-    },
-  });
-
-  if (!response.ok) {
-    throw new Error("Error al obtener las pólizas");
+    return data.map((poliza) => ({
+      _id: poliza._id,
+      dominio: poliza.dominio,
+      marca: poliza.vehiculo.marca,
+      modelo: poliza.vehiculo.modelo,
+      anio: poliza.vehiculo.anio,
+      tipoVehiculo: poliza.vehiculo.tipoVehiculo,
+      aseguradora: poliza.aseguradora,
+      tipoCobertura: poliza.tipoCobertura,
+      primaSegura: poliza.primaSegura,
+      deducible: poliza.deducible,
+      asegurado: poliza.asegurado,
+      aseguradoNombre: poliza.aseguradoName,
+      aseguradoApellido: poliza.aseguradoLastName,
+    }));
+  } catch (error) {
+    throw new Error(error.message || "Error fetching clients");
   }
-
-  const data = await response.json();
-  return data.map((poliza) => ({
-    _id: poliza._id,
-    dominio: poliza.dominio,
-    marca: poliza.vehiculo.marca,
-    modelo: poliza.vehiculo.modelo,
-    anio: poliza.vehiculo.anio,
-    tipoVehiculo: poliza.vehiculo.tipoVehiculo,
-    aseguradora: poliza.aseguradora,
-    tipoCobertura: poliza.tipoCobertura,
-    primaSegura: poliza.primaSegura,
-    deducible: poliza.deducible,
-    asegurado: poliza.asegurado,
-  }));
-} catch (error) {
-  throw new Error(error.message || "Error fetching clients");
-}
 };
-
 
 export const fetchClientById = async (clienteId) => {
   const url = `${api}users/buscarCliente/${clienteId}`;
@@ -63,6 +62,22 @@ export const fetchClientById = async (clienteId) => {
   return data;
 };
 
+export const fetchClients = async () => {
+  const url = `${api}users/clients`;
+  const response = await fetch(url, {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("Error al obtener los clientes");
+  }
+
+  const data = await response.json();
+  return data;
+};
 
 export const crearPoliza = async (formData) => {
   try {

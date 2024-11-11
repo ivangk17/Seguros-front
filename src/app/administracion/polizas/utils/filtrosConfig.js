@@ -4,7 +4,8 @@ export const filtrosConfigPolizas = (
   filtroAsegurado,
   setFiltroAsegurado,
   filtroCobertura,
-  setFiltroCobertura
+  setFiltroCobertura,
+  aseguradosOptions
 ) => [
   {
     valor: filtroDominio,
@@ -19,8 +20,9 @@ export const filtrosConfigPolizas = (
     funcion: setFiltroAsegurado,
     id: "asegurado",
     name: "asegurado",
-    type: "text",
+    type: "select",
     placeholder: "ASEGURADO",
+    options: [{ value: "", label: "Todos los clientes" }, ...aseguradosOptions],
   },
   {
     valor: filtroCobertura,
