@@ -14,7 +14,7 @@ export const usePolizas = () => {
     setLoading(true);
     try {
       const polizasData = await fetchPolizas(
-        filtroDominio,
+        filtroDominio.toUpperCase(),
         filtroAsegurado,
         filtroCobertura
       );
