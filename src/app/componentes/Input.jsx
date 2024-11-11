@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 export default function Input({
   name,
   label,
@@ -8,6 +10,12 @@ export default function Input({
   onChange,
   ...rest
 }) {
+  const [showPassword, setShowPassword] = useState(false);
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
   return (
     <div className="mb-4">
       {label && (
@@ -34,15 +42,26 @@ export default function Input({
           ))}
         </select>
       ) : (
-        <input
-          id={name}
-          name={name}
-          type={type}
-          value={value}
-          onChange={onChange}
-          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full py-2 px-3 mb-3"
-          {...rest}
-        />
+        <div className="relative">
+          <input
+            id={name}
+            name={name}
+            type={type === "password" && showPassword ? "text" : type}
+            value={value}
+            onChange={onChange}
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full py-2 px-3 mb-3"
+            {...rest}
+          />
+          {type === "password" && (
+            <button
+              type="button"
+              onClick={togglePasswordVisibility}
+              className="absolute inset-y-0 right-3 flex items-center text-gray-500"
+            >
+              {showPassword ? "👁️" : "🙈"}
+            </button>
+          )}
+        </div>
       )}
       {error && (
         <small className="text-red-500 text-xs italic mt-1">{error}</small>

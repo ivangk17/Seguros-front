@@ -19,9 +19,29 @@ import { atributosPolizaEditables } from "./utils/atributosPolizaEditables";
 import { atributosPolizaDelete } from "./utils/atributosPolizaDelete";
 import { filtrosConfigPolizas } from "./utils/filtrosConfig";
 import { keysTablaPoliza } from "./utils/keys";
+import { useAuth } from "@/context/AuthContext";
+import { useRouter } from "next/navigation";
+import jwt from "jsonwebtoken"
 
 export default function PolizasList() {
+  const { token, role } = useAuth();
+  const router = useRouter();
+  const [canUse, setCanUse] = useState(null);
 
+  useEffect(() => {
+    if (token) {
+      try {
+        const decode = jwt.decode(token);
+        const role = decode.role;
+        setCanUse(role === "asegurador");
+      } catch (error) {
+        console.error("Error al decodificar el token", error);
+        setCanUse(false);
+      }
+    } else {
+      setCanUse(false);
+    }
+  }, [token, role]);
   const {
     polizas,
     loading,
@@ -114,6 +134,12 @@ export default function PolizasList() {
     e.preventDefault();
     setCambios((prev) => !prev);
   };
+
+  if (canUse === null) return <ScreenLoader />;
+  if (!canUse) {
+    router.push("/");
+    return null;
+  }
 
   return (
     <>
