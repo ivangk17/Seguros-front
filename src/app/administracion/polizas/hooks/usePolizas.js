@@ -1,7 +1,7 @@
 // hooks/usePolizas.js
 import { useState, useEffect } from "react";
 import { fetchPolizas } from "../services/polizasService";
-import { fetchClientById } from "../services/polizasService";
+import { fetchClientById } from "../services/polizasService"; // Importa el endpoint para obtener el cliente por ID
 
 export const usePolizas = () => {
   const [polizas, setPolizas] = useState([]);
@@ -14,16 +14,16 @@ export const usePolizas = () => {
     try {
       const polizasData = await fetchPolizas(filtroDominio);
 
-      // Asegúrate de que `asegurado` esté definido antes de llamar a `fetchClientById`
+      // Agregar el nombre completo de cada cliente asegurado a cada póliza
       const polizasWithClientNames = await Promise.all(
         polizasData.map(async (poliza) => {
-          if (poliza.asegurado) {  // Verifica si el ID del asegurado está definido
+          try {
+            // Llama al endpoint para obtener los detalles del cliente
             const cliente = await fetchClientById(poliza.asegurado);
-            return {
-              ...poliza,
-              aseguradoNombre: `${cliente.name} ${cliente.lastname}`,
-            };
-          } else {
+            const nombreCompleto = `${cliente.name} ${cliente.lastname}`;
+            return { ...poliza, aseguradoNombre: nombreCompleto };
+          } catch {
+            // Maneja el caso donde el cliente no existe o falla la solicitud
             return { ...poliza, aseguradoNombre: "Cliente no encontrado" };
           }
         })

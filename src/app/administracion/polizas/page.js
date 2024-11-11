@@ -20,16 +20,16 @@ import { atributosPolizaDelete } from "./utils/atributosPolizaDelete";
 import { filtrosConfigPolizas } from "./utils/filtrosConfig";
 
 export default function PolizasList() {
-  const aseguradoId = "ID_DEL_ASEGURADO"; 
+  const aseguradoId = "ID_DEL_ASEGURADO"; // Obtén este ID del contexto de autenticación o estado de la app.
 
-
+  // Pasa `aseguradoId` como argumento al hook `usePolizas`
   const {
     polizas,
     loading,
     filtroDominio,
     setFiltroDominio,
     fetchPolizasData,
-  } = usePolizas(aseguradoId);  
+  } = usePolizas(aseguradoId);  // <-- Aquí pasamos el ID del asegurado
 
   const {
     showModalCreate,
@@ -92,7 +92,7 @@ export default function PolizasList() {
     try {
       await eliminarPoliza(selectedPoliza._id);
       setShowModalDelete(false);
-      fetchPolizasData(); 
+      fetchPolizasData(); // Actualiza la lista de pólizas después de eliminar
     } catch (error) {
       console.error(error.message);
     }
@@ -117,7 +117,7 @@ export default function PolizasList() {
   cabeceras={cabecerasTablaPolizas}
   datos={polizas}
   keys={[
-    "aseguradoNombre", // Ahora usamos aseguradoNombre en lugar del ID de asegurado
+    "aseguradoNombre", // Cambia asegurado por aseguradoNombre
     "dominio",
     "marca",
     "modelo",

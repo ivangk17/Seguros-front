@@ -28,7 +28,28 @@ export const fetchPolizas = async (dominio) => {
     tipoCobertura: poliza.tipoCobertura,
     primaSegura: poliza.primaSegura,
     deducible: poliza.deducible,
+    asegurado: poliza.asegurado, 
   }));
+};
+
+
+export const fetchClientById = async (clienteId) => {
+  const api = process.env.NEXT_PUBLIC_URL_API;
+  const url = `${api}users/buscarCliente/${clienteId}`;
+  
+  const response = await fetch(url, {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("Error al obtener el cliente por ID");
+  }
+
+  const data = await response.json();
+  return data;
 };
 
 
@@ -89,7 +110,6 @@ export const fetchDnis = async () => {
   }
 };
 
-
 export const deletePoliza = async (polizaId) => {
   try {
     const url = `${api}polizas/${polizaId}`;
@@ -144,22 +164,4 @@ export const editarPoliza = async (polizaId, updatedData) => {
     toast.error("Ocurrió un error al actualizar la póliza.");
     throw error;
   }
-};
-
-
-export const fetchClientById = async (clienteId) => {
-  const url = `${api}users/buscarCliente/${clienteId}`;
-  const response = await fetch(url, {
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${sessionStorage.getItem("token")}`,
-    },
-  });
-
-  if (!response.ok) {
-    throw new Error("Error al obtener el cliente por ID");
-  }
-
-  const data = await response.json();
-  return data;
 };
