@@ -20,7 +20,7 @@
     "react-bootstrap": "^2.10.5",
     "react-collapse": "^5.1.1",
     "react-dom": "^18",
-    "react-select": "^5.8.2",
+    "react-select": "^5.8.3",
     "react-toastify": "^10.0.6",
     "sweetalert2": "^11.14.3",
     "tailwind-merge": "^2.5.4",

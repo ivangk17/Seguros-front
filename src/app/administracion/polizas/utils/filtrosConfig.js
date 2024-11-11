@@ -1,3 +1,5 @@
+import Select from 'react-select';
+
 export const filtrosConfigPolizas = (
   filtroDominio,
   setFiltroDominio,
@@ -20,9 +22,19 @@ export const filtrosConfigPolizas = (
     funcion: setFiltroAsegurado,
     id: "asegurado",
     name: "asegurado",
-    type: "select",
-    placeholder: "ASEGURADO",
-    options: [{ value: "", label: "Todos los clientes" }, ...aseguradosOptions],
+    type: "custom",
+    component: (
+      <Select
+        value={aseguradosOptions.find(option => option.value === filtroAsegurado)}
+        onChange={option => setFiltroAsegurado(option ? option.value : "")}
+        options={[{ value: "", label: "Todos los clientes" }, ...aseguradosOptions]}
+        placeholder="ASEGURADO"
+        isClearable
+        isSearchable
+        className="react-select-container"
+        classNamePrefix="react-select"
+      />
+    ),
   },
   {
     valor: filtroCobertura,
