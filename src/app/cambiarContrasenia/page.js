@@ -43,7 +43,7 @@ export default function PaginaCambioContraseña() {
     } else {
       setLoading(true);
       try {
-        const url = `http://localhost:3001/api/users/changePassword/${token}`;
+        const url = `${api}users/changePassword/`;        
 
         const response = await fetch(url, {
           method: 'POST',
