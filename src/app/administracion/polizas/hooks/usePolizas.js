@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { fetchPolizas, fetchClients } from "../services/polizasService";
+import { usePaginado } from "../hooks/usePaginado";
 
 export const usePolizas = () => {
   const [polizas, setPolizas] = useState([]);
@@ -11,12 +12,14 @@ export const usePolizas = () => {
   const [cambios, setCambios] = useState(false);
   const [aseguradosOptions, setAseguradosOptions] = useState([]);
 
+  const { itemsActuales: polizasActuales, paginaActual, itemsPorPagina, totalItems, paginate, resetPagina } = usePaginado(polizas, 10);
+
   const fetchPolizasData = async () => {
     setLoading(true);
     try {
       const polizasData = await fetchPolizas(
-        filtroDominio.toUpperCase(),
-        filtroAsegurado || null,
+        filtroDominio,
+        filtroAsegurado,
         filtroCobertura
       );
 
@@ -55,7 +58,7 @@ export const usePolizas = () => {
   }, []);
 
   return {
-    polizas,
+    polizas: polizasActuales,
     loading,
     error,
     filtroDominio,
@@ -67,5 +70,10 @@ export const usePolizas = () => {
     fetchPolizasData,
     setCambios,
     aseguradosOptions,
+    paginaActual,
+    itemsPorPagina,
+    totalItems,
+    paginate,
+    resetPagina, // Asegúrate de que esta función esté incluida
   };
 };

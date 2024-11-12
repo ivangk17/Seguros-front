@@ -34,6 +34,11 @@ export default function PolizasList() {
     fetchPolizasData,
     setCambios,
     aseguradosOptions,
+    paginaActual,
+    itemsPorPagina,
+    totalItems,
+    paginate,
+    resetPagina,
   } = usePolizas();
   const {
     showModalCreate,
@@ -63,6 +68,14 @@ export default function PolizasList() {
     setFiltroCobertura,
     aseguradosOptions
   );
+
+  
+  const handleSubmitFilters = (e) => {
+    e.preventDefault();
+    resetPagina(); 
+    setCambios((prev) => !prev);
+  };
+
 
   const handleDeleteClick = (poliza) => {
     setSelectedPoliza(poliza);
@@ -110,11 +123,6 @@ export default function PolizasList() {
     }
   };
 
-  const handleSubmitFilters = (e) => {
-    e.preventDefault();
-    setCambios((prev) => !prev);
-  };
-
   return (
     <>
       {loading && <ScreenLoader />}
@@ -136,6 +144,7 @@ export default function PolizasList() {
           filtros={filtros}
           filtrosSubmit={handleSubmitFilters}
           acciones={acciones}
+          paginado={{ total: totalItems, datosPorPagina: itemsPorPagina, paginaActual, funcion: paginate }}
         />
       </div>
 
