@@ -13,16 +13,16 @@ import ChangePasswordModal from "../../componentes/modals/ModalCambiarContra";
 function EditProfile() {
   const api = process.env.NEXT_PUBLIC_URL_API;
   const [formData, setFormData] = useState({
-    email: "",
+    email:"",
     nombre: "",
     apellido: "",
     dni: "",
-    calle: "",
-    numero: "",
-    piso: "",
-    departamento: "",
-    codigoPostal: "",
-    telefono: "",
+    address: "",
+    number: "",
+    floor: "",
+    apartment: "",
+    zip_code: "",
+    phone: "",
   });
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
@@ -48,12 +48,12 @@ function EditProfile() {
           nombre: data.name,
           apellido: data.lastname,
           dni: data.dni,
-          telefono: data.phone,
-          calle: data.address,
-          numero: data.number,
-          piso: data.floor,
-          departamento: data.apartment,
-          codigoPostal: data.zip_code,
+          phone: data.phone,
+          address: data.address,
+          number: data.number,
+          floor: data.floor,
+          apartment: data.apartment,
+          zip_code: data.zip_code,
         });
       } catch (err) {
         setError(err.message);
@@ -88,16 +88,12 @@ function EditProfile() {
 
   const validateField = (field, value) => {
     const atributos = [
-      { name: "email", placeholder: "Email", required: true },
-      { name: "nombre", placeholder: "Nombre", required: true },
-      { name: "apellido", placeholder: "Apellido", required: true },
-      { name: "dni", placeholder: "DNI", required: true },
-      { name: "calle", placeholder: "Calle", required: true },
-      { name: "numero", placeholder: "Número", required: true },
-      { name: "piso", placeholder: "Piso", required: false },
-      { name: "departamento", placeholder: "Departamento", required: false },
-      { name: "codigoPostal", placeholder: "Código Postal", required: true },
-      { name: "telefono", placeholder: "Teléfono", required: true },
+      { name: "address", placeholder: "Calle", required: true },
+      { name: "number", placeholder: "Número", required: true },
+      { name: "floor", placeholder: "Piso", required: false },
+      { name: "apartment", placeholder: "Departamento", required: false },
+      { name: "zip_code", placeholder: "Código Postal", required: true },
+      { name: "phone", placeholder: "Teléfono", required: true },
     ];
 
     const formDataToValidate = { [field]: value };
@@ -114,12 +110,12 @@ function EditProfile() {
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          phone: formData.telefono,
-          address: formData.calle,
-          zip_code: formData.codigoPostal,
-          number: formData.numero,
-          apartment: formData.departamento,
-          floor: formData.piso,
+          phone: formData.phone,
+          address: formData.address,
+          zip_code: formData.zip_code,
+          number: formData.number,
+          apartment: formData.apartment,
+          floor: formData.floor,
         }),
       });
 
@@ -144,16 +140,12 @@ function EditProfile() {
     setLoading(true);
 
     const atributos = [
-      { name: "email", placeholder: "Email", required: true },
-      { name: "nombre", placeholder: "Nombre", required: true },
-      { name: "apellido", placeholder: "Apellido", required: true },
-      { name: "dni", placeholder: "DNI", required: true },
-      { name: "calle", placeholder: "Calle", required: true },
-      { name: "numero", placeholder: "Número", required: true },
-      { name: "piso", placeholder: "Piso", required: false },
-      { name: "departamento", placeholder: "Departamento", required: false },
-      { name: "codigoPostal", placeholder: "Código Postal", required: true },
-      { name: "telefono", placeholder: "Teléfono", required: true },
+      { name: "address", placeholder: "Calle", required: true },
+      { name: "number", placeholder: "Número", required: true },
+      { name: "floor", placeholder: "Piso", required: false },
+      { name: "apartment", placeholder: "Departamento", required: false },
+      { name: "zip_code", placeholder: "Código Postal", required: true },
+      { name: "phone", placeholder: "Teléfono", required: true },
     ];
 
     const validationErrors = validarCliente(formData, atributos);
@@ -221,6 +213,7 @@ function EditProfile() {
         />
         <form className="grid grid-cols-4 gap-4" onSubmit={handleSubmit}>
           <Input
+            id="email"
             name="email"
             label="Email"
             type="text"
@@ -231,6 +224,7 @@ function EditProfile() {
             className="col-span-4"
           />
           <Input
+            id="nombre"
             name="nombre"
             label="Nombre"
             type="text"
@@ -239,8 +233,10 @@ function EditProfile() {
             onBlur={handleBlur}
             error={errors.nombre}
             className="col-span-2"
+            disabled
           />
           <Input
+            id="apellido"
             name="apellido"
             label="Apellido"
             type="text"
@@ -249,8 +245,10 @@ function EditProfile() {
             onBlur={handleBlur}
             error={errors.apellido}
             className="col-span-2"
+            disabled
           />
           <Input
+            id="dni"
             name="dni"
             label="DNI"
             type="text"
@@ -259,60 +257,67 @@ function EditProfile() {
             onBlur={handleBlur}
             error={errors.dni}
             className="col-span-4"
+            disabled
           />
           <Input
-            name="calle"
+            id="address"
+            name="address"
             label="Calle"
             type="text"
-            value={formData.calle}
+            value={formData.address}
             onChange={handleInputChange}
             onBlur={handleBlur}
-            error={errors.calle}
+            error={errors.address}
           />
           <Input
-            name="numero"
+            id="number"
+            name="number"
             label="Número"
             type="text"
-            value={formData.numero}
+            value={formData.number}
             onChange={handleInputChange}
             onBlur={handleBlur}
-            error={errors.numero}
+            error={errors.number}
           />
           <Input
-            name="piso"
+            id="floor"
+            name="floor"
             label="Piso"
             type="text"
-            value={formData.piso}
+            value={formData.floor}
             onChange={handleInputChange}
             onBlur={handleBlur}
-            error={errors.piso}
+            error={errors.floor}
           />
           <Input
-            name="departamento"
+            id="apartment"
+            name="apartment"
             label="Departamento"
             type="text"
-            value={formData.departamento}
+            value={formData.apartment}
             onChange={handleInputChange}
             onBlur={handleBlur}
-            error={errors.departamento}
+            error={errors.apartment}
           />
           <Input
-            name="codigoPostal"
+            id="zip_code"
+            name="zip_code"
             label="Código Postal"
             type="text"
-            value={formData.codigoPostal}
+            value={formData.zip_code}
             onChange={handleInputChange}
             onBlur={handleBlur}
-            error={errors.codigoPostal}
+            error={errors.zip_code}
           />
           <Input
-            name="telefono"
+            id="phone"
+            name="phone"
             label="Teléfono"
             type="text"
-            value={formData.telefono}
+            value={formData.phone}
             onChange={handleInputChange}
             onBlur={handleBlur}
-            error={errors.telefono}
+            error={errors.phone}
           />
           <div className="col-span-4 flex items-end">
             <button

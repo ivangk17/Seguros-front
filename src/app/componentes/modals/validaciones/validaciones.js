@@ -112,7 +112,6 @@ export const validarCliente = (formData, atributos) => {
       }
     }
   });
-
   return newErrors;
 };
 
