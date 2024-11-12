@@ -227,7 +227,42 @@ const SolicitudesPage = () => {
     }
   };
 
-  const acciones = [
+  const acciones = (solicitud) => {
+    return getAccionesPorEstado(
+      solicitud,
+      handleDescargarReporte,
+      handleAccept,
+      handleReject
+    );
+  };
+
+  const getAccionesPorEstado = (
+    solicitud,
+    handleDescargarReporte,
+    handleAccept,
+    handleReject
+  ) => {
+    const descargarReporteAction = {
+      nombre: "Descargar reporte",
+      funcion: handleDescargarReporte,
+    };
+    let acciones = [descargarReporteAction];
+    if(solicitud.estado === "PENDIENTE"){
+      acciones = [{
+        nombre: "Aceptar",
+        funcion: handleAccept,
+        disabled: (solicitud) => solicitud.estado !== "PENDIENTE",
+      },
+      {
+        nombre: "Rechazar",
+        funcion: handleReject,
+        disabled: (solicitud) => solicitud.estado !== "PENDIENTE",
+      }]
+    }
+    return acciones;
+  };
+
+/*   const acciones = [
     {
       nombre: "Descargar reporte",
       funcion: handleDescargarReporte,
@@ -242,7 +277,7 @@ const SolicitudesPage = () => {
       funcion: handleReject,
       disabled: (solicitud) => solicitud.estado !== "PENDIENTE",
     },
-  ];
+  ]; */
 
   if (canUse === null) return <ScreenLoader />;
   if (!canUse) {

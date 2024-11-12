@@ -271,7 +271,6 @@ export default function ClientsList() {
         onConfirm={handleSubmitDeleteCliente}
         atributos={atributosClienteDelete}
         mensaje="¿Estás seguro de eliminar esta cliente?"
-        acciones={acciones}
       />
       <ModalPolizas
         show={showModalViewPolizas}
