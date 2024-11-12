@@ -90,11 +90,7 @@ export default function PolizasList() {
   );
 
   
-  const handleSubmitFilters = (e) => {
-    e.preventDefault();
-    resetPagina(); 
-    setCambios((prev) => !prev);
-  };
+
 
 
   const handleDeleteClick = (poliza) => {
