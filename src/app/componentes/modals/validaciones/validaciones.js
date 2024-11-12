@@ -219,3 +219,7 @@ export const validarContraseña = (contrasenia) => {
   return contrasenia.length >= caracteresMinimos && tieneMayus && tieneCaracteresEspeciales;
 };
 
+export const validarEmail = (email) => {
+  const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return regex.test(email);
+};
