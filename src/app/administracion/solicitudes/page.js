@@ -208,7 +208,6 @@ const SolicitudesPage = () => {
           },
         }
       );
-      const data = await response.json();
       if (!response.ok) {
         throw new Error(data.error);
       }
@@ -248,7 +247,7 @@ const SolicitudesPage = () => {
     };
     let acciones = [descargarReporteAction];
     if(solicitud.estado === "PENDIENTE"){
-      acciones = [{
+      acciones = [...acciones,{
         nombre: "Aceptar",
         funcion: handleAccept,
         disabled: (solicitud) => solicitud.estado !== "PENDIENTE",
