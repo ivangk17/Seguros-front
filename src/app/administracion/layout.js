@@ -105,14 +105,6 @@ export default function RootLayout({ children }) {
       },
       {
         url: "#",
-        descripcion: "Editar perfil",
-        onClick: () => {
-          setVerify((prev) => !prev);
-          router.push("/administracion/editarPerfil");
-        },
-      },
-      {
-        url: "#",
         descripcion: "Cerrar sesión",
         onClick: () => {
           setShowLogoutModal(true);

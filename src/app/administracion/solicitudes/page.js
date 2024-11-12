@@ -11,6 +11,7 @@ import { useRouter } from "next/navigation";
 import jwt from "jsonwebtoken";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Header from "@/app/componentes/clientes/Header";
 
 const SolicitudesPage = () => {
   const api = process.env.NEXT_PUBLIC_URL_API;
@@ -246,22 +247,25 @@ const SolicitudesPage = () => {
       funcion: handleDescargarReporte,
     };
     let acciones = [descargarReporteAction];
-    if(solicitud.estado === "PENDIENTE"){
-      acciones = [...acciones,{
-        nombre: "Aceptar",
-        funcion: handleAccept,
-        disabled: (solicitud) => solicitud.estado !== "PENDIENTE",
-      },
-      {
-        nombre: "Rechazar",
-        funcion: handleReject,
-        disabled: (solicitud) => solicitud.estado !== "PENDIENTE",
-      }]
+    if (solicitud.estado === "PENDIENTE") {
+      acciones = [
+        ...acciones,
+        {
+          nombre: "Aceptar",
+          funcion: handleAccept,
+          disabled: (solicitud) => solicitud.estado !== "PENDIENTE",
+        },
+        {
+          nombre: "Rechazar",
+          funcion: handleReject,
+          disabled: (solicitud) => solicitud.estado !== "PENDIENTE",
+        },
+      ];
     }
     return acciones;
   };
 
-/*   const acciones = [
+  /*   const acciones = [
     {
       nombre: "Descargar reporte",
       funcion: handleDescargarReporte,
@@ -300,9 +304,7 @@ const SolicitudesPage = () => {
         theme="colored"
       />
       <div className="bg-white shadow-lg rounded-lg w-full p-6 dark:bg-gray-800">
-        <h2 className="text-lg font-semibold text-black dark:text-white">
-          Administración de solicitudes
-        </h2>
+        <Header titulo="Administración de solicitudes" />
         <Table
           cabeceras={[
             "Nombre Completo",

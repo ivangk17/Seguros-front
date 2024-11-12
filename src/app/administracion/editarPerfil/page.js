@@ -9,11 +9,15 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { validarCliente } from "../../componentes/modals/validaciones/validaciones";
 import ChangePasswordModal from "../../componentes/modals/ModalCambiarContra";
+import jwt from "jsonwebtoken";
+import { useRouter } from "next/navigation";
 
 function EditProfile() {
+  const router = useRouter();
+  const [canUse, setCanUse] = useState(null);
   const api = process.env.NEXT_PUBLIC_URL_API;
   const [formData, setFormData] = useState({
-    email:"",
+    email: "",
     nombre: "",
     apellido: "",
     dni: "",
@@ -29,7 +33,22 @@ function EditProfile() {
   const [error, setError] = useState(null);
   const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
 
-  const { token } = useAuth();
+  const { token, role } = useAuth();
+
+  useEffect(() => {
+    if (token) {
+      try {
+        const decode = jwt.decode(token);
+        const role = decode.role;
+        setCanUse(role === "asegurador");
+      } catch (error) {
+        console.error("Error al decodificar el token", error);
+        setCanUse(false);
+      }
+    } else {
+      setCanUse(false);
+    }
+  }, [token, role]);
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -189,7 +208,11 @@ function EditProfile() {
       throw new Error("Contraseña antigua incorrecta.");
     }
   };
-
+  if (canUse === null) return <ScreenLoader />;
+  if (!canUse) {
+    router.push("/");
+    return null;
+  }
   return (
     <>
       {loading && <ScreenLoader />}
