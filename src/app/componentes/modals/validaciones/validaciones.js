@@ -212,4 +212,10 @@ const isValidDominio = (dominio) => {
   return regex.test(dominio);
 };
 
+export const validarContraseña = (contrasenia) => {
+  const caracteresMinimos = 8;
+  const tieneMayus = /[A-Z]/.test(contrasenia);
+  const tieneCaracteresEspeciales = /[!@#$%^&*(),.?":{}|<>]/.test(contrasenia);
+  return contrasenia.length >= caracteresMinimos && tieneMayus && tieneCaracteresEspeciales;
+};
 
