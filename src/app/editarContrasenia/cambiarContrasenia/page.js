@@ -5,8 +5,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import ScreenLoader from "@/app/componentes/ScreenLoader";
 import { validarContraseña } from "@/app/componentes/modals/validaciones/validaciones";
-
-
+import Input from "@/app/componentes/Input"; // Asegúrate de que la ruta sea correcta
 
 export default function PaginaRecuperacionContrasenia() {
   const api = process.env.NEXT_PUBLIC_URL_API;
@@ -15,13 +14,10 @@ export default function PaginaRecuperacionContrasenia() {
   const [confirmacionContrasenia, setConfirmacionContrasenia] = useState('');
   const [cargando, setCargando] = useState(false);
 
-  
-
-  const MSG_ERROR_CONTRASENIA_VACIA = "La contraseña no puede estar vacía."
-  const MSG_ERROR_CONTRASENIA_CARACTERES = "La contraseña debe tener al menos 8 caracteres, una letra mayúscula y un signo."
-  const MSG_ERROR_CONTRASENIAS_NO_COINCIDEN = "Las contraseñas no coinciden."
-  const MSG_ERROR_CAMBIO_EXITOSO = "La contraseña se cambio correctamente, puede cerrar esta pestaña."
-
+  const MSG_ERROR_CONTRASENIA_VACIA = "La contraseña no puede estar vacía.";
+  const MSG_ERROR_CONTRASENIA_CARACTERES = "La contraseña debe tener al menos 8 caracteres, una letra mayúscula y un signo.";
+  const MSG_ERROR_CONTRASENIAS_NO_COINCIDEN = "Las contraseñas no coinciden.";
+  const MSG_ERROR_CAMBIO_EXITOSO = "La contraseña se cambió correctamente, puede cerrar esta pestaña.";
 
   const handleCambioContrasenia = async (event) => {
     event.preventDefault();
@@ -79,27 +75,29 @@ export default function PaginaRecuperacionContrasenia() {
       <div className="mx-auto my-36 flex h-auto w-[400px] flex-col border-2 bg-white text-black shadow-xl">
         <div className="mx-8 mt-7 mb-3 flex flex-row justify-start space-x-2">
           <div className="h-7 w-3 bg-[#0DE6AC]"></div>
-          <div className="w-3 text-center font-sans text-xl font-bold">
+          <div className="w-3 text-center font-sans text-xl font-bold whitespace-nowrap">
             <h1>Cambio de Contraseña</h1>
           </div>
         </div>
         <form onSubmit={handleCambioContrasenia} className="flex flex-col items-center">
           <div className="my-2 w-72">
-            <input
+            <Input
+              name="nuevaContrasenia"
+              label="Nueva Contraseña"
               type="password"
-              placeholder="Nueva Contraseña"
               value={contrasenia}
               onChange={(e) => setContrasenia(e.target.value)}
-              className="mb-4 px-4 py-2 border rounded w-full"
+              error={errores.submit}
             />
           </div>
           <div className="my-2 w-72">
-            <input
+            <Input
+              name="confirmacionContrasenia"
+              label="Confirmar Contraseña"
               type="password"
-              placeholder="Confirmar Contraseña"
               value={confirmacionContrasenia}
               onChange={(e) => setConfirmacionContrasenia(e.target.value)}
-              className="mb-4 px-4 py-2 border rounded w-full"
+              error={errores.submit}
             />
           </div>
           <div className="my-2 flex justify-center">
