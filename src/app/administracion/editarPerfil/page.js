@@ -8,6 +8,7 @@ import ScreenLoader from "@/app/componentes/ScreenLoader";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { validarCliente } from "../../componentes/modals/validaciones/validaciones";
+import ChangePasswordModal from "../../componentes/modals/ModalCambiarContra";
 
 function EditProfile() {
   const api = process.env.NEXT_PUBLIC_URL_API;
@@ -26,6 +27,7 @@ function EditProfile() {
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
 
   const { token } = useAuth();
 
@@ -173,6 +175,29 @@ function EditProfile() {
     }
   };
 
+  const handleChangePassword = async (formData) => {
+    try {
+      const response = await fetch(`${api}users/changePassword`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Contraseña antigua incorrecta.");
+      }
+
+      toast.success("Contraseña cambiada exitosamente");
+      setShowChangePasswordModal(false);
+    } catch (err) {
+      throw new Error("Contraseña antigua incorrecta.");
+    }
+  };
+
   return (
     <>
       {loading && <ScreenLoader />}
@@ -192,7 +217,7 @@ function EditProfile() {
         <Header
           titulo="Editar Perfil"
           texto="Cambiar contraseña"
-          accion={true}
+          accion={() => setShowChangePasswordModal(true)}
         />
         <form className="grid grid-cols-4 gap-4" onSubmit={handleSubmit}>
           <Input
@@ -300,6 +325,11 @@ function EditProfile() {
           </div>
         </form>
       </div>
+      <ChangePasswordModal
+        show={showChangePasswordModal}
+        onClose={() => setShowChangePasswordModal(false)}
+        onSubmit={handleChangePassword}
+      />
     </>
   );
 }
