@@ -7,9 +7,29 @@ import { motion } from "framer-motion";
 import SolicitudDetalles from "@/app/administracion/solicitudes/SolicitudDetalles";
 import { Modal, Button } from "react-bootstrap";
 import "react-toastify/dist/ReactToastify.css";
-
+import { useAuth } from "@/context/AuthContext";
+import { useRouter } from "next/navigation";
+import jwt from "jsonwebtoken"
 const SolicitudesPage = () => {
   const api = process.env.NEXT_PUBLIC_URL_API;
+  const { token, role } = useAuth();
+  const router = useRouter();
+  const [canUse, setCanUse] = useState(null);
+
+  useEffect(() => {
+    if (token) {
+      try {
+        const decode = jwt.decode(token);
+        const role = decode.role;
+        setCanUse(role === "asegurador");
+      } catch (error) {
+        console.error("Error al decodificar el token", error);
+        setCanUse(false);
+      }
+    } else {
+      setCanUse(false);
+    }
+  }, [token, role]);
 
   const [solicitudes, setSolicitudes] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -190,6 +210,11 @@ const SolicitudesPage = () => {
       filtroFechaOcurrencia
     );
   };
+  if (canUse === null) return <ScreenLoader />;
+  if (!canUse) {
+    router.push("/");
+    return null;
+  }
 
   return (
     <>

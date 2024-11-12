@@ -124,13 +124,17 @@ export default function RootLayout({ children }) {
     setShowLogoutModal(false);
     setCerrandoSesion(true);
 
-    setToken(null);
-    setRole(null);
-    sessionStorage.removeItem("token");
-    sessionStorage.removeItem("role");
+    setTimeout(() => {
+      setCerrandoSesion(false);
 
-    setCerrandoSesion(false);
-    router.push("/");
+      // Las acciones que quieres que se ejecuten después del delay
+      setToken(null);
+      setRole(null);
+      sessionStorage.removeItem("token");
+      sessionStorage.removeItem("role");
+
+      router.push("/");
+    }, 1000); // Espera de 1 segundo
   };
   if (valid === null || role === null) {
     return null;
