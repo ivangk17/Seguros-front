@@ -83,7 +83,7 @@ export default function RootLayout({ children }) {
         url: "/administracion/editarPerfil",
         descripcion: "Editar perfil",
         onClick: () => {
-          setShowLogoutModal(true);
+          router.push("/administracion/editarPerfil");
         },
       },
       {
