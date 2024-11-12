@@ -6,7 +6,7 @@ import { useClientsDni } from "./hooks/useClientsDni";
 import { useCrearPoliza } from "./hooks/useCrearPoliza";
 import { useEliminarPoliza } from "./hooks/useEliminarPoliza";
 import { useEditarPoliza } from "./hooks/useEditarPoliza";
-import { ToastContainer } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import ConfirmDeleteModal from "@/app/componentes/modals/ConfirmDeleteModal";
 import ModalEdit from "@/app/componentes/modals/ModalEdit";
 import ModalCreate from "@/app/componentes/modals/ModalCreate";
@@ -21,7 +21,7 @@ import { filtrosConfigPolizas } from "./utils/filtrosConfig";
 import { keysTablaPoliza } from "./utils/keys";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
-import jwt from "jsonwebtoken"
+import jwt from "jsonwebtoken";
 
 export default function PolizasList() {
   const { token, role } = useAuth();
@@ -89,10 +89,6 @@ export default function PolizasList() {
     aseguradosOptions
   );
 
-  
-
-
-
   const handleDeleteClick = (poliza) => {
     setSelectedPoliza(poliza);
     setShowModalDelete(true);
@@ -114,7 +110,9 @@ export default function PolizasList() {
       await actualizarPoliza(selectedPoliza._id, datosSinId);
       setShowEditModal(false);
       fetchPolizasData();
+      toast.success("La poliza ha sido editada correctamente.")
     } catch (error) {
+      toast.success("Ocurrió un error al eliminar la poliza.")
       console.error(error.message);
     }
   };
@@ -134,12 +132,12 @@ export default function PolizasList() {
       await eliminarPoliza(selectedPoliza._id);
       setShowModalDelete(false);
       fetchPolizasData();
+      toast.success("La poliza ha sido eliminada correctamente.")
     } catch (error) {
+      toast.success("Ocurrió un error al eliminarla poliza.")
       console.error(error.message);
     }
   };
-
-
 
   const handleSubmitFilters = (e) => {
     e.preventDefault();
@@ -152,11 +150,21 @@ export default function PolizasList() {
     return null;
   }
 
-
   return (
     <>
       {loading && <ScreenLoader />}
-      <ToastContainer position="top-right" autoClose={3500} />
+      <ToastContainer
+        position="top-right"
+        autoClose={3500}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"
+      />
       <div className="bg-white shadow-lg rounded-lg w-full p-6 dark:bg-gray-800">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg font-semibold">Administración de pólizas</h2>
@@ -174,7 +182,12 @@ export default function PolizasList() {
           filtros={filtros}
           filtrosSubmit={handleSubmitFilters}
           acciones={acciones}
-          paginado={{ total: totalItems, datosPorPagina: itemsPorPagina, paginaActual, funcion: paginate }}
+          paginado={{
+            total: totalItems,
+            datosPorPagina: itemsPorPagina,
+            paginaActual,
+            funcion: paginate,
+          }}
         />
       </div>
 

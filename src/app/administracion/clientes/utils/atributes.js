@@ -166,9 +166,21 @@ export const atributosPoliza = [
   {
     id: "color",
     name: "color",
-    type: "text",
+    type: "select",
     placeholder: "Color",
     required: true,
+    options: [
+      { value: "Rojo", label: "Rojo" },
+      { value: "Azul", label: "Azul" },
+      { value: "Verde", label: "Verde" },
+      { value: "Negro", label: "Negro" },
+      { value: "Amarillo", label: "Amarillo" },
+      { value: "Gris", label: "Gris" },
+      { value: "Naranja", label: "Naranja" },
+      { value: "Rosa", label: "Rosa" },
+      { value: "Marrón", label: "Marrón" },
+      { value: "Blanco", label: "Blanco" },
+    ],
   },
   {
     id: "tipoVehiculo",

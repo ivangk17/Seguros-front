@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import Swal from 'sweetalert2';
-import Input from '../componentes/Input';
+import React, { useState } from "react";
+import { useRouter } from "next/navigation";
+import Swal from "sweetalert2";
+import Input from "../componentes/Input";
+import Image from "next/image";
 
 const CrearAseguradorForm = () => {
   const [formData, setFormData] = useState({
@@ -12,10 +13,18 @@ const CrearAseguradorForm = () => {
     confirmPassword: "",
     name: "",
     lastname: "",
-    dni: ""
+    dni: "",
   });
 
-  const [errors, setErrors] = useState({ email: "", password: "", confirmPassword: "", name: "", lastname: "", dni: "", submit: "" });
+  const [errors, setErrors] = useState({
+    email: "",
+    password: "",
+    confirmPassword: "",
+    name: "",
+    lastname: "",
+    dni: "",
+    submit: "",
+  });
   const router = useRouter();
 
   const validateEmail = (value) => {
@@ -30,11 +39,23 @@ const CrearAseguradorForm = () => {
 
   const validatePassword = (value) => {
     let res = "";
+    const minLength = 8;
+    const hasUpperCase = /[A-Z]/.test(value);
+    const hasNumber = /[0-9]/.test(value);
+    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(value);
+
     if (!value) {
       res = "Contraseña es requerida";
-    } else if (value.length < 6) {
-      res = "La contraseña debe tener al menos 6 caracteres";
+    } else if (value.length < minLength) {
+      res = `La contraseña debe tener al menos ${minLength} caracteres`;
+    } else if (!hasUpperCase) {
+      res = "La contraseña debe tener al menos una letra mayúscula";
+    } else if (!hasNumber) {
+      res = "La contraseña debe tener al menos un número";
+    } else if (!hasSpecialChar) {
+      res = "La contraseña debe tener al menos un carácter especial";
     }
+
     return res;
   };
 
@@ -67,11 +88,30 @@ const CrearAseguradorForm = () => {
     } else if (name === "password") {
       setErrors((prev) => ({ ...prev, password: validatePassword(value) }));
     } else if (name === "confirmPassword") {
-      setErrors((prev) => ({ ...prev, confirmPassword: validatePassword(value) }));
+      setErrors((prev) => ({
+        ...prev,
+        confirmPassword: validatePassword(value),
+      }));
     } else if (name === "name") {
-      setErrors((prev) => ({ ...prev, name: validateString(value, 2, "Nombre es requerido", "Nombre debe tener al menos 2 caracteres") }));
+      setErrors((prev) => ({
+        ...prev,
+        name: validateString(
+          value,
+          2,
+          "Nombre es requerido",
+          "Nombre debe tener al menos 2 caracteres"
+        ),
+      }));
     } else if (name === "lastname") {
-      setErrors((prev) => ({ ...prev, lastname: validateString(value, 2, "Apellido es requerido", "Apellido debe tener al menos 2 caracteres") }));
+      setErrors((prev) => ({
+        ...prev,
+        lastname: validateString(
+          value,
+          2,
+          "Apellido es requerido",
+          "Apellido debe tener al menos 2 caracteres"
+        ),
+      }));
     } else if (name === "dni") {
       setErrors((prev) => ({ ...prev, dni: validateDni(value) }));
     }
@@ -81,7 +121,7 @@ const CrearAseguradorForm = () => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
-      [name]: value
+      [name]: value,
     });
   };
 
@@ -93,8 +133,18 @@ const CrearAseguradorForm = () => {
     const emailError = validateEmail(formData.email.trim());
     const passwordError = validatePassword(formData.password);
     const confirmPasswordError = validatePassword(formData.confirmPassword);
-    const nameError = validateString(formData.name.trim(), 2, "Nombre es requerido", "Nombre debe tener al menos 2 caracteres");
-    const lastnameError = validateString(formData.lastname.trim(), 2, "Apellido es requerido", "Apellido debe tener al menos 2 caracteres");
+    const nameError = validateString(
+      formData.name.trim(),
+      2,
+      "Nombre es requerido",
+      "Nombre debe tener al menos 2 caracteres"
+    );
+    const lastnameError = validateString(
+      formData.lastname.trim(),
+      2,
+      "Apellido es requerido",
+      "Apellido debe tener al menos 2 caracteres"
+    );
     const dniError = validateDni(formData.dni.trim());
 
     setErrors({
@@ -104,15 +154,25 @@ const CrearAseguradorForm = () => {
       name: nameError,
       lastname: lastnameError,
       dni: dniError,
-      submit: ""
+      submit: "",
     });
 
-    if (emailError || passwordError || confirmPasswordError || nameError || lastnameError || dniError) {
+    if (
+      emailError ||
+      passwordError ||
+      confirmPasswordError ||
+      nameError ||
+      lastnameError ||
+      dniError
+    ) {
       return;
     }
 
     if (formData.password !== formData.confirmPassword) {
-      setErrors((prev) => ({ ...prev, submit: "Las contraseñas no coinciden" }));
+      setErrors((prev) => ({
+        ...prev,
+        submit: "Las contraseñas no coinciden",
+      }));
       return;
     }
 
@@ -121,49 +181,64 @@ const CrearAseguradorForm = () => {
       password: formData.password,
       name: formData.name.trim(),
       lastname: formData.lastname.trim(),
-      dni: formData.dni.trim()
+      dni: formData.dni.trim(),
     };
 
     try {
       const response = await fetch("http://localhost:3000/api/users/register", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(asegurador)
+        body: JSON.stringify(asegurador),
       });
 
       if (response.ok) {
         Swal.fire({
-          title: 'Éxito',
-          text: 'Asegurador creado exitosamente',
-          icon: 'success',
-          confirmButtonText: 'OK'
+          title: "Éxito",
+          text: "Su cuenta ha sido creada con éxito.",
+          icon: "success",
+          confirmButtonText: "Ir al login",
         }).then(() => {
-          router.push('/login'); 
+          router.push("/login");
         });
       } else {
         const data = await response.json();
-        setErrors((prev) => ({ ...prev, submit: data.error || "Error al crear la cuenta" }));
+        setErrors((prev) => ({
+          ...prev,
+          submit: data.error || "Error al crear la cuenta",
+        }));
       }
     } catch (error) {
       console.log(error);
-      setErrors((prev) => ({ ...prev, submit: "Error interno, refresque la pagina e intente nuevamente" }));
+      setErrors((prev) => ({
+        ...prev,
+        submit: "Error interno, refresque la pagina e intente nuevamente",
+      }));
     }
   };
 
   const handleCancel = () => {
-    router.push('/login');
+    router.push("/login");
   };
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
       <div className="mx-auto my-36 flex h-auto w-[400px] flex-col border-2 bg-white text-black shadow-xl">
-        <div className="mx-8 mt-7 mb-3 flex flex-row justify-start space-x-2">
-          <div className="h-7 w-3 bg-[#0DE6AC]"></div>
-          <div className="w-3 text-center font-sans text-xl font-bold">
-            <h1>Registrate</h1>
+        <div className="mx-auto mt-7 mb-3 flex flex-col items-center">
+          <div className="relative w-24 h-24 mb-3">
+            <Image
+              src="/img/logo.png"
+              alt="Logo"
+              className="rounded-full object-cover"
+              layout="fill"
+              priority
+              style={{ filter: "opacity(0.7)" }}
+            />
           </div>
+          <h1 className="text-center font-sans text-xl font-bold">
+            Registro
+          </h1>
         </div>
         <form onSubmit={handleSubmit} className="flex flex-col items-center">
           <div className="my-2 w-72">
@@ -177,7 +252,6 @@ const CrearAseguradorForm = () => {
                 handleValidation(event);
               }}
               error={errors.email}
-              
             />
           </div>
           <div className="my-2 w-72">
@@ -191,7 +265,6 @@ const CrearAseguradorForm = () => {
                 handleValidation(event);
               }}
               error={errors.password}
-              
             />
           </div>
           <div className="my-2 w-72">
@@ -205,7 +278,6 @@ const CrearAseguradorForm = () => {
                 handleValidation(event);
               }}
               error={errors.confirmPassword}
-              
             />
           </div>
           <div className="my-2 w-72">
@@ -219,7 +291,6 @@ const CrearAseguradorForm = () => {
                 handleValidation(event);
               }}
               error={errors.name}
-              
             />
           </div>
           <div className="my-2 w-72">
@@ -233,7 +304,6 @@ const CrearAseguradorForm = () => {
                 handleValidation(event);
               }}
               error={errors.lastname}
-              
             />
           </div>
           <div className="my-2 w-72">
@@ -247,7 +317,6 @@ const CrearAseguradorForm = () => {
                 handleValidation(event);
               }}
               error={errors.dni}
-              
             />
           </div>
           {errors.submit && (

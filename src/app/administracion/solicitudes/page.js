@@ -1,7 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
 import ScreenLoader from "@/app/componentes/ScreenLoader";
-import { ToastContainer, toast } from "react-toastify";
 import Table from "@/app/componentes/table/Table";
 import { motion } from "framer-motion";
 import SolicitudDetalles from "@/app/administracion/solicitudes/SolicitudDetalles";
@@ -9,7 +8,10 @@ import { Modal, Button } from "react-bootstrap";
 import "react-toastify/dist/ReactToastify.css";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
-import jwt from "jsonwebtoken"
+import jwt from "jsonwebtoken";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 const SolicitudesPage = () => {
   const api = process.env.NEXT_PUBLIC_URL_API;
   const { token, role } = useAuth();
@@ -178,23 +180,6 @@ const SolicitudesPage = () => {
     }
   };
 
-  const acciones = [
-    {
-      nombre: "Ver",
-      funcion: (solicitud) => setSelectedSolicitud(solicitud),
-    },
-    {
-      nombre: "Aceptar",
-      funcion: handleAccept,
-      disabled: (solicitud) => solicitud.estado !== "PENDIENTE",
-    },
-    {
-      nombre: "Rechazar",
-      funcion: handleReject,
-      disabled: (solicitud) => solicitud.estado !== "PENDIENTE",
-    },
-  ];
-
   const paginado = {
     total: solicitudes.length,
     datosPorPagina: solicitudesPorPagina,
@@ -210,6 +195,55 @@ const SolicitudesPage = () => {
       filtroFechaOcurrencia
     );
   };
+
+  const handleDescargarReporte = async (solicitud) => {
+    try {
+      const response = await fetch(
+        `${api}solicitudes/getSolicitudPdf/${solicitud._id}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+          },
+        }
+      );
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error);
+      }
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "solicitud.pdf";
+      document.body.appendChild(link);
+      link.click();
+
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      toast.error(err.message);
+    }
+  };
+
+  const acciones = [
+    {
+      nombre: "Descargar reporte",
+      funcion: handleDescargarReporte,
+    },
+    {
+      nombre: "Aceptar",
+      funcion: handleAccept,
+      disabled: (solicitud) => solicitud.estado !== "PENDIENTE",
+    },
+    {
+      nombre: "Rechazar",
+      funcion: handleReject,
+      disabled: (solicitud) => solicitud.estado !== "PENDIENTE",
+    },
+  ];
+
   if (canUse === null) return <ScreenLoader />;
   if (!canUse) {
     router.push("/");
@@ -219,7 +253,18 @@ const SolicitudesPage = () => {
   return (
     <>
       {loading && <ScreenLoader />}
-      <ToastContainer position="top-right" autoClose={3500} />
+      <ToastContainer
+        position="top-right"
+        autoClose={3500}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"
+      />
       <div className="bg-white shadow-lg rounded-lg w-full p-6 dark:bg-gray-800">
         <h2 className="text-lg font-semibold text-black dark:text-white">
           Administración de solicitudes

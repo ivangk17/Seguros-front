@@ -1,4 +1,5 @@
 import SideBarItem from "./SideBarItem";
+import Image from "next/image";
 
 export default function SideBar(props) {
   const { items } = props;
@@ -33,14 +34,17 @@ export default function SideBar(props) {
         aria-label="Sidebar"
       >
         <div className="h-full px-3 py-4 overflow-y-auto bg-gray-50 dark:bg-gray-800">
-          <a href="https://flowbite.com/" className="flex items-center ps-2.5 mb-5">
-            <img
-              src="https://flowbite.com/docs/images/logo.svg"
-              className="h-6 me-3 sm:h-7"
-              alt="Flowbite Logo"
-            />
+          <a href="#" className="flex items-center ps-2.5 mb-5">
+            <div className="relative w-10 h-10 rounded-full overflow-hidden mr-1">
+              <Image
+                src="/img/logo.png" // Ruta de la imagen en public/img
+                alt="Logo"
+                layout="fill"
+                objectFit="cover" // Hace que la imagen se adapte sin deformarse
+              />
+            </div>
             <span className="self-center text-xl font-semibold whitespace-nowrap dark:text-white">
-              Seguros Ort
+              Grupo 5 Seguros
             </span>
           </a>
           <ul className="space-y-2 font-medium">

@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { handlerLogin } from "./handlerLogin";
 import { useAuth } from "../../context/AuthContext";
 import Input from "../componentes/Input";
+import Image from "next/image";
 
 export default function PageLogin() {
   const [errors, setErrors] = useState({ email: "", password: "", submit: "" });
@@ -78,11 +79,20 @@ export default function PageLogin() {
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
       <div className="mx-auto my-36 flex h-auto w-[400px] flex-col border-2 bg-white text-black shadow-xl">
-        <div className="mx-8 mt-7 mb-3 flex flex-row justify-start space-x-2">
-          <div className="h-7 w-3 bg-[#0DE6AC]"></div>
-          <div className="text-center font-sans text-xl font-bold">
-            <h1>Inicio de sesión</h1>
+        <div className="mx-auto mt-7 mb-3 flex flex-col items-center">
+          <div className="relative w-24 h-24 mb-3">
+            <Image
+              src="/img/logo.png"
+              alt="Logo"
+              className="rounded-full object-cover"
+              layout="fill"
+              priority
+              style={{ filter: "opacity(0.7)" }}
+            />
           </div>
+          <h1 className="text-center font-sans text-xl font-bold">
+            Inicio de sesión
+          </h1>
         </div>
         <form onSubmit={handleSubmit} className="flex flex-col items-center">
           <div className="my-2 w-72">
@@ -118,12 +128,15 @@ export default function PageLogin() {
           </small>
         )}
         <div className="mx-7 my-3 flex justify-end text-sm font-semibold">
-          <a href="/crearAsegurador" className="text-blue-500">
+          <a href="/registro" className="text-blue-500">
             No tienes cuenta? Regístrate aquí.
           </a>
         </div>
         <div className="mx-7 my-3 flex justify-end text-sm font-semibold">
-          <a href="/editarContrasenia/mailRecuperacion" className="text-blue-500">
+          <a
+            href="/editarContrasenia/mailRecuperacion"
+            className="text-blue-500"
+          >
             Olvide la contraseña.
           </a>
         </div>

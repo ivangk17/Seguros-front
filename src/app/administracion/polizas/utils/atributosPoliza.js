@@ -57,6 +57,20 @@ export const atributosPoliza = [
       required: true,
     },
     {
+      id: "modelo",
+      name: "modelo",
+      type: "text",
+      placeholder: "Modelo",
+      required: true,
+    },
+    {
+      id: "anio",
+      name: "anio",
+      type: "number",
+      placeholder: "Año",
+      required: true,
+    },
+    {
       id: "color",
       name: "color",
       type: "select",
@@ -75,21 +89,6 @@ export const atributosPoliza = [
         { value: "Blanco", label: "Blanco" },
       ],
     },
-    {
-      id: "modelo",
-      name: "modelo",
-      type: "text",
-      placeholder: "Modelo",
-      required: true,
-    },
-    {
-      id: "anio",
-      name: "anio",
-      type: "number",
-      placeholder: "Año",
-      required: true,
-    },
-   
     {
       id: "tipoVehiculo",
       name: "tipoVehiculo",
