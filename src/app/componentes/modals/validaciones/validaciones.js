@@ -132,14 +132,14 @@ export const validarPoliza = (formData, atributos) => {
       newErrors[atributo.name] = "Prima Segura maxima es de 100000000(diez millones)";
     }
 
-    if (atributo.name === "primaSegura" && (isNaN(value) || value <= 1000)) {
+    if (atributo.name === "primaSegura" && (isNaN(value) || value < 1000)) {
       newErrors[atributo.name] = "Prima Segura minima es de 1000(mil)";
     }
     if (atributo.name === "deducible" && (isNaN(value)  || value > 10000000)) {
       newErrors[atributo.name] = "Deducible maximo es de 10000000(diez millones)";
     }
 
-    if (atributo.name === "deducible" && (isNaN(value) || value <= 2000)) {
+    if (atributo.name === "deducible" && (isNaN(value) || value < 2000)) {
       newErrors[atributo.name] = "Deducible minimo es de 2000(dos mil)";
     }
     if (atributo.name === "dominio" && !isValidDominio(value)) {
