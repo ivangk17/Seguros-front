@@ -65,7 +65,7 @@ export default function RootLayout({ children }) {
       },
       {
         url: "#",
-        descripcion: "Polizas",
+        descripcion: "Pólizas",
         onClick: () => {
           setVerify((prev) => !prev);
           router.push("/administracion/polizas");

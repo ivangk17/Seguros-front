@@ -129,7 +129,7 @@ export default function PageLogin() {
         )}
         <div className="mx-7 my-3 flex justify-end text-sm font-semibold">
           <a href="/registro" className="text-blue-500">
-            No tienes cuenta? Regístrate aquí.
+            ¿No tienes cuenta? Regístrate aquí.
           </a>
         </div>
         <div className="mx-7 my-3 flex justify-end text-sm font-semibold">

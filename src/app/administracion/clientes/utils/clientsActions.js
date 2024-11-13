@@ -6,7 +6,7 @@ export const getAccionesPorEstado = (
   handleViewPolizas
 ) => {
   const viewPolizasAction = {
-    nombre: "Ver Polizas",
+    nombre: "Ver Pólizas",
     funcion: () => handleViewPolizas(cliente),
   };
 
@@ -17,7 +17,7 @@ export const getAccionesPorEstado = (
       acciones = [
         ...acciones,
         {
-          nombre: "Crear Poliza",
+          nombre: "Agregar póliza",
           funcion: () => handleClickCreatePoliza(cliente),
         },
         {

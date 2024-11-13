@@ -191,7 +191,7 @@ export default function PolizasList() {
       </div>
 
       <ModalCreate
-        titulo="Crear una poliza"
+        titulo="Crear una póliza"
         tipo="poliza"
         show={showModalCreate}
         onClose={() => setShowModalCreate(false)}

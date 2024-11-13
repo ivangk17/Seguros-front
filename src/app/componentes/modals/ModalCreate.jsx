@@ -91,7 +91,7 @@ export default function ModalForm(props) {
       transition={{ duration: 0.3 }}
     >
       <motion.div
-        className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-full sm:max-w-md md:max-w-4xl lg:max-w-4xl xl:max-w-4xl max-h-[85vh] overflow-auto"
+        className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-full sm:max-w-md md:max-w-4xl lg:max-w-4xl xl:max-w-4xl max-h-[85vh] sm:max-h-full overflow-auto md:max-h-screen"
         initial={{ scale: 0.9 }}
         animate={{ scale: show ? 1 : 0.9 }}
         exit={{ scale: 0.9 }}
@@ -167,4 +167,3 @@ export default function ModalForm(props) {
     </motion.div>
   );
 }
-
