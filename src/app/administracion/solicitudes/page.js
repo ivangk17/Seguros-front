@@ -43,21 +43,21 @@ const SolicitudesPage = () => {
 
   const [filtroEstado, setFiltroEstado] = useState("");
   const [filtroNombrePropietario, setFiltroNombrePropietario] = useState("");
-  const [filtroFechaOcurrencia, setFiltroFechaOcurrencia] = useState("");
+/*   const [filtroFechaOcurrencia, setFiltroFechaOcurrencia] = useState(""); */
   const [paginaActual, setPaginaActual] = useState(1);
   const [solicitudesPorPagina] = useState(15);
 
   const fetchSolicitudes = async (
     estadoSolicitud,
     nombrePropietarioAsegurado,
-    fechaOcurrencia
+/*     fechaOcurrencia */
   ) => {
     setLoading(true);
     try {
       const queryParams = new URLSearchParams({
         ...(estadoSolicitud && { estadoSolicitud }),
         ...(nombrePropietarioAsegurado && { nombrePropietarioAsegurado }),
-        ...(fechaOcurrencia && { fechaDesde: fechaOcurrencia }),
+/*         ...(fechaOcurrencia && { fechaDesde: fechaOcurrencia }), */
       }).toString();
 
       const url = `${api}solicitudes/list?${queryParams}`;
@@ -193,7 +193,7 @@ const SolicitudesPage = () => {
     fetchSolicitudes(
       filtroEstado,
       filtroNombrePropietario,
-      filtroFechaOcurrencia
+/*       filtroFechaOcurrencia */
     );
   };
 
@@ -352,14 +352,14 @@ const SolicitudesPage = () => {
               type: "text",
               placeholder: "Nombre completo",
             },
-            {
+            /* {
               valor: filtroFechaOcurrencia,
               funcion: setFiltroFechaOcurrencia,
               id: "fechaOcurrencia",
               name: "fechaOcurrencia",
               type: "date",
               placeholder: "Fecha desde",
-            },
+            }, */
           ]}
           filtrosSubmit={handleSubmitFilters}
         />
