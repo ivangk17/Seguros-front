@@ -87,7 +87,7 @@ export default function PaginaRecuperacionContrasenia() {
               type="password"
               value={contrasenia}
               onChange={(e) => setContrasenia(e.target.value)}
-              error={errores.submit}
+           /*    error={errores} */
             />
           </div>
           <div className="my-2 w-72">
@@ -97,7 +97,7 @@ export default function PaginaRecuperacionContrasenia() {
               type="password"
               value={confirmacionContrasenia}
               onChange={(e) => setConfirmacionContrasenia(e.target.value)}
-              error={errores.submit}
+           /*    error={errores} */
             />
           </div>
           <div className="my-2 flex justify-center">
