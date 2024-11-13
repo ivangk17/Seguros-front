@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 
 export default function ConfirmDeleteModal(props) {
-  const { show, dato, onClose, onConfirm, atributos, mensaje } = props;
+  const { show, dato, onClose, onConfirm, atributos, mensaje, mensajeAdicional = "" } = props;
   if (!show) return null;
 
   return (
@@ -20,7 +20,7 @@ export default function ConfirmDeleteModal(props) {
         transition={{ duration: 0.3 }}
       >
         <h2 className="text-xl font-semibold">{mensaje}</h2>
-        <h3 className="text-gray-500 mb-4">Esta acción es irreversible.</h3>
+        <h3 className="text-gray-500 mb-4 mt-2">Esta acción es irreversible. {mensajeAdicional}</h3>
         <p>
           {atributos.map((atributo) => (
             <span key={atributo}>{dato ? dato[atributo] : ""} </span>

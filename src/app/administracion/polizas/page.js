@@ -112,8 +112,7 @@ export default function PolizasList() {
       fetchPolizasData();
       toast.success("La poliza ha sido editada correctamente.")
     } catch (error) {
-      toast.success("Ocurrió un error al eliminar la poliza.")
-      console.error(error.message);
+      toast.error(error.message)
     }
   };
 
@@ -123,7 +122,7 @@ export default function PolizasList() {
       setShowModalCreate(false);
       fetchPolizasData();
     } catch (error) {
-      console.error(error.message);
+      toast.error(error.message);
     }
   };
 
@@ -134,8 +133,7 @@ export default function PolizasList() {
       fetchPolizasData();
       toast.success("La poliza ha sido eliminada correctamente.")
     } catch (error) {
-      toast.success("Ocurrió un error al eliminarla poliza.")
-      console.error(error.message);
+      toast.error(error.message)
     }
   };
 
@@ -219,6 +217,7 @@ export default function PolizasList() {
         atributos={atributosPolizaDelete}
         mensaje="¿Estás seguro de eliminar esta póliza?"
         acciones={acciones}
+        mensajeAdicional="Se eliminaran todas las solicitudes asociadas a esta póliza, sea cual sea su estado."
       />
     </>
   );

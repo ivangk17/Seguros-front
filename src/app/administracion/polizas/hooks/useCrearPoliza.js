@@ -13,7 +13,7 @@ export const useCrearPoliza = () => {
       toast.success("La póliza ha sido agregada con éxito.");
     } catch (error) {
       setErrorCrearPoliza(error.message);
-      toast.error(`Error: ${error.message}`);
+      throw new Error(error.message);
     } finally {
       setLoadingCrearPoliza(false);
     }

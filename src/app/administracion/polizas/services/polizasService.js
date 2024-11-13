@@ -146,7 +146,8 @@ export const deletePoliza = async (polizaId) => {
     });
 
     if (!response.ok) {
-      throw new Error("Error al eliminar la póliza");
+      const data = await response.json();
+      throw new Error(data.error);
     }
 
     return true;

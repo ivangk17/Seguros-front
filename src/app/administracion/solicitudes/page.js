@@ -217,10 +217,13 @@ const SolicitudesPage = () => {
       const link = document.createElement("a");
       link.href = url;
       link.download = "solicitud.pdf";
+
+      // Añadir el enlace al DOM, clicarlo y luego eliminarlo
       document.body.appendChild(link);
       link.click();
+      document.body.removeChild(link);
 
-      link.remove();
+      // Liberar el objeto URL después de la descarga
       window.URL.revokeObjectURL(url);
     } catch (err) {
       toast.error(err.message);
