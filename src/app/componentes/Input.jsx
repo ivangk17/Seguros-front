@@ -17,7 +17,7 @@ export default function Input({
   };
 
   return (
-    <div className="mb-4 w-full">
+    <div className="w-full">
       {label && (
         <label
           htmlFor={name}
@@ -32,7 +32,7 @@ export default function Input({
           name={name}
           value={value}
           onChange={onChange}
-          className="bg-gray-50 border border-gray-300 text-gray-900 text-xs sm:text-sm md:text-base rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full py-1 px-2 sm:py-2 sm:px-3 mb-3"
+          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full py-2 px-3"
           {...rest}
         >
           {options.map((option, index) => (
@@ -49,7 +49,7 @@ export default function Input({
             type={type === "password" && showPassword ? "text" : type}
             value={value}
             onChange={onChange}
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-xs sm:text-sm md:text-base rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full py-1 px-2 sm:py-2 sm:px-3 mb-3"
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full py-2 px-3"
             {...rest}
           />
           {type === "password" && (
