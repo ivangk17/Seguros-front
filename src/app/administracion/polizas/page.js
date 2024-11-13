@@ -186,6 +186,7 @@ export default function PolizasList() {
             paginaActual,
             funcion: paginate,
           }}
+          responsiveTable="1"
         />
       </div>
 

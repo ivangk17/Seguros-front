@@ -124,6 +124,7 @@ export default function AseguradoresPage() {
           paginado={paginado}
           acciones={acciones}
           filtrosSubmit={handleSubmitFilters}
+          responsiveTable="3"
         />
       </div>
     </>

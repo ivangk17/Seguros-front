@@ -1,13 +1,24 @@
 import SideBarItem from "./SideBarItem";
 import Image from "next/image";
+import { useState } from "react";
 
 export default function SideBar(props) {
   const { items } = props;
+  const [isOpen, setIsOpen] = useState(false);
+
+  // Función para alternar el estado del sidebar
+  const toggleSidebar = () => {
+    setIsOpen((prevState) => !prevState);
+  };
+
+  // Función para cerrar el sidebar directamente
+  const closeSidebar = () => {
+    setIsOpen(false);
+  };
   return (
     <>
       <button
-        data-drawer-target="logo-sidebar"
-        data-drawer-toggle="logo-sidebar"
+        onClick={toggleSidebar}
         aria-controls="logo-sidebar"
         type="button"
         className="inline-flex items-center p-2 mt-2 ms-3 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
@@ -30,7 +41,9 @@ export default function SideBar(props) {
 
       <aside
         id="logo-sidebar"
-        className="fixed top-0 left-0 z-40 w-64 h-screen transition-transform -translate-x-full sm:translate-x-0"
+        className={`fixed top-0 left-0 z-40 w-64 h-screen transition-transform duration-300 ease-in-out ${
+          isOpen ? "translate-x-0" : "-translate-x-full"
+        } sm:translate-x-0`} // Cambiar la clase dependiendo del estado
         aria-label="Sidebar"
       >
         <div className="h-full px-3 py-4 overflow-y-auto bg-gray-50 dark:bg-gray-800">
@@ -49,8 +62,14 @@ export default function SideBar(props) {
           </a>
           <ul className="space-y-2 font-medium">
             {items.map((item, index) => (
-              <SideBarItem key={index} item={item} />
+              <SideBarItem key={index} item={item} closeSidebar={closeSidebar} />
             ))}
+            <li
+              onClick={closeSidebar}
+              className="text-gray-500 dark:text-gray-400 cursor-pointer sm:hidden hover:bg-gray-100 dark:hover:bg-gray-700 p-2 rounded-lg"
+            >
+              <span>Cerrar menú</span>
+            </li>
           </ul>
         </div>
       </aside>

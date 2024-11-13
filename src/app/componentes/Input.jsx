@@ -17,11 +17,11 @@ export default function Input({
   };
 
   return (
-    <div className="mb-4">
+    <div className="mb-4 w-full">
       {label && (
         <label
           htmlFor={name}
-          className="block text-gray-700 text-sm font-bold mb-2"
+          className="block text-gray-700 text-xs sm:text-sm md:text-base font-bold mb-1"
         >
           {label}
         </label>
@@ -32,7 +32,7 @@ export default function Input({
           name={name}
           value={value}
           onChange={onChange}
-          className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full py-2 px-3 mb-3"
+          className="bg-gray-50 border border-gray-300 text-gray-900 text-xs sm:text-sm md:text-base rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full py-1 px-2 sm:py-2 sm:px-3 mb-3"
           {...rest}
         >
           {options.map((option, index) => (
@@ -49,14 +49,14 @@ export default function Input({
             type={type === "password" && showPassword ? "text" : type}
             value={value}
             onChange={onChange}
-            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full py-2 px-3 mb-3"
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-xs sm:text-sm md:text-base rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full py-1 px-2 sm:py-2 sm:px-3 mb-3"
             {...rest}
           />
           {type === "password" && (
             <button
               type="button"
               onClick={togglePasswordVisibility}
-              className="absolute inset-y-0 right-3 flex items-center text-gray-500"
+              className="absolute inset-y-0 right-2 flex items-center text-gray-500"
             >
               {showPassword ? "👁️" : "🙈"}
             </button>
@@ -64,7 +64,9 @@ export default function Input({
         </div>
       )}
       {error && (
-        <small className="text-red-500 text-xs italic mt-1">{error}</small>
+        <small className="text-red-500 text-xs sm:text-sm italic mt-1">
+          {error}
+        </small>
       )}
     </div>
   );
