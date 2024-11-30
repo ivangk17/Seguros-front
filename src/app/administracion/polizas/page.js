@@ -186,11 +186,12 @@ export default function PolizasList() {
             paginaActual,
             funcion: paginate,
           }}
+          responsiveTable="1"
         />
       </div>
 
       <ModalCreate
-        titulo="Crear una poliza"
+        titulo="Crear una póliza"
         tipo="poliza"
         show={showModalCreate}
         onClose={() => setShowModalCreate(false)}

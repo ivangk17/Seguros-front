@@ -1,12 +1,14 @@
 import Link from "next/link";
 
 export default function SideBarItem(props) {
-  const { item } = props;
-
+  const { item, closeSidebar } = props;
   const handleClick = (e) => {
     if (item.onClick) {
       e.preventDefault();
       item.onClick();
+    }
+    if (closeSidebar) {
+      closeSidebar();
     }
   };
 

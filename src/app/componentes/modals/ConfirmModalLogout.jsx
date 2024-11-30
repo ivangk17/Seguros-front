@@ -5,7 +5,7 @@ export default function ConfirmLogoutModal({ show, onClose, onConfirm }) {
 
   return (
     <motion.div
-      className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50"
+      className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50" // Añadimos z-50 aquí
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}

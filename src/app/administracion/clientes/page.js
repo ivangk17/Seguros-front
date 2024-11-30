@@ -254,6 +254,7 @@ export default function ClientsList() {
           paginado={paginado}
           filtros={filtros}
           filtrosSubmit={handleSubmitFilters}
+          responsiveTable="0"
         />
       </div>
       <ModalCreate

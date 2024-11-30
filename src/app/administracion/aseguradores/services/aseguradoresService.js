@@ -47,7 +47,6 @@ export const changeStateClient = async (asegurado, newState) => {
   }
 
   const { _id } = asegurado;
-  console.log(_id);
 
   try {
     const url = `${api}users/editarEstadoAsegurador/${_id}`;

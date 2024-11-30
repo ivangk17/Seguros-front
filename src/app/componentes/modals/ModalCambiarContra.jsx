@@ -74,16 +74,16 @@ const ChangePasswordModal = ({ show, onClose, onSubmit }) => {
 
   return (
     <motion.div
-      className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 dark:bg-gray-700 dark:bg-opacity-70"
+      className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50" // Añadimos z-50 aquí
       initial={{ opacity: 0 }}
-      animate={{ opacity: show ? 1 : 0 }}
+      animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.3 }}
     >
       <motion.div
-        className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-md"
+        className="bg-white p-6 rounded-lg shadow-lg"
         initial={{ scale: 0.9 }}
-        animate={{ scale: show ? 1 : 0.9 }}
+        animate={{ scale: 1 }}
         exit={{ scale: 0.9 }}
         transition={{ duration: 0.3 }}
       >
@@ -99,30 +99,36 @@ const ChangePasswordModal = ({ show, onClose, onSubmit }) => {
           </button>
         </div>
         <form onSubmit={handleSubmit}>
-          <Input
-            name="oldPass"
-            label="Contraseña Actual"
-            type="password"
-            value={formData.oldPass}
-            onChange={handleInputChange}
-            error={errors.oldPass}
-          />
-          <Input
-            name="newPass"
-            label="Nueva Contraseña"
-            type="password"
-            value={formData.newPass}
-            onChange={handleInputChange}
-            error={errors.newPass}
-          />
-          <Input
-            name="confirmPassword"
-            label="Confirmar Nueva Contraseña"
-            type="password"
-            value={formData.confirmPassword}
-            onChange={handleInputChange}
-            error={errors.confirmPassword}
-          />
+          <div className="mb-2">
+            <Input
+              name="oldPass"
+              label="Contraseña Actual"
+              type="password"
+              value={formData.oldPass}
+              onChange={handleInputChange}
+              error={errors.oldPass}
+            />
+          </div>
+          <div className="mb-2">
+            <Input
+              name="newPass"
+              label="Nueva Contraseña"
+              type="password"
+              value={formData.newPass}
+              onChange={handleInputChange}
+              error={errors.newPass}
+            />
+          </div>
+          <div className="mb-2">
+            <Input
+              name="confirmPassword"
+              label="Confirmar Nueva Contraseña"
+              type="password"
+              value={formData.confirmPassword}
+              onChange={handleInputChange}
+              error={errors.confirmPassword}
+            />
+          </div>
           <div className="mt-4 flex justify-end">
             <button
               type="button"

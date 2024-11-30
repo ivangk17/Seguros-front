@@ -10,7 +10,7 @@ export default function ModalEdit({
   onClose,
   onConfirm,
   titulo,
-  tipo
+  tipo,
 }) {
   if (!show) return null; // Si no se debe mostrar, no renderiza nada
   const [formData, setFormData] = useState({});
@@ -49,21 +49,23 @@ export default function ModalEdit({
 
   return (
     <motion.div
-      className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 dark:bg-gray-700 dark:bg-opacity-70"
+      className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50" // Añadimos z-50 aquí
       initial={{ opacity: 0 }}
-      animate={{ opacity: show ? 1 : 0 }}
+      animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.3 }}
     >
       <motion.div
-        className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-2xl"
+        className="bg-white p-6 rounded-lg shadow-lg"
         initial={{ scale: 0.9 }}
-        animate={{ scale: show ? 1 : 0.9 }}
+        animate={{ scale: 1 }}
         exit={{ scale: 0.9 }}
         transition={{ duration: 0.3 }}
       >
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-lg font-semibold text-black dark:text-white">{titulo}</h2>
+          <h2 className="text-lg font-semibold text-black dark:text-white">
+            {titulo}
+          </h2>
           <button
             onClick={onClose}
             className="text-gray-600 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200"
@@ -75,7 +77,10 @@ export default function ModalEdit({
         <div className="grid grid-cols-1 sm:grid-cols-1 gap-4">
           {atributos.map((atributo, index) => (
             <div className="flex flex-col mb-4" key={index}>
-              <label htmlFor={atributo.id} className="mb-1 text-gray-700 dark:text-gray-300 p-1">
+              <label
+                htmlFor={atributo.id}
+                className="mb-1 text-gray-700 dark:text-gray-300 p-1"
+              >
                 {atributo.placeholder}
               </label>
               <Input
@@ -85,7 +90,7 @@ export default function ModalEdit({
                 placeholder={atributo.placeholder}
                 options={atributo.options || []}
                 onChange={handleChange}
-                value={formData[atributo.name] || ''}
+                value={formData[atributo.name] || ""}
                 error={errors[atributo.name]}
               />
             </div>

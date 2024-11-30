@@ -33,6 +33,10 @@ export const validarCliente = (formData, atributos) => {
         newErrors[
           atributo.name
         ] = `${atributo.placeholder} no es válido. Solo se permiten letras y espacios`;
+      } else if (value.length > 80) {
+        newErrors[
+          atributo.name
+        ] = `${atributo.placeholder} no puede tener más de 80 caracteres`;
       }
     }
 
@@ -124,30 +128,38 @@ export const validarPoliza = (formData, atributos) => {
     }
     if (atributo.name === "anio") {
       const yearRegex = /^\d{4}$/;
-      if (!yearRegex.test(value) || isNaN(value) || value < 1950 || value > 2024) {
-      newErrors[atributo.name] = "Año no válido";
+      if (
+        !yearRegex.test(value) ||
+        isNaN(value) ||
+        value < 1950 ||
+        value > 2024
+      ) {
+        newErrors[atributo.name] = "Año no válido";
       }
-    } 
+    }
     if (atributo.name === "primaSegura" && (isNaN(value) || value > 10000000)) {
-      newErrors[atributo.name] = "Prima Segura maxima es de 100000000(diez millones)";
+      newErrors[atributo.name] =
+        "Prima Segura maxima es de 100000000(diez millones)";
     }
 
-    if (atributo.name === "primaSegura" && (isNaN(value) || value <= 1000)) {
+    if (atributo.name === "primaSegura" && (isNaN(value) || value < 1000)) {
       newErrors[atributo.name] = "Prima Segura minima es de 1000(mil)";
     }
-    if (atributo.name === "deducible" && (isNaN(value)  || value > 10000000)) {
-      newErrors[atributo.name] = "Deducible maximo es de 10000000(diez millones)";
+    if (atributo.name === "deducible" && (isNaN(value) || value > 10000000)) {
+      newErrors[atributo.name] =
+        "Deducible maximo es de 10000000(diez millones)";
     }
 
-    if (atributo.name === "deducible" && (isNaN(value) || value <= 2000)) {
+    if (atributo.name === "deducible" && (isNaN(value) || value < 2000)) {
       newErrors[atributo.name] = "Deducible minimo es de 2000(dos mil)";
     }
     if (atributo.name === "dominio" && !isValidDominio(value)) {
       newErrors[atributo.name] = "Dominio no válido";
     }
-   
+
     if (atributo.name === "aseguradora" && (!value || value.length > 20)) {
-      newErrors[atributo.name] = "Aseguradora debe tener  menos de 20 caracteres";
+      newErrors[atributo.name] =
+        "Aseguradora debe tener  menos de 20 caracteres";
     }
 
     if (atributo.name === "aseguradora" && (!value || value.length < 3)) {
@@ -160,7 +172,7 @@ export const validarPoliza = (formData, atributos) => {
     if (atributo.name === "marca" && (!value || value.length < 3)) {
       newErrors[atributo.name] = "Marca debe tener al menos 3 caracteres";
     }
-  
+
     if (atributo.name === "modelo" && (!value || value.length < 3)) {
       newErrors[atributo.name] = "Modelo debe tener al menos 3 caracteres";
     }
@@ -169,7 +181,8 @@ export const validarPoliza = (formData, atributos) => {
       newErrors[atributo.name] = "Color es obligatorio";
     }
     if (atributo.name === "numeroIdentificador" && !isValidVIN(value)) {
-      newErrors[atributo.name] = "Número identificador (VIN) no válido,debe tener 17 caracteres alfanuméricos";
+      newErrors[atributo.name] =
+        "Número identificador (VIN) no válido,debe tener 17 caracteres alfanuméricos";
     }
     if (atributo.name === "dni" && !value) {
       newErrors[atributo.name] = "DNI es obligatorio";
@@ -193,10 +206,13 @@ const isValidCUIT = (cuit) => {
   if (!cuit || cuit.length !== 11) return false;
 
   const multipliers = [5, 4, 3, 2, 7, 6, 5, 4, 3, 2];
-  const digits = cuit.split('').map(Number);
+  const digits = cuit.split("").map(Number);
   const checkDigit = digits.pop();
 
-  const sum = digits.reduce((acc, digit, index) => acc + digit * multipliers[index], 0);
+  const sum = digits.reduce(
+    (acc, digit, index) => acc + digit * multipliers[index],
+    0
+  );
   const mod11 = 11 - (sum % 11);
 
   return mod11 === checkDigit || (mod11 === 11 && checkDigit === 0);
@@ -208,7 +224,8 @@ const isValidEmail = (email) => {
 };
 
 const isValidDominio = (dominio) => {
-  const regex = /^[A-Z]{3}\d{3}$|^[A-Z]{2}\d{3}[A-Z]{2}$|^[A-Z]{3} \d{3}$|^[A-Z]{2} \d{3} [A-Z]{2}$|^[A-Z]\d{3}[A-Z]{3}$/i;
+  const regex =
+    /^[A-Z]{3}\d{3}$|^[A-Z]{2}\d{3}[A-Z]{2}$|^[A-Z]{3} \d{3}$|^[A-Z]{2} \d{3} [A-Z]{2}$|^[A-Z]\d{3}[A-Z]{3}$/i;
   return regex.test(dominio);
 };
 
@@ -216,7 +233,11 @@ export const validarContraseña = (contrasenia) => {
   const caracteresMinimos = 8;
   const tieneMayus = /[A-Z]/.test(contrasenia);
   const tieneCaracteresEspeciales = /[!@#$%^&*(),.?":{}|<>]/.test(contrasenia);
-  return contrasenia.length >= caracteresMinimos && tieneMayus && tieneCaracteresEspeciales;
+  return (
+    contrasenia.length >= caracteresMinimos &&
+    tieneMayus &&
+    tieneCaracteresEspeciales
+  );
 };
 
 export const validarEmail = (email) => {

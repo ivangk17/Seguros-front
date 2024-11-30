@@ -145,7 +145,8 @@ function EditProfile() {
       }
 
       if (!response.ok) {
-        throw new Error("Error al agregar cliente.");
+        const data = await response.json();
+        throw new Error(data.error);
       }
       const data = await response.json();
       return data;
@@ -180,7 +181,6 @@ function EditProfile() {
       toast.success("Perfil actualizado exitosamente");
     } catch (err) {
       toast.error(err.message);
-      console.log(err.message);
     } finally {
       setLoading(false);
     }
@@ -228,13 +228,13 @@ function EditProfile() {
         pauseOnHover
         theme="colored"
       />
-      <div className="bg-white shadow-lg rounded-lg w-full p-6 dark:bg-gray-800">
+      <div className="bg-white shadow-lg rounded-lg w-full p-4 sm:p-6 md:p-8 dark:bg-gray-800">
         <Header
           titulo="Editar Perfil"
           texto="Cambiar contraseña"
           accion={() => setShowChangePasswordModal(true)}
         />
-        <form className="grid grid-cols-4 gap-4" onSubmit={handleSubmit}>
+        <form className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" onSubmit={handleSubmit}>
           <Input
             id="email"
             name="email"
@@ -342,10 +342,10 @@ function EditProfile() {
             onBlur={handleBlur}
             error={errors.phone}
           />
-          <div className="col-span-4 flex items-end">
+          <div className="col-span-1 sm:col-span-2 lg:col-span-4 flex items-end">
             <button
               type="submit"
-              className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 inline-flex items-center ml-auto"
+              className="w-full text-xs sm:text-sm md:text-base text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg px-4 py-2"
               disabled={loading}
             >
               {loading ? "Guardando..." : "Guardar Cambios"}

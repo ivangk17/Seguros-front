@@ -95,7 +95,7 @@ export default function PageLogin() {
           </h1>
         </div>
         <form onSubmit={handleSubmit} className="flex flex-col items-center">
-          <div className="my-2 w-72">
+          <div className="my-2 w-72 mb-4">
             <Input
               id="email"
               name="email"
@@ -104,7 +104,7 @@ export default function PageLogin() {
               error={errors.email}
             />
           </div>
-          <div className="my-2 w-72">
+          <div className="my-2 w-72 mb-4">
             <Input
               id="password"
               name="password"
@@ -129,7 +129,7 @@ export default function PageLogin() {
         )}
         <div className="mx-7 my-3 flex justify-end text-sm font-semibold">
           <a href="/registro" className="text-blue-500">
-            No tienes cuenta? Regístrate aquí.
+            ¿No tienes cuenta? Regístrate aquí.
           </a>
         </div>
         <div className="mx-7 my-3 flex justify-end text-sm font-semibold">

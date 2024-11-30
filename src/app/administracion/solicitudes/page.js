@@ -362,6 +362,7 @@ const SolicitudesPage = () => {
             }, */
           ]}
           filtrosSubmit={handleSubmitFilters}
+          responsiveTable="2"
         />
         {selectedSolicitud && (
           <motion.div

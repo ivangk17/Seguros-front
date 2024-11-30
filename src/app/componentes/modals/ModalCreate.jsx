@@ -4,9 +4,17 @@ import SelectWithError from "../SelectWithError";
 import { useState, useEffect } from "react";
 import { validarCliente, validarPoliza } from "./validaciones/validaciones";
 
-
 export default function ModalForm(props) {
-  const { titulo, show, onClose, onSubmit, atributos, tipo, initialData = {} } = props;
+  const {
+    titulo,
+    show,
+    onClose,
+    onSubmit,
+    atributos,
+    tipo,
+    initialData = {},
+  } = props;
+
   if (!show) return null;
 
   const [formData, setFormData] = useState(initialData);
@@ -25,14 +33,15 @@ export default function ModalForm(props) {
 
     let normalizedValue = value;
     if (name === "dominio" || name === "numeroIdentificador") {
-      normalizedValue = value.replace(/\s+/g, '').toUpperCase();
+      normalizedValue = value.replace(/\s+/g, "").toUpperCase();
     }
 
-    if ((name === "marca" || name === "color") && !/^[a-zA-Z\s]*$/.test(normalizedValue)) {
+    if (
+      (name === "marca" || name === "color") &&
+      !/^[a-zA-Z\s]*$/.test(normalizedValue)
+    ) {
       return;
     }
-
-
 
     setFormData((prevFormData) => ({
       ...prevFormData,
@@ -75,14 +84,14 @@ export default function ModalForm(props) {
 
   return (
     <motion.div
-      className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 dark:bg-gray-700 dark:bg-opacity-70"
+      className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 dark:bg-gray-700 dark:bg-opacity-70 z-50"
       initial={{ opacity: 0 }}
       animate={{ opacity: show ? 1 : 0 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.3 }}
     >
       <motion.div
-        className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-full max-w-4xl"
+        className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-full sm:max-w-md md:max-w-4xl lg:max-w-4xl xl:max-w-4xl max-h-[85vh] sm:max-h-full overflow-auto md:max-h-screen"
         initial={{ scale: 0.9 }}
         animate={{ scale: show ? 1 : 0.9 }}
         exit={{ scale: 0.9 }}
@@ -103,7 +112,8 @@ export default function ModalForm(props) {
           </button>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+        {/* Aquí cambiamos el grid para 2 columnas en pantallas pequeñas */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
           {atributos.map((atributo, index) => (
             <div className="flex flex-col mb-4" key={index}>
               <label
@@ -116,7 +126,9 @@ export default function ModalForm(props) {
                 <SelectWithError
                   id={atributo.id}
                   options={atributo.options}
-                  onChange={(selectedOption) => handleSelectChange(selectedOption, atributo.name)}
+                  onChange={(selectedOption) =>
+                    handleSelectChange(selectedOption, atributo.name)
+                  }
                   placeholder={atributo.placeholder}
                   error={errors[atributo.name]}
                   value={formData[atributo.name]}
