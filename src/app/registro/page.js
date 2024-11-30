@@ -59,16 +59,24 @@ const CrearAseguradorForm = () => {
     return res;
   };
 
-  const validateString = (value, minLength, msgRequired, msgLength) => {
+  const validateString = (
+    value,
+    minLength,
+    msgRequired,
+    msgLength,
+    maxLength,
+    msgMaxLength
+  ) => {
     let res = "";
     if (!value) {
       res = msgRequired;
     } else if (value.length < minLength) {
       res = msgLength;
+    } else if (maxLength && value.length > maxLength) {
+      res = msgMaxLength;
     }
     return res;
   };
-
   const validateDni = (value) => {
     let res = "";
     if (!value) {
@@ -99,7 +107,9 @@ const CrearAseguradorForm = () => {
           value,
           2,
           "Nombre es requerido",
-          "Nombre debe tener al menos 2 caracteres"
+          "Nombre debe tener al menos 2 caracteres",
+          80,
+          "Nombre no puede tener más de 80 caracteres"
         ),
       }));
     } else if (name === "lastname") {
@@ -109,7 +119,9 @@ const CrearAseguradorForm = () => {
           value,
           2,
           "Apellido es requerido",
-          "Apellido debe tener al menos 2 caracteres"
+          "Apellido debe tener al menos 2 caracteres",
+          80,
+          "Apellido no puede tener más de 80 caracteres"
         ),
       }));
     } else if (name === "dni") {
@@ -137,13 +149,17 @@ const CrearAseguradorForm = () => {
       formData.name.trim(),
       2,
       "Nombre es requerido",
-      "Nombre debe tener al menos 2 caracteres"
+      "Nombre debe tener al menos 2 caracteres",
+      80,
+      "Nombre no puede tener más de 80 caracteres"
     );
     const lastnameError = validateString(
       formData.lastname.trim(),
       2,
       "Apellido es requerido",
-      "Apellido debe tener al menos 2 caracteres"
+      "Apellido debe tener al menos 2 caracteres",
+      80,
+      "Apellido no puede tener más de 80 caracteres"
     );
     const dniError = validateDni(formData.dni.trim());
 
@@ -236,9 +252,7 @@ const CrearAseguradorForm = () => {
               style={{ filter: "opacity(0.7)" }}
             />
           </div>
-          <h1 className="text-center font-sans text-xl font-bold">
-            Registro
-          </h1>
+          <h1 className="text-center font-sans text-xl font-bold">Registro</h1>
         </div>
         <form onSubmit={handleSubmit} className="flex flex-col items-center">
           <div className="my-2 w-72">
