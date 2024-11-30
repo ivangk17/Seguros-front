@@ -95,7 +95,6 @@ export const crearPoliza = async (formData) => {
     const contentType = response.headers.get("content-type");
     if (!contentType || !contentType.includes("application/json")) {
       const text = await response.text();
-      console.log(text);
       throw new Error(`Error: ${text}`);
     }
 

@@ -226,7 +226,6 @@ const CrearAseguradorForm = () => {
         }));
       }
     } catch (error) {
-      console.log(error);
       setErrors((prev) => ({
         ...prev,
         submit: "Error interno, refresque la pagina e intente nuevamente",

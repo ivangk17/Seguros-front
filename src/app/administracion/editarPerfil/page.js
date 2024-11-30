@@ -181,7 +181,6 @@ function EditProfile() {
       toast.success("Perfil actualizado exitosamente");
     } catch (err) {
       toast.error(err.message);
-      console.log(err.message);
     } finally {
       setLoading(false);
     }

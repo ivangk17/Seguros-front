@@ -7,7 +7,6 @@ export default function TableHeader(props) {
       <tr>
         {cabeceras.map((cabecera, index) => {
           const visibilityClass = getVisibilityClass(index, columnasVisibles);
-          console.log(index);
           return (
             <TableHeaderItem
               key={index}
