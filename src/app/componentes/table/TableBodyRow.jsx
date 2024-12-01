@@ -37,15 +37,14 @@ export default function TableBodyRow(props) {
   );
 }
 function getVisibilityClass(index, columnasVisibles) {
-  let visibilityClass = "hidden"; // Por defecto, ocultar la columna
+  let visibilityClass = "hidden";
 
-  // Asignar las clases correspondientes a cada tamaño de pantalla
   if (columnasVisibles.xs.includes(index))
-    visibilityClass += " col-xs-visible "; // Pantallas menores a 640px
-  if (columnasVisibles.sm.includes(index)) visibilityClass += " sm:table-cell "; // sm
-  if (columnasVisibles.md.includes(index)) visibilityClass += " md:table-cell "; // md
-  if (columnasVisibles.lg.includes(index)) visibilityClass += " lg:table-cell "; // lg
-  if (columnasVisibles.xl.includes(index)) visibilityClass += " xl:table-cell "; // xl
+    visibilityClass += " col-xs-visible "; 
+  if (columnasVisibles.sm.includes(index)) visibilityClass += " sm:table-cell "; 
+  if (columnasVisibles.md.includes(index)) visibilityClass += " md:table-cell "; 
+  if (columnasVisibles.lg.includes(index)) visibilityClass += " lg:table-cell "; 
+  if (columnasVisibles.xl.includes(index)) visibilityClass += " xl:table-cell "; 
 
-  return visibilityClass.trim(); // Devuelve las clases concatenadas
+  return visibilityClass.trim();
 }

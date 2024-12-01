@@ -17,31 +17,31 @@ export default function Table(props) {
   const columnasVisibles = [
     {
       xs: [2, 6],
-      sm: [2, 3, 6], // Mostrar la columna 0, 1 y 5 (acciones) en pantallas pequeñas
-      md: [0, 2, 3, 6], // Mostrar la columna 0, 1, 2 y 5 (acciones) en pantallas medianas
-      lg: [0, 2, 3, 5, 6], // Mostrar la columna 0, 1, 2, 3 y 5 (acciones) en pantallas grandes
-      xl: [0, 1, 2, 3, 4, 5, 6], // Mostrar la columna 0, 1, 2, 3, 4 y 5 (acciones) en pantallas extra grandes
+      sm: [2, 3, 6],
+      md: [0, 2, 3, 6],
+      lg: [0, 2, 3, 5, 6],
+      xl: [0, 1, 2, 3, 4, 5, 6],
     },
     {
       xs: [0, 1, 10],
-      sm: [0, 1, 10], // Mostrar la columna 0, 1 y 5 (acciones) en pantallas pequeñas
-      md: [0, 1, 2, 3, 4, 10], // Mostrar la columna 0, 1, 2 y 5 (acciones) en pantallas medianas
-      lg: [0, 1, 2, 3, 4, 5, 6, 7, 10], // Mostrar la columna 0, 1, 2, 3 y 5 (acciones) en pantallas grandes
-      xl: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10], // Mostrar la columna 0, 1, 2, 3, 4 y 5 (acciones) en pantallas extra grandes
+      sm: [0, 1, 10],
+      md: [0, 1, 2, 3, 4, 10],
+      lg: [0, 1, 2, 3, 4, 5, 6, 7, 10],
+      xl: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
     },
     {
       xs: [0, 1, 5],
-      sm: [0, 1, 5], // Mostrar la columna 0, 1 y 5 (acciones) en pantallas pequeñas
-      md: [0, 1, 2, 5], // Mostrar la columna 0, 1, 2 y 5 (acciones) en pantallas medianas
-      lg: [0, 1, 2, 3, 5], // Mostrar la columna 0, 1, 2, 3 y 5 (acciones) en pantallas grandes
-      xl: [0, 1, 2, 3, 4, 5], // Mostrar la columna 0, 1, 2, 3, 4 y 5 (acciones) en pantallas extra grandes
+      sm: [0, 1, 5],
+      md: [0, 1, 2, 5],
+      lg: [0, 1, 2, 3, 5],
+      xl: [0, 1, 2, 3, 4, 5],
     },
     {
       xs: [2, 5],
-      sm: [2, 3, 5], // Mostrar la columna 0, 1 y 5 (acciones) en pantallas pequeñas
-      md: [0, 2, 3, 5], // Mostrar la columna 0, 1, 2 y 5 (acciones) en pantallas medianas
-      lg: [0, 2, 3, 5], // Mostrar la columna 0, 1, 2, 3 y 5 (acciones) en pantallas grandes
-      xl: [0, 1, 2, 3, 4, 5], // Mostrar la columna 0, 1, 2, 3, 4 y 5 (acciones) en pantallas extra grandes
+      sm: [2, 3, 5],
+      md: [0, 2, 3, 5],
+      lg: [0, 2, 3, 5],
+      xl: [0, 1, 2, 3, 4, 5],
     },
   ];
   const cols = columnasVisibles[responsiveTable];
@@ -65,26 +65,4 @@ export default function Table(props) {
       {paginado ? <Pagination paginado={paginado} /> : ""}
     </>
   );
-}
-
-{
-  /* <div className="flex justify-between items-center mt-4">
-<Pagination paginado={paginado} />
-<div className="flex items-center">
-  <label htmlFor="clientesPorPagina" className="mr-2">
-    Registros por página:
-  </label>
-  <select
-    id="clientesPorPagina"
-    value={clientesPorPagina}
-    onChange={handleClientesPorPaginaChange}
-    className="border rounded px-4 py-2"
-  >
-    <option value={5}>5</option>
-    <option value={10}>10</option>
-    <option value={15}>15</option>
-    <option value={20}>20</option>
-  </select>
-</div>
-</div> */
 }
